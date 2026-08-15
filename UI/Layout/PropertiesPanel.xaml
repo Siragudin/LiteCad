@@ -1,0 +1,102 @@
+<UserControl x:Class="LiteCad.UI.Layout.PropertiesPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="400" d:DesignWidth="260">
+    <Border Background="#FAFAFA"
+            BorderBrush="#CCCCCC"
+            BorderThickness="1,0,0,0">
+        <DockPanel>
+            <TextBlock DockPanel.Dock="Top"
+                       Text="Properties"
+                       FontWeight="SemiBold"
+                       FontSize="13"
+                       Margin="12,10,12,8" />
+
+            <Border DockPanel.Dock="Top"
+                    BorderBrush="#E0E0E0"
+                    BorderThickness="0,0,0,1" />
+
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="12,12,12,12">
+                    <TextBlock Text="Tool"
+                               FontSize="11"
+                               Foreground="#666666"
+                               Margin="0,0,0,4" />
+                    <TextBlock x:Name="ActiveToolText"
+                               Text="None"
+                               FontSize="13"
+                               Margin="0,0,0,16" />
+
+                    <TextBlock Text="Selection"
+                               FontSize="11"
+                               Foreground="#666666"
+                               Margin="0,0,0,4" />
+                    <TextBlock x:Name="SelectionText"
+                               Text="Nothing selected"
+                               FontSize="13"
+                               Margin="0,0,0,16" />
+
+                    <StackPanel x:Name="LineToolPanel" Visibility="Collapsed">
+                        <TextBlock Text="Line parameters"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,8" />
+
+                        <TextBlock Text="Color"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,4" />
+                        <ComboBox x:Name="LineColorCombo"
+                                  Margin="0,0,0,12"
+                                  SelectionChanged="LineColorCombo_OnSelectionChanged">
+                            <ComboBoxItem Content="Black" Tag="Black" IsSelected="True" />
+                            <ComboBoxItem Content="Gray" Tag="Gray" />
+                            <ComboBoxItem Content="Blue" Tag="Blue" />
+                            <ComboBoxItem Content="Red" Tag="Red" />
+                            <ComboBoxItem Content="Green" Tag="Green" />
+                        </ComboBox>
+
+                        <TextBlock Text="Thickness"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,4" />
+                        <ComboBox x:Name="LineThicknessCombo"
+                                  Margin="0,0,0,12"
+                                  SelectionChanged="LineThicknessCombo_OnSelectionChanged">
+                            <ComboBoxItem Content="1.0" Tag="1" />
+                            <ComboBoxItem Content="1.5" Tag="1.5" IsSelected="True" />
+                            <ComboBoxItem Content="2.0" Tag="2" />
+                            <ComboBoxItem Content="3.0" Tag="3" />
+                        </ComboBox>
+
+                        <TextBlock Text="Type"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,4" />
+                        <ComboBox x:Name="LineTypeCombo"
+                                  Margin="0,0,0,12"
+                                  SelectionChanged="LineTypeCombo_OnSelectionChanged">
+                            <ComboBoxItem Content="Solid" Tag="Solid" IsSelected="True" />
+                            <ComboBoxItem Content="Dashed" Tag="Dashed" />
+                            <ComboBoxItem Content="Dotted" Tag="Dotted" />
+                        </ComboBox>
+
+                        <CheckBox x:Name="OrthoCheckBox"
+                                  Content="Ortho (H/V)"
+                                  Margin="0,0,0,4"
+                                  Checked="OrthoCheckBox_OnChanged"
+                                  Unchecked="OrthoCheckBox_OnChanged" />
+                    </StackPanel>
+
+                    <TextBlock x:Name="NoParametersText"
+                               Text="No parameters"
+                               FontSize="13"
+                               Foreground="#999999" />
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </Border>
+</UserControl>

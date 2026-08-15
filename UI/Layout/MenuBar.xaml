@@ -1,0 +1,71 @@
+<UserControl x:Class="LiteCad.UI.Layout.MenuBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="24" d:DesignWidth="800">
+    <Menu Background="#F0F0F0" Padding="4,0">
+        <MenuItem Header="_File">
+            <MenuItem Header="_New"
+                      Tag="New"
+                      Click="FileMenuItem_OnClick" />
+            <MenuItem Header="_Open..." />
+            <MenuItem Header="_Save" />
+            <Separator />
+            <MenuItem Header="E_xit" />
+        </MenuItem>
+        <MenuItem Header="_Edit">
+            <MenuItem Header="_Undo"
+                      Tag="Undo"
+                      InputGestureText="Ctrl+Z"
+                      Click="EditMenuItem_OnClick" />
+            <MenuItem Header="_Redo"
+                      Tag="Redo"
+                      InputGestureText="Ctrl+Y"
+                      Click="EditMenuItem_OnClick" />
+            <Separator />
+            <MenuItem Header="Cu_t"
+                      Tag="Cut"
+                      InputGestureText="Ctrl+X"
+                      Click="EditMenuItem_OnClick" />
+            <MenuItem Header="_Copy"
+                      Tag="Copy"
+                      InputGestureText="Ctrl+C"
+                      Click="EditMenuItem_OnClick" />
+            <MenuItem Header="_Paste"
+                      Tag="Paste"
+                      InputGestureText="Ctrl+V"
+                      Click="EditMenuItem_OnClick" />
+            <MenuItem Header="_Delete"
+                      Tag="Delete"
+                      InputGestureText="Del"
+                      Click="EditMenuItem_OnClick" />
+        </MenuItem>
+        <MenuItem Header="_View">
+            <MenuItem Header="_Zoom In" />
+            <MenuItem Header="Zoom _Out" />
+            <MenuItem Header="Zoom _Extents" />
+            <Separator />
+            <MenuItem Header="_Grid" IsCheckable="True" IsChecked="True" />
+        </MenuItem>
+        <MenuItem Header="_Tools">
+            <MenuItem Header="_Selection" Tag="Selection" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="_Line" Tag="Line" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="_Axis" Tag="Axis" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="_Wall" Tag="Wall" Click="ToolMenuItem_OnClick" />
+            <Separator />
+            <MenuItem Header="_Rectangle" Tag="Rectangle" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="_Polyline" Tag="Polyline" Click="ToolMenuItem_OnClick" />
+            <Separator />
+            <MenuItem Header="_Move" Tag="Move" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="C_opy" Tag="Copy" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="_Delete" Tag="Delete" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="Polygon _Edit" Tag="PolygonEdit" Click="ToolMenuItem_OnClick" />
+        </MenuItem>
+        <MenuItem Header="_Layers" />
+        <MenuItem Header="_Help">
+            <MenuItem Header="_About LiteCad" />
+        </MenuItem>
+    </Menu>
+</UserControl>

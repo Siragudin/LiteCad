@@ -1,0 +1,80 @@
+<UserControl x:Class="LiteCad.UI.Layout.StatusBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="24" d:DesignWidth="800">
+    <Border Background="#F0F0F0"
+            BorderBrush="#CCCCCC"
+            BorderThickness="0,1,0,0"
+            Padding="8,4">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="StatusText"
+                       Grid.Column="0"
+                       VerticalAlignment="Center"
+                       Text="Ready"
+                       FontSize="12" />
+
+            <TextBlock x:Name="CoordinatesText"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       Margin="16,0,0,0"
+                       Text="X: 0.00  Y: 0.00"
+                       FontSize="12" />
+
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="16,0,0,0">
+                <TextBlock Text="L:"
+                           VerticalAlignment="Center"
+                           FontSize="12"
+                           Margin="0,0,4,0" />
+                <Grid Width="80"
+                      Height="22">
+                    <Border Background="#E8E8E8"
+                            BorderBrush="#CCCCCC"
+                            BorderThickness="1"
+                            CornerRadius="2" />
+                    <TextBlock x:Name="LengthDisplay"
+                               Margin="6,0"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="#666666"
+                               Text="—"
+                               IsHitTestVisible="False" />
+                    <TextBox x:Name="LengthInput"
+                             Margin="0"
+                             Padding="5,0"
+                             FontSize="12"
+                             VerticalContentAlignment="Center"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             CaretBrush="Black"
+                             IsEnabled="False"
+                             IsTabStop="False"
+                             Focusable="True"
+                             Text=""
+                             KeyDown="LengthInput_OnKeyDown"
+                             PreviewTextInput="LengthInput_OnPreviewTextInput"
+                             TextChanged="LengthInput_OnTextChanged" />
+                </Grid>
+            </StackPanel>
+
+            <TextBlock x:Name="AreaText"
+                       Grid.Column="3"
+                       VerticalAlignment="Center"
+                       Margin="16,0,0,0"
+                       Text="A: —"
+                       FontSize="12" />
+        </Grid>
+    </Border>
+</UserControl>
