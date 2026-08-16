@@ -13,10 +13,9 @@
                 <Button Content="{loc:Loc Key=Tool.Hand}" Width="64" Padding="6,4" Tag="Hand" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Line}" Width="64" Padding="6,4" Tag="Line" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Rectangle.Short}" Width="64" Padding="6,4" Tag="Rectangle" Click="ToolButton_OnClick" />
+                <Button Content="{loc:Loc Key=Tool.Circle.Short}" Width="64" Padding="6,4" Tag="Circle" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Axis}" Width="64" Padding="6,4" Tag="Axis" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Wall}" Width="64" Padding="6,4" Tag="Wall" Click="ToolButton_OnClick" />
-                <Separator />
-                <Button Content="{loc:Loc Key=Tool.Polyline}" Width="72" Padding="6,4" Tag="Polyline" Click="ToolButton_OnClick" />
                 <Separator />
                 <Button Content="{loc:Loc Key=Tool.Move}" Width="64" Padding="6,4" Tag="Move" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Stretch}" Width="64" Padding="6,4" Tag="Stretch" Click="ToolButton_OnClick" />

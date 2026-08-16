@@ -22,9 +22,10 @@ public static class Strings
     public static string Tool_Line => Get("Tool.Line");
     public static string Tool_Rectangle => Get("Tool.Rectangle");
     public static string Tool_Rectangle_Short => Get("Tool.Rectangle.Short");
+    public static string Tool_Circle => Get("Tool.Circle");
+    public static string Tool_Circle_Short => Get("Tool.Circle.Short");
     public static string Tool_Axis => Get("Tool.Axis");
     public static string Tool_Wall => Get("Tool.Wall");
-    public static string Tool_Polyline => Get("Tool.Polyline");
     public static string Tool_Move => Get("Tool.Move");
     public static string Tool_Stretch => Get("Tool.Stretch");
     public static string Tool_Copy => Get("Tool.Copy");
@@ -78,7 +79,7 @@ public static class Strings
     public static string Menu_Header_Axis => Get("Menu.Header.Axis");
     public static string Menu_Header_Wall => Get("Menu.Header.Wall");
     public static string Menu_Header_Rectangle => Get("Menu.Header.Rectangle");
-    public static string Menu_Header_Polyline => Get("Menu.Header.Polyline");
+    public static string Menu_Header_Circle => Get("Menu.Header.Circle");
     public static string Menu_Header_Move => Get("Menu.Header.Move");
     public static string Menu_Header_CopyTool => Get("Menu.Header.CopyTool");
     public static string Menu_Header_DeleteTool => Get("Menu.Header.DeleteTool");
@@ -106,6 +107,7 @@ public static class Strings
     public static string Label_X => Get("Label.X");
     public static string Label_Y => Get("Label.Y");
     public static string Label_Distance => Get("Label.Distance");
+    public static string Label_Radius => Get("Label.Radius");
     public static string Label_EmptyValue => Get("Label.EmptyValue");
     public static string Label_Color_Black => Get("Label.Color.Black");
     public static string Label_Color_Gray => Get("Label.Color.Gray");
@@ -139,6 +141,7 @@ public static class Strings
     public static string Status_CrossingSelection => Get("Status.CrossingSelection");
     public static string Status_LineCancelled => Get("Status.LineCancelled");
     public static string Status_RectangleCancelled => Get("Status.RectangleCancelled");
+    public static string Status_CircleCancelled => Get("Status.CircleCancelled");
     public static string Status_MoveCancelled => Get("Status.MoveCancelled");
     public static string Status_MoveCompleted => Get("Status.MoveCompleted");
     public static string Status_StretchCancelled => Get("Status.StretchCancelled");
@@ -149,6 +152,9 @@ public static class Strings
     public static string Input_Line_SetDirectionThenTypeLength => Get("Input.Line.SetDirectionThenTypeLength");
     public static string Input_Rectangle_SelectFirstCorner => Get("Input.Rectangle.SelectFirstCorner");
     public static string Input_Rectangle_SelectOppositeCorner => Get("Input.Rectangle.SelectOppositeCorner");
+    public static string Input_Circle_SelectCenter => Get("Input.Circle.SelectCenter");
+    public static string Input_Circle_SelectRadius => Get("Input.Circle.SelectRadius");
+    public static string Input_Circle_SetDirectionThenTypeRadius => Get("Input.Circle.SetDirectionThenTypeRadius");
     public static string Input_Move_Idle => Get("Input.Move.Idle");
     public static string Input_Move_SelectVertices => Get("Input.Move.SelectVertices");
     public static string Input_Move_VertexSelected => Get("Input.Move.VertexSelected");
@@ -160,6 +166,7 @@ public static class Strings
 
     public static string Error_CannotCommand => Get("Error.CannotCommand");
     public static string Error_RectangleTooSmall => Get("Error.RectangleTooSmall");
+    public static string Error_CircleTooSmall => Get("Error.CircleTooSmall");
     public static string Error_StretchUnavailable => Get("Error.StretchUnavailable");
 
     public static string Selection_NothingSelected => Get("Selection.NothingSelected");

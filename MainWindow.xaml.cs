@@ -31,7 +31,7 @@ public partial class MainWindow : Window
             ["Axis"] = new AxisTool(),
             ["Wall"] = new WallTool(),
             ["Rectangle"] = new RectangleTool(),
-            ["Polyline"] = new PolylineTool(),
+            ["Circle"] = new CircleTool(),
             ["Move"] = new MoveTool(),
             ["Stretch"] = new StretchTool(),
             ["Copy"] = new CopyTool(),

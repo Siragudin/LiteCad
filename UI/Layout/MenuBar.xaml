@@ -65,7 +65,7 @@
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Wall}" Tag="Wall" Click="ToolMenuItem_OnClick" />
                 <Separator />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Rectangle}" Tag="Rectangle" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Polyline}" Tag="Polyline" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Circle}" Tag="Circle" Click="ToolMenuItem_OnClick" />
                 <Separator />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Move}" Tag="Move" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.CopyTool}" Tag="Copy" Click="ToolMenuItem_OnClick" />

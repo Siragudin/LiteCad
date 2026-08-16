@@ -443,7 +443,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
                 committed = true;
             }
 
-            if (committed == true || !IsMoveDistanceInput())
+            if (committed == true || !PreservesInputOnFailedCommit())
             {
                 ClearLineTyping();
             }
@@ -494,6 +494,9 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         }
     }
 
+    private bool PreservesInputOnFailedCommit()
+        => _lineInputLabelMode is LineInputLabelMode.Distance or LineInputLabelMode.Radius;
+
     private bool IsMoveDistanceInput()
         => _isInputActive && _lineInputLabelMode == LineInputLabelMode.Distance;
 
@@ -501,7 +504,12 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         => IsMoveDistanceInput();
 
     private static string GetLineInputLabelText(LineInputLabelMode mode)
-        => mode == LineInputLabelMode.Distance ? Strings.Label_Distance : Strings.Label_Length;
+        => mode switch
+        {
+            LineInputLabelMode.Distance => Strings.Label_Distance,
+            LineInputLabelMode.Radius => Strings.Label_Radius,
+            _ => Strings.Label_Length
+        };
 
     private void LengthInput_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
     {

@@ -64,9 +64,10 @@
   <data name="Tool.Line" xml:space="preserve"><value>Line</value></data>
   <data name="Tool.Rectangle" xml:space="preserve"><value>Rectangle</value></data>
   <data name="Tool.Rectangle.Short" xml:space="preserve"><value>Rect</value></data>
+  <data name="Tool.Circle" xml:space="preserve"><value>Circle</value></data>
+  <data name="Tool.Circle.Short" xml:space="preserve"><value>Circle</value></data>
   <data name="Tool.Axis" xml:space="preserve"><value>Axis</value></data>
   <data name="Tool.Wall" xml:space="preserve"><value>Wall</value></data>
-  <data name="Tool.Polyline" xml:space="preserve"><value>Polyline</value></data>
   <data name="Tool.Move" xml:space="preserve"><value>Move</value></data>
   <data name="Tool.Stretch" xml:space="preserve"><value>Stretch</value></data>
   <data name="Tool.Copy" xml:space="preserve"><value>Copy</value></data>
@@ -118,7 +119,7 @@
   <data name="Menu.Header.Axis" xml:space="preserve"><value>_Axis</value></data>
   <data name="Menu.Header.Wall" xml:space="preserve"><value>_Wall</value></data>
   <data name="Menu.Header.Rectangle" xml:space="preserve"><value>_Rectangle</value></data>
-  <data name="Menu.Header.Polyline" xml:space="preserve"><value>_Polyline</value></data>
+  <data name="Menu.Header.Circle" xml:space="preserve"><value>C_ircle</value></data>
   <data name="Menu.Header.Move" xml:space="preserve"><value>_Move</value></data>
   <data name="Menu.Header.CopyTool" xml:space="preserve"><value>C_opy</value></data>
   <data name="Menu.Header.DeleteTool" xml:space="preserve"><value>_Delete</value></data>
@@ -145,6 +146,7 @@
   <data name="Label.X" xml:space="preserve"><value>X:</value></data>
   <data name="Label.Y" xml:space="preserve"><value>Y:</value></data>
   <data name="Label.Distance" xml:space="preserve"><value>Distance:</value></data>
+  <data name="Label.Radius" xml:space="preserve"><value>Radius:</value></data>
   <data name="Label.EmptyValue" xml:space="preserve"><value>—</value></data>
   <data name="Label.Color.Black" xml:space="preserve"><value>Black</value></data>
   <data name="Label.Color.Gray" xml:space="preserve"><value>Gray</value></data>
@@ -177,6 +179,7 @@
   <data name="Status.CrossingSelection" xml:space="preserve"><value>Crossing selection</value></data>
   <data name="Status.LineCancelled" xml:space="preserve"><value>Line cancelled</value></data>
   <data name="Status.RectangleCancelled" xml:space="preserve"><value>Rectangle cancelled</value></data>
+  <data name="Status.CircleCancelled" xml:space="preserve"><value>Circle cancelled</value></data>
   <data name="Status.MoveCancelled" xml:space="preserve"><value>Move cancelled</value></data>
   <data name="Status.MoveCompleted" xml:space="preserve"><value>Move completed</value></data>
   <data name="Status.StretchCancelled" xml:space="preserve"><value>Stretch cancelled</value></data>
@@ -186,6 +189,9 @@
   <data name="Input.Line.SetDirectionThenTypeLength" xml:space="preserve"><value>Move mouse to set direction, then type length</value></data>
   <data name="Input.Rectangle.SelectFirstCorner" xml:space="preserve"><value>Select first corner or type size after first click (Right click to cancel)</value></data>
   <data name="Input.Rectangle.SelectOppositeCorner" xml:space="preserve"><value>Select opposite corner or type width/height (Alt to switch, Enter to apply)</value></data>
+  <data name="Input.Circle.SelectCenter" xml:space="preserve"><value>Select center or type radius after first click (Right click to cancel)</value></data>
+  <data name="Input.Circle.SelectRadius" xml:space="preserve"><value>Select radius point or type radius (Right click to cancel)</value></data>
+  <data name="Input.Circle.SetDirectionThenTypeRadius" xml:space="preserve"><value>Move mouse to set direction, then type radius</value></data>
   <data name="Input.Move.Idle" xml:space="preserve"><value>Click a vertex grip or select objects, then click base point and destination</value></data>
   <data name="Input.Move.SelectVertices" xml:space="preserve"><value>Select vertices or objects to move</value></data>
   <data name="Input.Move.VertexSelected" xml:space="preserve"><value>Vertex selected — click base point, then destination</value></data>
@@ -196,6 +202,7 @@
   <data name="Input.Stretch.SelectBasePoint" xml:space="preserve"><value>Click base point, then stretch destination</value></data>
   <data name="Error.CannotCommand" xml:space="preserve"><value>Cannot {0}</value></data>
   <data name="Error.RectangleTooSmall" xml:space="preserve"><value>Rectangle size is too small</value></data>
+  <data name="Error.CircleTooSmall" xml:space="preserve"><value>Circle radius is too small</value></data>
   <data name="Error.StretchUnavailable" xml:space="preserve"><value>Stretch unavailable — perpendicular parallel sides required at both ends</value></data>
   <data name="Selection.NothingSelected" xml:space="preserve"><value>Nothing selected</value></data>
   <data name="Selection.Pasted" xml:space="preserve"><value>Pasted</value></data>
