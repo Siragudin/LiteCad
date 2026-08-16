@@ -27,6 +27,12 @@ public sealed class ToolContext
         Action<double?, double?>? setRectangleSizePreview = null,
         Action<double?, double?>? resetRectangleSizeInput = null,
         Func<KeyEventArgs, bool>? processRectangleSizeKey = null,
+        Action<bool, DualFieldLabelMode>? setDualFieldInputEnabled = null,
+        Action<bool, string>? setLineInputModeEnabled = null,
+        Func<(string First, string Second)>? getDualFieldInputText = null,
+        Action<string, string>? setDualFieldInputText = null,
+        Func<string>? getLineInputText = null,
+        Action<string>? setLineInputText = null,
         Action? recordUndo = null)
     {
         Session = session;
@@ -48,6 +54,12 @@ public sealed class ToolContext
         SetRectangleSizePreview = setRectangleSizePreview ?? ((_, _) => { });
         ResetRectangleSizeInput = resetRectangleSizeInput ?? ((_, _) => { });
         ProcessRectangleSizeKey = processRectangleSizeKey ?? (_ => false);
+        SetDualFieldInputEnabled = setDualFieldInputEnabled ?? ((_, _) => { });
+        SetLineInputModeEnabled = setLineInputModeEnabled ?? ((_, _) => { });
+        GetDualFieldInputText = getDualFieldInputText ?? (() => (string.Empty, string.Empty));
+        SetDualFieldInputText = setDualFieldInputText ?? ((_, _) => { });
+        GetLineInputText = getLineInputText ?? (() => string.Empty);
+        SetLineInputText = setLineInputText ?? (_ => { });
         RecordUndo = recordUndo ?? (() => { });
     }
 
@@ -88,6 +100,18 @@ public sealed class ToolContext
     public Action<double?, double?> ResetRectangleSizeInput { get; }
 
     public Func<KeyEventArgs, bool> ProcessRectangleSizeKey { get; }
+
+    public Action<bool, DualFieldLabelMode> SetDualFieldInputEnabled { get; }
+
+    public Action<bool, string> SetLineInputModeEnabled { get; }
+
+    public Func<(string First, string Second)> GetDualFieldInputText { get; }
+
+    public Action<string, string> SetDualFieldInputText { get; }
+
+    public Func<string> GetLineInputText { get; }
+
+    public Action<string> SetLineInputText { get; }
 
     public Action RecordUndo { get; }
 

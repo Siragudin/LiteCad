@@ -10,28 +10,52 @@ namespace LiteCad.UI.Layout;
 public partial class PropertiesPanel : UserControl
 {
     private CadSession? _session;
+    private Action? _onMoveOrthoChanged;
+    private bool _suppressMoveOrthoEvents;
 
     public PropertiesPanel()
     {
         InitializeComponent();
     }
 
-    public void BindSession(CadSession session)
+    public bool IsMoveToolPanelVisible => MoveToolPanel.Visibility == Visibility.Visible;
+
+    public bool IsMoveOrthoToggleVisible => IsMoveToolPanelVisible;
+
+    public bool MoveOrthoIsChecked => MoveOrthoCheckBox.IsChecked == true;
+
+    public void BindSession(CadSession session, Action? onMoveOrthoChanged = null)
     {
         _session = session;
+        _onMoveOrthoChanged = onMoveOrthoChanged;
     }
 
     public void SetActiveTool(string toolName)
     {
         ActiveToolText.Text = toolName;
         var isLineTool = toolName == "Line";
+        var isMoveTool = toolName == "Move";
         LineToolPanel.Visibility = isLineTool ? Visibility.Visible : Visibility.Collapsed;
-        NoParametersText.Visibility = isLineTool ? Visibility.Collapsed : Visibility.Visible;
+        MoveToolPanel.Visibility = isMoveTool ? Visibility.Visible : Visibility.Collapsed;
+        NoParametersText.Visibility = isLineTool || isMoveTool ? Visibility.Collapsed : Visibility.Visible;
+
+        if (isMoveTool)
+        {
+            SyncMoveOrthoCheckBoxFromSession();
+        }
     }
 
     public void SetSelection(string selectionInfo)
     {
         SelectionText.Text = selectionInfo;
+    }
+
+    public void SetMoveOrthoChecked(bool enabled)
+    {
+        _suppressMoveOrthoEvents = true;
+        MoveOrthoCheckBox.IsChecked = enabled;
+        _suppressMoveOrthoEvents = false;
+        ApplyMoveOrthoEnabled(enabled);
     }
 
     private void LineColorCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -87,5 +111,38 @@ public partial class PropertiesPanel : UserControl
         }
 
         _session.LineToolOptions.OrthoEnabled = OrthoCheckBox.IsChecked == true;
+    }
+
+    private void MoveOrthoCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        if (_session is null || _suppressMoveOrthoEvents)
+        {
+            return;
+        }
+
+        ApplyMoveOrthoEnabled(MoveOrthoCheckBox.IsChecked == true);
+    }
+
+    private void ApplyMoveOrthoEnabled(bool enabled)
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        _session.LineToolOptions.OrthoEnabled = enabled;
+        _onMoveOrthoChanged?.Invoke();
+    }
+
+    private void SyncMoveOrthoCheckBoxFromSession()
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        _suppressMoveOrthoEvents = true;
+        MoveOrthoCheckBox.IsChecked = _session.LineToolOptions.OrthoEnabled;
+        _suppressMoveOrthoEvents = false;
     }
 }

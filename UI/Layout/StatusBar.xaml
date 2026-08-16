@@ -35,7 +35,8 @@
                         Orientation="Horizontal"
                         VerticalAlignment="Center"
                         Margin="16,0,0,0">
-                <TextBlock Text="L:"
+                <TextBlock x:Name="LineInputLabel"
+                           Text="L:"
                            VerticalAlignment="Center"
                            FontSize="12"
                            Margin="0,0,4,0" />
@@ -76,7 +77,8 @@
                         VerticalAlignment="Center"
                         Margin="16,0,0,0"
                         Visibility="Collapsed">
-                <TextBlock Text="W:"
+                <TextBlock x:Name="FirstFieldLabel"
+                           Text="W:"
                            VerticalAlignment="Center"
                            FontSize="12"
                            Margin="0,0,4,0" />
@@ -112,7 +114,8 @@
                              TextChanged="WidthInput_OnTextChanged"
                              GotFocus="WidthInput_OnGotFocus" />
                 </Grid>
-                <TextBlock Text="H:"
+                <TextBlock x:Name="SecondFieldLabel"
+                           Text="H:"
                            VerticalAlignment="Center"
                            FontSize="12"
                            Margin="8,0,4,0" />

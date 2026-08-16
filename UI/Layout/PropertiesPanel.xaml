@@ -91,6 +91,19 @@
                                   Unchecked="OrthoCheckBox_OnChanged" />
                     </StackPanel>
 
+                    <StackPanel x:Name="MoveToolPanel" Visibility="Collapsed">
+                        <TextBlock Text="Move parameters"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,8" />
+
+                        <CheckBox x:Name="MoveOrthoCheckBox"
+                                  Content="Ortho"
+                                  Margin="0,0,0,4"
+                                  Checked="MoveOrthoCheckBox_OnChanged"
+                                  Unchecked="MoveOrthoCheckBox_OnChanged" />
+                    </StackPanel>
+
                     <TextBlock x:Name="NoParametersText"
                                Text="No parameters"
                                FontSize="13"

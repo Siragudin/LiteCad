@@ -19,6 +19,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     private bool _isTypingWidth;
     private bool _isTypingHeight;
     private RectangleSizeField _activeRectangleField = RectangleSizeField.Width;
+    private DualFieldLabelMode _dualFieldLabelMode = DualFieldLabelMode.WidthHeight;
 
     public StatusBar()
     {
@@ -29,17 +30,71 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
     public event EventHandler<(string Width, string Height)>? RectangleSizeCommitted;
 
+    public Func<string, bool>? TryCommitLengthInput { get; set; }
+
+    public Func<(string Width, string Height), bool>? TryCommitRectangleSizeInput { get; set; }
+
     public bool IsRectangleInputActive => _isRectangleInputActive;
 
+    public bool IsLineInputActive => _isInputActive && !_isRectangleInputActive;
+
     public RectangleSizeField ActiveRectangleField => _activeRectangleField;
+
+    public DualFieldLabelMode DualFieldLabels => _dualFieldLabelMode;
+
+    public string FirstFieldLabelText => FirstFieldLabel.Text;
+
+    public string LineInputLabelText => LineInputLabel.Text;
 
     public string RectangleWidthText => WidthInput.Text;
 
     public string RectangleHeightText => HeightInput.Text;
 
+    public string LineInputText => LengthInput.Text;
+
     public bool IsWidthFieldFocused => WidthInput.IsKeyboardFocusWithin;
 
     public bool IsHeightFieldFocused => HeightInput.IsKeyboardFocusWithin;
+
+    public void SetDualFieldLabelMode(DualFieldLabelMode mode)
+    {
+        _dualFieldLabelMode = mode;
+        switch (mode)
+        {
+            case DualFieldLabelMode.MoveOffset:
+                FirstFieldLabel.Text = "X:";
+                SecondFieldLabel.Text = "Y:";
+                break;
+            default:
+                FirstFieldLabel.Text = "W:";
+                SecondFieldLabel.Text = "H:";
+                break;
+        }
+    }
+
+    public void SetLineInputLabel(string label)
+    {
+        LineInputLabel.Text = label;
+    }
+
+    public void SetDualFieldInputText(string first, string second)
+    {
+        SetRectangleWidthInputText(first);
+        SetRectangleHeightInputText(second);
+    }
+
+    public void SetLineInputText(string text)
+    {
+        LengthInput.Text = text;
+        if (!string.IsNullOrEmpty(text))
+        {
+            _isTyping = true;
+            LengthInput.Background = TypingBackgroundBrush;
+        }
+    }
+
+    public (string First, string Second) GetDualFieldInputText()
+        => (WidthInput.Text, HeightInput.Text);
 
     public void SetRectangleWidthInputText(string text)
     {
@@ -92,11 +147,11 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         AreaText.Text = area.HasValue ? $"A: {area.Value:F2}" : "A: —";
     }
 
-    public void SetLengthInputEnabled(bool enabled)
+    public void SetLengthInputEnabled(bool enabled, string label = "L:")
     {
         if (enabled)
         {
-            ActivateLineInput();
+            ActivateLineInput(label);
         }
         else
         {
@@ -104,11 +159,11 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         }
     }
 
-    public void SetRectangleSizeInputEnabled(bool enabled)
+    public void SetRectangleSizeInputEnabled(bool enabled, DualFieldLabelMode labelMode = DualFieldLabelMode.WidthHeight)
     {
         if (enabled)
         {
-            ActivateRectangleSizeInput();
+            ActivateRectangleSizeInput(labelMode);
         }
         else
         {
@@ -243,11 +298,12 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         => e.Key is Key.LeftAlt or Key.RightAlt
            || (e.Key == Key.System && e.SystemKey is Key.LeftAlt or Key.RightAlt);
 
-    private void ActivateLineInput()
+    private void ActivateLineInput(string label = "L:")
     {
         DeactivateRectangleSizeInput();
         _isInputActive = true;
         LineInputPanel.Visibility = Visibility.Visible;
+        LineInputLabel.Text = label;
         LengthInput.IsEnabled = true;
         ClearLineTyping();
         LengthInput.Focus();
@@ -261,17 +317,19 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         LengthInput.Text = string.Empty;
         LengthInput.Background = Brushes.Transparent;
         LengthDisplay.Text = "—";
+        LineInputLabel.Text = "L:";
         if (!_isRectangleInputActive)
         {
             LineInputPanel.Visibility = Visibility.Visible;
         }
     }
 
-    private void ActivateRectangleSizeInput()
+    private void ActivateRectangleSizeInput(DualFieldLabelMode labelMode = DualFieldLabelMode.WidthHeight)
     {
         DeactivateLineInput();
         _isRectangleInputActive = true;
         _activeRectangleField = RectangleSizeField.Width;
+        SetDualFieldLabelMode(labelMode);
         LineInputPanel.Visibility = Visibility.Collapsed;
         RectangleInputPanel.Visibility = Visibility.Visible;
         WidthInput.IsEnabled = true;
@@ -298,6 +356,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         HeightDisplay.Text = "—";
         RectangleInputPanel.Visibility = Visibility.Collapsed;
         LineInputPanel.Visibility = Visibility.Visible;
+        SetDualFieldLabelMode(DualFieldLabelMode.WidthHeight);
         UpdateRectangleFieldHighlight();
     }
 
@@ -369,10 +428,24 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     {
         if (_isTyping && !string.IsNullOrWhiteSpace(LengthInput.Text))
         {
-            LengthCommitted?.Invoke(this, LengthInput.Text);
+            var text = LengthInput.Text;
+            var committed = TryCommitLengthInput?.Invoke(text);
+            if (TryCommitLengthInput is null)
+            {
+                LengthCommitted?.Invoke(this, text);
+                committed = true;
+            }
+
+            if (committed == true || !IsMoveDistanceInput())
+            {
+                ClearLineTyping();
+            }
+        }
+        else
+        {
+            ClearLineTyping();
         }
 
-        ClearLineTyping();
         if (_isInputActive)
         {
             LengthInput.Focus();
@@ -381,13 +454,27 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
     private void CommitRectangleSizeInput()
     {
-        RectangleSizeCommitted?.Invoke(this, (WidthInput.Text, HeightInput.Text));
-        ClearRectangleTyping();
+        var sizes = (WidthInput.Text, HeightInput.Text);
+        var committed = TryCommitRectangleSizeInput?.Invoke(sizes);
+        if (TryCommitRectangleSizeInput is null)
+        {
+            RectangleSizeCommitted?.Invoke(this, sizes);
+            committed = true;
+        }
+
+        if (committed == true || _dualFieldLabelMode != DualFieldLabelMode.MoveOffset)
+        {
+            ClearRectangleTyping();
+        }
+
         if (_isRectangleInputActive)
         {
             FocusActiveRectangleField();
         }
     }
+
+    private bool IsMoveDistanceInput()
+        => _isInputActive && LineInputLabel.Text == "Distance:";
 
     private void LengthInput_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
     {

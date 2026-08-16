@@ -31,13 +31,22 @@ public partial class MainWindow : Window
             ["Rectangle"] = new RectangleTool(),
             ["Polyline"] = new PolylineTool(),
             ["Move"] = new MoveTool(),
+            ["Stretch"] = new StretchTool(),
             ["Copy"] = new CopyTool(),
             ["Delete"] = new DeleteTool(),
             ["PolygonEdit"] = new PolygonEditTool()
         };
 
         MainCanvas.Session = ViewModel.Session;
-        MainProperties.BindSession(ViewModel.Session);
+        MainProperties.BindSession(ViewModel.Session, () =>
+        {
+            if (ViewModel.Session.ToolService.ActiveTool is MoveTool moveTool)
+            {
+                moveTool.NotifyOrthoChanged();
+            }
+
+            MainCanvas.RequestRedraw();
+        });
 
         var toolContext = new ToolContext(
             ViewModel.Session,
@@ -59,12 +68,20 @@ public partial class MainWindow : Window
             (width, height) => MainStatusBar.SetRectangleSizePreview(width, height),
             (width, height) => MainStatusBar.ResetRectangleSizeInput(width, height),
             e => MainStatusBar.ProcessRectangleSizeKey(e),
+            (enabled, mode) => MainStatusBar.SetRectangleSizeInputEnabled(enabled, mode),
+            (enabled, label) => MainStatusBar.SetLengthInputEnabled(enabled, label),
+            () => MainStatusBar.GetDualFieldInputText(),
+            (first, second) => MainStatusBar.SetDualFieldInputText(first, second),
+            () => MainStatusBar.LineInputText,
+            text => MainStatusBar.SetLineInputText(text),
             () => ViewModel.Session.History.Record(ViewModel.Session.Document));
 
         MainCanvas.InitializeTools(toolContext);
         MainCanvas.MouseWorldPositionChanged += OnMouseWorldPositionChanged;
         MainStatusBar.LengthCommitted += OnLengthCommitted;
         MainStatusBar.RectangleSizeCommitted += OnRectangleSizeCommitted;
+        MainStatusBar.TryCommitLengthInput = TryCommitLengthForActiveTool;
+        MainStatusBar.TryCommitRectangleSizeInput = TryCommitRectangleSizeForActiveTool;
 
         MainToolBar.ToolRequested += OnToolRequested;
         MainMenuBar.ToolRequested += OnToolRequested;
@@ -227,23 +244,28 @@ public partial class MainWindow : Window
         ViewModel.Session.ToolService.ActiveTool?.TryApplyRectangleSize(sizes.Width, sizes.Height);
     }
 
+    private bool TryCommitRectangleSizeForActiveTool((string Width, string Height) sizes)
+        => ViewModel.Session.ToolService.ActiveTool?.TryApplyRectangleSize(sizes.Width, sizes.Height) == true;
+
     private void OnLengthCommitted(object? sender, string input)
+    {
+        TryCommitLengthForActiveTool(input);
+    }
+
+    private bool TryCommitLengthForActiveTool(string input)
     {
         var tool = ViewModel.Session.ToolService.ActiveTool;
         if (tool is null)
         {
-            return;
+            return false;
         }
 
         if (tool.TryApplyLengthInput(input))
         {
-            return;
+            return true;
         }
 
-        if (TryParseSingleLength(input, out var length))
-        {
-            tool.TryApplyLength(length);
-        }
+        return TryParseSingleLength(input, out var length) && tool.TryApplyLength(length);
     }
 
     private static bool TryParseSingleLength(string text, out double length)

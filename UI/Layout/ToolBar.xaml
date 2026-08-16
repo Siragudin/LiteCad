@@ -18,6 +18,7 @@
                 <Button Content="Polyline" Width="72" Padding="6,4" Tag="Polyline" Click="ToolButton_OnClick" />
                 <Separator />
                 <Button Content="Move" Width="64" Padding="6,4" Tag="Move" Click="ToolButton_OnClick" />
+                <Button Content="Stretch" Width="64" Padding="6,4" Tag="Stretch" Click="ToolButton_OnClick" />
                 <Button Content="Copy" Width="64" Padding="6,4" Tag="Copy" Click="ToolButton_OnClick" />
                 <Button Content="Delete" Width="64" Padding="6,4" Tag="Delete" Click="ToolButton_OnClick" />
                 <Separator />

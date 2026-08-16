@@ -114,6 +114,12 @@ public sealed class SelectionTool : ToolBase
             selection.Clear();
         }
 
+        if (TryToggleVertexAt(document, selection, world, tolerance, additive))
+        {
+            UpdateSelectionUi();
+            return;
+        }
+
         if (TryToggleEdgeAt(document, selection, world, tolerance, additive))
         {
             UpdateSelectionUi();
@@ -186,6 +192,46 @@ public sealed class SelectionTool : ToolBase
         }
 
         UpdateSelectionUi(windowSelection ? "Window selection" : "Crossing selection");
+    }
+
+    private bool TryToggleVertexAt(
+        CadDocument document,
+        Core.Selection.Selection selection,
+        PointF world,
+        double tolerance,
+        bool additive)
+    {
+        Vertex? closestVertex = null;
+        var closestDistance = tolerance;
+
+        foreach (var vertex in document.Vertices)
+        {
+            var distance = MathUtils.Distance(world, vertex.Position);
+            if (distance > closestDistance)
+            {
+                continue;
+            }
+
+            closestVertex = vertex;
+            closestDistance = distance;
+        }
+
+        if (closestVertex is null)
+        {
+            return false;
+        }
+
+        if (additive && selection.SelectedVertexIds.Contains(closestVertex.Id))
+        {
+            selection.SelectedVertexIds.Remove(closestVertex.Id);
+        }
+        else
+        {
+            selection.SelectedVertexIds.Add(closestVertex.Id);
+        }
+
+        Context!.SetStatus(additive ? "Selection updated" : "Vertex selected");
+        return true;
     }
 
     private bool TryToggleEdgeAt(
@@ -287,8 +333,9 @@ public sealed class SelectionTool : ToolBase
         var selection = Context.Session.Selection;
         var edgeCount = selection.SelectedEdgeIds.Count;
         var polygonCount = selection.SelectedPolygonIds.Count;
+        var vertexCount = selection.SelectedVertexIds.Count;
 
-        if (edgeCount == 0 && polygonCount == 0)
+        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0)
         {
             Context.SetArea(null);
             Context.SetLength(null);
@@ -297,7 +344,17 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (edgeCount == 1 && polygonCount == 0)
+        if (vertexCount == 1 && edgeCount == 0 && polygonCount == 0)
+        {
+            var vertex = document.Vertices.First(item => selection.SelectedVertexIds.Contains(item.Id));
+            Context.SetLength(null);
+            Context.SetArea(null);
+            Context.SetSelectionInfo($"Vertex ({vertex.Position.X:F2}, {vertex.Position.Y:F2})");
+            Context.SetStatus(status ?? "Vertex selected");
+            return;
+        }
+
+        if (edgeCount == 1 && polygonCount == 0 && vertexCount == 0)
         {
             var edge = document.Edges.First(item => selection.SelectedEdgeIds.Contains(item.Id));
             var length = MathUtils.Distance(
@@ -310,7 +367,7 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (polygonCount == 1 && edgeCount == 0)
+        if (polygonCount == 1 && edgeCount == 0 && vertexCount == 0)
         {
             var polygon = document.Polygons.First(item => selection.SelectedPolygonIds.Contains(item.Id));
             var area = PolygonGeometry.GetArea(document, polygon, MathUtils.DefaultTolerance);
@@ -323,7 +380,7 @@ public sealed class SelectionTool : ToolBase
 
         Context.SetLength(null);
         Context.SetArea(null);
-        Context.SetSelectionInfo($"{edgeCount} edge(s), {polygonCount} polygon(s)");
+        Context.SetSelectionInfo($"{vertexCount} vertex(s), {edgeCount} edge(s), {polygonCount} polygon(s)");
         Context.SetStatus(status ?? "Multiple objects selected");
     }
 

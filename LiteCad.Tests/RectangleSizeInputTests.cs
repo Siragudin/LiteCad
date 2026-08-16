@@ -243,7 +243,7 @@ public class RectangleSizeInputTests
                 () => { },
                 () => { },
                 () => { },
-                setRectangleSizeInputEnabled: StatusBar.SetRectangleSizeInputEnabled,
+                setRectangleSizeInputEnabled: enabled => StatusBar.SetRectangleSizeInputEnabled(enabled),
                 setRectangleSizePreview: StatusBar.SetRectangleSizePreview,
                 resetRectangleSizeInput: StatusBar.ResetRectangleSizeInput,
                 processRectangleSizeKey: StatusBar.ProcessRectangleSizeKey);

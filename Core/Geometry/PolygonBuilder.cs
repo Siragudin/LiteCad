@@ -3,7 +3,7 @@ using LiteCad.Core.Document;
 
 
 namespace LiteCad.Core.Geometry;
-
+ 
 
 
 public static class PolygonBuilder
