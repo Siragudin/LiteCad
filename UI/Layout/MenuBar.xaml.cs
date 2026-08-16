@@ -11,6 +11,8 @@ public partial class MenuBar : UserControl
 
     public event EventHandler<string>? FileCommandRequested;
 
+    public LanguageSelector LanguageSelector => LanguageSelectorControl;
+
     public MenuBar()
     {
         InitializeComponent();

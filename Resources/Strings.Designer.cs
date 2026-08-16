@@ -9,7 +9,9 @@ public static class Strings
         new("LiteCad.Resources.Strings", typeof(Strings).Assembly);
 
     public static string Get(string key)
-        => ResourceManager.GetString(key, CultureInfo.CurrentUICulture) ?? key;
+        => ResourceManager.GetString(key, LocalizationManager.Instance.CurrentCulture)
+           ?? ResourceManager.GetString(key, AppLanguage.EnglishCulture)
+           ?? key;
 
     public static string Format(string key, params object[] args)
         => string.Format(CultureInfo.CurrentUICulture, Get(key), args);

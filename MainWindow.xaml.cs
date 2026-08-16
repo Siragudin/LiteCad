@@ -3,6 +3,7 @@ using LiteCad.Infrastructure;
 using LiteCad.Resources;
 using LiteCad.Services;
 using LiteCad.Tools;
+using LiteCad.UI;
 using LiteCad.UI.Layout;
 using System.Windows;
 using System.Windows.Controls;
@@ -88,6 +89,7 @@ public partial class MainWindow : Window
         MainMenuBar.ToolRequested += OnToolRequested;
         MainMenuBar.EditCommandRequested += OnEditCommandRequested;
         MainMenuBar.FileCommandRequested += OnFileCommandRequested;
+        LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
         ActivateTool(_tools["Selection"]);
     }
 
@@ -280,6 +282,23 @@ public partial class MainWindow : Window
         var normalized = text.Trim().Replace(',', '.');
         return double.TryParse(normalized, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out length)
             && length > 0;
+    }
+
+    private void OnLanguageChanged(object? sender, EventArgs e)
+        => RefreshLocalizedUi();
+
+    private void RefreshLocalizedUi()
+    {
+        MainStatusBar.RefreshLocalizedLabels();
+
+        var activeTool = ViewModel.Session.ToolService.ActiveTool;
+        if (activeTool is not null)
+        {
+            MainProperties.SetActiveTool(activeTool.Id);
+            MainStatusBar.SetStatus(Strings.Format(Strings.Status_ToolActive, activeTool.Name));
+        }
+
+        MainProperties.SetSelection(SelectionUiFormatter.FormatSelectionInfo(ViewModel.Session));
     }
 
     private void OnMouseWorldPositionChanged(object? sender, PointEventArgs e)

@@ -480,8 +480,25 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         }
     }
 
+    public void RefreshLocalizedLabels()
+    {
+        if (_isRectangleInputActive)
+        {
+            SetDualFieldLabelMode(_dualFieldLabelMode);
+            return;
+        }
+
+        if (_isInputActive)
+        {
+            LineInputLabel.Text = GetLineInputLabelText(_lineInputLabelMode);
+        }
+    }
+
     private bool IsMoveDistanceInput()
         => _isInputActive && _lineInputLabelMode == LineInputLabelMode.Distance;
+
+    public bool IsMoveDistanceInputMode()
+        => IsMoveDistanceInput();
 
     private static string GetLineInputLabelText(LineInputLabelMode mode)
         => mode == LineInputLabelMode.Distance ? Strings.Label_Distance : Strings.Label_Length;

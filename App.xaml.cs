@@ -1,6 +1,8 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Windows;
+using LiteCad.Infrastructure;
+using LiteCad.Resources;
 
 namespace LiteCad
 {
@@ -9,6 +11,11 @@ namespace LiteCad
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            LocalizationManager.Instance.Initialize(LanguageSettingsStore.LoadLanguage());
+            base.OnStartup(e);
+        }
     }
 
 }
