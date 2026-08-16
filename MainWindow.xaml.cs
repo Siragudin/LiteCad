@@ -1,5 +1,6 @@
 ﻿using LiteCad.Core.Geometry;
 using LiteCad.Infrastructure;
+using LiteCad.Resources;
 using LiteCad.Services;
 using LiteCad.Tools;
 using LiteCad.UI.Layout;
@@ -113,10 +114,10 @@ public partial class MainWindow : Window
         var session = ViewModel.Session;
         session.NewDocument();
         session.Selection.Clear();
-        MainProperties.SetSelection("Nothing selected");
+        MainProperties.SetSelection(Strings.Selection_NothingSelected);
         MainStatusBar.SetLength(null);
         MainStatusBar.SetArea(null);
-        MainStatusBar.SetStatus("New document");
+        MainStatusBar.SetStatus(Strings.Status_NewDocument);
         MainCanvas.RequestRedraw();
     }
 
@@ -186,7 +187,7 @@ public partial class MainWindow : Window
 
         if (!success)
         {
-            MainStatusBar.SetStatus($"Cannot {command.ToLower()}");
+            MainStatusBar.SetStatus(Strings.Format(Strings.Error_CannotCommand, command.ToLowerInvariant()));
             return;
         }
 
@@ -201,33 +202,33 @@ public partial class MainWindow : Window
             case "Undo":
             case "Redo":
                 session.Selection.Clear();
-                MainProperties.SetSelection("Nothing selected");
+                MainProperties.SetSelection(Strings.Selection_NothingSelected);
                 MainStatusBar.SetLength(null);
                 MainStatusBar.SetArea(null);
-                MainStatusBar.SetStatus(command);
+                MainStatusBar.SetStatus(command == "Undo" ? Strings.Status_Undo : Strings.Status_Redo);
                 break;
             case "Copy":
-                MainStatusBar.SetStatus("Copied to clipboard");
+                MainStatusBar.SetStatus(Strings.Status_CopiedToClipboard);
                 break;
             case "Paste":
-                MainProperties.SetSelection("Pasted");
+                MainProperties.SetSelection(Strings.Selection_Pasted);
                 MainStatusBar.SetLength(null);
                 MainStatusBar.SetArea(null);
-                MainStatusBar.SetStatus("Pasted");
+                MainStatusBar.SetStatus(Strings.Status_Pasted);
                 break;
             case "Cut":
                 session.Selection.Clear();
-                MainProperties.SetSelection("Nothing selected");
+                MainProperties.SetSelection(Strings.Selection_NothingSelected);
                 MainStatusBar.SetLength(null);
                 MainStatusBar.SetArea(null);
-                MainStatusBar.SetStatus("Cut to clipboard");
+                MainStatusBar.SetStatus(Strings.Status_CutToClipboard);
                 break;
             case "Delete":
                 session.Selection.Clear();
-                MainProperties.SetSelection("Nothing selected");
+                MainProperties.SetSelection(Strings.Selection_NothingSelected);
                 MainStatusBar.SetLength(null);
                 MainStatusBar.SetArea(null);
-                MainStatusBar.SetStatus("Deleted");
+                MainStatusBar.SetStatus(Strings.Status_Deleted);
                 break;
         }
     }
@@ -235,8 +236,8 @@ public partial class MainWindow : Window
     private void ActivateTool(ITool tool)
     {
         ViewModel.Session.ToolService.ActivateTool(tool);
-        MainProperties.SetActiveTool(tool.Name);
-        MainStatusBar.SetStatus($"{tool.Name} tool active");
+        MainProperties.SetActiveTool(tool.Id);
+        MainStatusBar.SetStatus(Strings.Format(Strings.Status_ToolActive, tool.Name));
     }
 
     private void OnRectangleSizeCommitted(object? sender, (string Width, string Height) sizes)

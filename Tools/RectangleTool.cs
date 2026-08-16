@@ -1,6 +1,7 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Rendering;
+using LiteCad.Resources;
 using LiteCad.Services;
 using System.Windows;
 using System.Windows.Input;
@@ -15,7 +16,7 @@ public sealed class RectangleTool : ToolBase
     private PointF _firstCorner;
     private PointF _oppositeCorner;
 
-    public override string Name => "Rectangle";
+    public override ToolId Id => ToolId.Rectangle;
 
     public override void OnDeactivated()
     {
@@ -33,7 +34,7 @@ public sealed class RectangleTool : ToolBase
 
         if (e.ChangedButton == MouseButton.Right)
         {
-            Cancel("Rectangle cancelled");
+            Cancel(Strings.Status_RectangleCancelled);
             e.Handled = true;
             return;
         }
@@ -51,7 +52,7 @@ public sealed class RectangleTool : ToolBase
             _firstCorner = snapped;
             _oppositeCorner = snapped;
             Context.SetRectangleSizeInputEnabled(true);
-            Context.SetStatus("Select opposite corner or type width/height (Alt to switch, Enter to apply)");
+            Context.SetStatus(Strings.Input_Rectangle_SelectOppositeCorner);
             Context.ResetRectangleSizeInput(null, null);
             Context.SetArea(null);
             Context.RequestRedraw();
@@ -100,7 +101,7 @@ public sealed class RectangleTool : ToolBase
 
         if (e.Key == Key.Escape && _hasFirstCorner)
         {
-            Cancel("Rectangle cancelled");
+            Cancel(Strings.Status_RectangleCancelled);
             e.Handled = true;
             return;
         }
@@ -188,7 +189,7 @@ public sealed class RectangleTool : ToolBase
 
         if (width <= topologyTolerance || height <= topologyTolerance)
         {
-            Context.SetStatus("Rectangle size is too small");
+            Context.SetStatus(Strings.Error_RectangleTooSmall);
             return;
         }
 
@@ -203,7 +204,7 @@ public sealed class RectangleTool : ToolBase
         PolygonBuilder.SyncFaces(document, topologyTolerance);
 
         ResetAfterCommit();
-        Context.SetStatus("Select first corner or type size after first click (Right click to cancel)");
+        Context.SetStatus(Strings.Input_Rectangle_SelectFirstCorner);
         Context.RequestRedraw();
     }
 

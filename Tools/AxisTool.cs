@@ -2,5 +2,5 @@ namespace LiteCad.Tools;
 
 public sealed class AxisTool : ToolBase
 {
-    public override string Name => "Axis";
+    public override ToolId Id => ToolId.Axis;
 }

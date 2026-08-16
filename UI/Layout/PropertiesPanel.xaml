@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:loc="clr-namespace:LiteCad.Resources"
              mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="260">
     <Border Background="#FAFAFA"
@@ -10,7 +11,7 @@
             BorderThickness="1,0,0,0">
         <DockPanel>
             <TextBlock DockPanel.Dock="Top"
-                       Text="Properties"
+                       Text="{loc:Loc Key=Label.Properties}"
                        FontWeight="SemiBold"
                        FontSize="13"
                        Margin="12,10,12,8" />
@@ -21,45 +22,45 @@
 
             <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel Margin="12,12,12,12">
-                    <TextBlock Text="Tool"
+                    <TextBlock Text="{loc:Loc Key=Label.Tool}"
                                FontSize="11"
                                Foreground="#666666"
                                Margin="0,0,0,4" />
                     <TextBlock x:Name="ActiveToolText"
-                               Text="None"
+                               Text="{loc:Loc Key=Label.None}"
                                FontSize="13"
                                Margin="0,0,0,16" />
 
-                    <TextBlock Text="Selection"
+                    <TextBlock Text="{loc:Loc Key=Label.Selection}"
                                FontSize="11"
                                Foreground="#666666"
                                Margin="0,0,0,4" />
                     <TextBlock x:Name="SelectionText"
-                               Text="Nothing selected"
+                               Text="{loc:Loc Key=Selection.NothingSelected}"
                                FontSize="13"
                                Margin="0,0,0,16" />
 
                     <StackPanel x:Name="LineToolPanel" Visibility="Collapsed">
-                        <TextBlock Text="Line parameters"
+                        <TextBlock Text="{loc:Loc Key=Label.LineParameters}"
                                    FontSize="11"
                                    Foreground="#666666"
                                    Margin="0,0,0,8" />
 
-                        <TextBlock Text="Color"
+                        <TextBlock Text="{loc:Loc Key=Label.Color}"
                                    FontSize="11"
                                    Foreground="#666666"
                                    Margin="0,0,0,4" />
                         <ComboBox x:Name="LineColorCombo"
                                   Margin="0,0,0,12"
                                   SelectionChanged="LineColorCombo_OnSelectionChanged">
-                            <ComboBoxItem Content="Black" Tag="Black" IsSelected="True" />
-                            <ComboBoxItem Content="Gray" Tag="Gray" />
-                            <ComboBoxItem Content="Blue" Tag="Blue" />
-                            <ComboBoxItem Content="Red" Tag="Red" />
-                            <ComboBoxItem Content="Green" Tag="Green" />
+                            <ComboBoxItem Content="{loc:Loc Key=Label.Color.Black}" Tag="Black" IsSelected="True" />
+                            <ComboBoxItem Content="{loc:Loc Key=Label.Color.Gray}" Tag="Gray" />
+                            <ComboBoxItem Content="{loc:Loc Key=Label.Color.Blue}" Tag="Blue" />
+                            <ComboBoxItem Content="{loc:Loc Key=Label.Color.Red}" Tag="Red" />
+                            <ComboBoxItem Content="{loc:Loc Key=Label.Color.Green}" Tag="Green" />
                         </ComboBox>
 
-                        <TextBlock Text="Thickness"
+                        <TextBlock Text="{loc:Loc Key=Label.Thickness}"
                                    FontSize="11"
                                    Foreground="#666666"
                                    Margin="0,0,0,4" />
@@ -72,40 +73,40 @@
                             <ComboBoxItem Content="3.0" Tag="3" />
                         </ComboBox>
 
-                        <TextBlock Text="Type"
+                        <TextBlock Text="{loc:Loc Key=Label.Type}"
                                    FontSize="11"
                                    Foreground="#666666"
                                    Margin="0,0,0,4" />
                         <ComboBox x:Name="LineTypeCombo"
                                   Margin="0,0,0,12"
                                   SelectionChanged="LineTypeCombo_OnSelectionChanged">
-                            <ComboBoxItem Content="Solid" Tag="Solid" IsSelected="True" />
-                            <ComboBoxItem Content="Dashed" Tag="Dashed" />
-                            <ComboBoxItem Content="Dotted" Tag="Dotted" />
+                            <ComboBoxItem Content="{loc:Loc Key=Label.LineType.Solid}" Tag="Solid" IsSelected="True" />
+                            <ComboBoxItem Content="{loc:Loc Key=Label.LineType.Dashed}" Tag="Dashed" />
+                            <ComboBoxItem Content="{loc:Loc Key=Label.LineType.Dotted}" Tag="Dotted" />
                         </ComboBox>
 
                         <CheckBox x:Name="OrthoCheckBox"
-                                  Content="Ortho (H/V)"
+                                  Content="{loc:Loc Key=Label.OrthoHorizontalVertical}"
                                   Margin="0,0,0,4"
                                   Checked="OrthoCheckBox_OnChanged"
                                   Unchecked="OrthoCheckBox_OnChanged" />
                     </StackPanel>
 
                     <StackPanel x:Name="MoveToolPanel" Visibility="Collapsed">
-                        <TextBlock Text="Move parameters"
+                        <TextBlock Text="{loc:Loc Key=Label.MoveParameters}"
                                    FontSize="11"
                                    Foreground="#666666"
                                    Margin="0,0,0,8" />
 
                         <CheckBox x:Name="MoveOrthoCheckBox"
-                                  Content="Ortho"
+                                  Content="{loc:Loc Key=Label.Ortho}"
                                   Margin="0,0,0,4"
                                   Checked="MoveOrthoCheckBox_OnChanged"
                                   Unchecked="MoveOrthoCheckBox_OnChanged" />
                     </StackPanel>
 
                     <TextBlock x:Name="NoParametersText"
-                               Text="No parameters"
+                               Text="{loc:Loc Key=Label.NoParameters}"
                                FontSize="13"
                                Foreground="#999999" />
                 </StackPanel>

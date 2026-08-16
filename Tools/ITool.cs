@@ -1,5 +1,7 @@
 using LiteCad.Core.Geometry;
 using LiteCad.Rendering;
+using LiteCad.Resources;
+using LiteCad.Services;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -8,6 +10,8 @@ namespace LiteCad.Tools;
 
 public interface ITool
 {
+    ToolId Id { get; }
+
     string Name { get; }
 
     void OnActivated();
@@ -29,4 +33,35 @@ public interface ITool
     bool TryApplyRectangleSize(string width, string height);
 
     void RenderOverlay(DrawingContext context, Camera camera, Size viewport);
+}
+
+public abstract class ToolBase : ITool
+{
+    protected ToolContext? Context { get; private set; }
+
+    public abstract ToolId Id { get; }
+
+    public string Name => ToolDisplayNames.Get(Id);
+
+    internal void AttachContext(ToolContext context) => Context = context;
+
+    public virtual void OnActivated() { }
+
+    public virtual void OnDeactivated() { }
+
+    public virtual void OnMouseDown(MouseButtonEventArgs e, PointF world) { }
+
+    public virtual void OnMouseMove(MouseEventArgs e, PointF world) { }
+
+    public virtual void OnMouseUp(MouseButtonEventArgs e, PointF world) { }
+
+    public virtual void OnKeyDown(KeyEventArgs e) { }
+
+    public virtual bool TryApplyLength(double length) => false;
+
+    public virtual bool TryApplyLengthInput(string input) => false;
+
+    public virtual bool TryApplyRectangleSize(string width, string height) => false;
+
+    public virtual void RenderOverlay(DrawingContext context, Camera camera, Size viewport) { }
 }

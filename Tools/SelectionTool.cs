@@ -1,6 +1,7 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Rendering;
+using LiteCad.Resources;
 using LiteCad.Services;
 using System.Windows;
 using System.Windows.Input;
@@ -16,7 +17,7 @@ public sealed class SelectionTool : ToolBase
     private PointF _selectStartWorld;
     private PointF _selectCurrentWorld;
 
-    public override string Name => "Selection";
+    public override ToolId Id => ToolId.Selection;
 
     public override void OnDeactivated()
     {
@@ -137,8 +138,8 @@ public sealed class SelectionTool : ToolBase
             selection.Clear();
             Context.SetArea(null);
             Context.SetLength(null);
-            Context.SetSelectionInfo("Nothing selected");
-            Context.SetStatus("Selection cleared");
+            Context.SetSelectionInfo(Strings.Selection_NothingSelected);
+            Context.SetStatus(Strings.Status_SelectionCleared);
             return;
         }
 
@@ -191,7 +192,7 @@ public sealed class SelectionTool : ToolBase
             }
         }
 
-        UpdateSelectionUi(windowSelection ? "Window selection" : "Crossing selection");
+        UpdateSelectionUi(windowSelection ? Strings.Status_WindowSelection : Strings.Status_CrossingSelection);
     }
 
     private bool TryToggleVertexAt(
@@ -230,7 +231,7 @@ public sealed class SelectionTool : ToolBase
             selection.SelectedVertexIds.Add(closestVertex.Id);
         }
 
-        Context!.SetStatus(additive ? "Selection updated" : "Vertex selected");
+        Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_VertexSelected);
         return true;
     }
 
@@ -272,7 +273,7 @@ public sealed class SelectionTool : ToolBase
             selection.SelectedEdgeIds.Add(closestEdge.Id);
         }
 
-        Context!.SetStatus(additive ? "Selection updated" : "Edge selected");
+        Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_EdgeSelected);
         return true;
     }
 
@@ -318,7 +319,7 @@ public sealed class SelectionTool : ToolBase
             selection.SelectedPolygonIds.Add(closestPolygon.Id);
         }
 
-        Context!.SetStatus(additive ? "Selection updated" : "Polygon selected");
+        Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_PolygonSelected);
         return true;
     }
 
@@ -339,8 +340,8 @@ public sealed class SelectionTool : ToolBase
         {
             Context.SetArea(null);
             Context.SetLength(null);
-            Context.SetSelectionInfo("Nothing selected");
-            Context.SetStatus(status ?? "Selection cleared");
+            Context.SetSelectionInfo(Strings.Selection_NothingSelected);
+            Context.SetStatus(status ?? Strings.Status_SelectionCleared);
             return;
         }
 
@@ -349,8 +350,8 @@ public sealed class SelectionTool : ToolBase
             var vertex = document.Vertices.First(item => selection.SelectedVertexIds.Contains(item.Id));
             Context.SetLength(null);
             Context.SetArea(null);
-            Context.SetSelectionInfo($"Vertex ({vertex.Position.X:F2}, {vertex.Position.Y:F2})");
-            Context.SetStatus(status ?? "Vertex selected");
+            Context.SetSelectionInfo(Strings.Format(Strings.Selection_VertexAt, vertex.Position.X, vertex.Position.Y));
+            Context.SetStatus(status ?? Strings.Status_VertexSelected);
             return;
         }
 
@@ -362,8 +363,8 @@ public sealed class SelectionTool : ToolBase
                 TopologyService.GetEdgeEndPoint(document, edge));
             Context.SetLength(length);
             Context.SetArea(null);
-            Context.SetSelectionInfo("Edge");
-            Context.SetStatus(status ?? "Edge selected");
+            Context.SetSelectionInfo(Strings.Selection_Edge);
+            Context.SetStatus(status ?? Strings.Status_EdgeSelected);
             return;
         }
 
@@ -373,15 +374,15 @@ public sealed class SelectionTool : ToolBase
             var area = PolygonGeometry.GetArea(document, polygon, MathUtils.DefaultTolerance);
             Context.SetArea(area);
             Context.SetLength(null);
-            Context.SetSelectionInfo($"{polygon.Type} ({area:F2})");
-            Context.SetStatus(status ?? "Polygon selected");
+            Context.SetSelectionInfo(Strings.Format(Strings.Selection_PolygonWithArea, PolygonTypeDisplay.Get(polygon.Type), area));
+            Context.SetStatus(status ?? Strings.Status_PolygonSelected);
             return;
         }
 
         Context.SetLength(null);
         Context.SetArea(null);
-        Context.SetSelectionInfo($"{vertexCount} vertex(s), {edgeCount} edge(s), {polygonCount} polygon(s)");
-        Context.SetStatus(status ?? "Multiple objects selected");
+        Context.SetSelectionInfo(Strings.Format(Strings.Selection_MultipleCount, vertexCount, edgeCount, polygonCount));
+        Context.SetStatus(status ?? Strings.Status_MultipleObjectsSelected);
     }
 
     private bool IsMarqueeDrag()

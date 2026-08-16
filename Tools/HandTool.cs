@@ -9,7 +9,7 @@ public sealed class HandTool : ToolBase
     private bool _isPanning;
     private Point _lastScreen;
 
-    public override string Name => "Hand";
+    public override ToolId Id => ToolId.Hand;
 
     public override void OnDeactivated()
     {

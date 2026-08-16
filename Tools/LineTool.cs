@@ -1,6 +1,7 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Rendering;
+using LiteCad.Resources;
 using LiteCad.Services;
 using System.Windows;
 using System.Windows.Input;
@@ -18,7 +19,7 @@ public sealed class LineTool : ToolBase
     private double _directionX;
     private double _directionY;
 
-    public override string Name => "Line";
+    public override ToolId Id => ToolId.Line;
 
     public override void OnDeactivated()
     {
@@ -39,7 +40,7 @@ public sealed class LineTool : ToolBase
             Context.SetLengthInputEnabled(false);
             ResetPreview();
             Context.SetLength(null);
-            Context.SetStatus("Line cancelled");
+            Context.SetStatus(Strings.Status_LineCancelled);
             Context.RequestRedraw();
             e.Handled = true;
             return;
@@ -58,7 +59,7 @@ public sealed class LineTool : ToolBase
             _startPoint = snapped;
             _previewEnd = snapped;
             Context.SetLengthInputEnabled(true);
-            Context.SetStatus("Select end point or type length (Right click to cancel)");
+            Context.SetStatus(Strings.Input_Line_SelectEndPoint);
             Context.ResetLengthInput(null);
             Context.RequestRedraw();
             e.Handled = true;
@@ -125,14 +126,14 @@ public sealed class LineTool : ToolBase
 
         if (!_hasDirection)
         {
-            Context.SetStatus("Move mouse to set direction, then type length");
+            Context.SetStatus(Strings.Input_Line_SetDirectionThenTypeLength);
             return false;
         }
 
         var currentLength = Math.Sqrt(_directionX * _directionX + _directionY * _directionY);
         if (currentLength <= Context.SnapTolerance)
         {
-            Context.SetStatus("Move mouse to set direction, then type length");
+            Context.SetStatus(Strings.Input_Line_SetDirectionThenTypeLength);
             return false;
         }
 
@@ -198,7 +199,7 @@ public sealed class LineTool : ToolBase
         _directionX = 0;
         _directionY = 0;
         Context.ResetLengthInput(null);
-        Context.SetStatus("Select next point or type length (Right click to cancel)");
+        Context.SetStatus(Strings.Input_Line_SelectNextPoint);
         Context.RequestRedraw();
     }
 

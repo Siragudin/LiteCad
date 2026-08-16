@@ -2,6 +2,7 @@ using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Core.Selection;
 using LiteCad.Rendering;
+using LiteCad.Resources;
 using LiteCad.Services;
 using System.Windows;
 using System.Windows.Input;
@@ -19,7 +20,7 @@ public sealed class StretchTool : ToolBase
     private Guid? _hoveredEdgeId;
     private bool _distanceInputEnabled;
 
-    public override string Name => "Stretch";
+    public override ToolId Id => ToolId.Stretch;
 
     public bool HasValidPlan => _plan is not null;
 
@@ -85,7 +86,7 @@ public sealed class StretchTool : ToolBase
             _previewPoint = _basePoint;
             _hasBasePoint = true;
             SyncDistanceInput();
-            Context.SetStatus("Select stretch destination, type distance, or press Enter (Right click to cancel)");
+            Context.SetStatus(Strings.Input_Stretch_SelectDestination);
             Context.RequestRedraw();
             e.Handled = true;
             return;
@@ -136,7 +137,7 @@ public sealed class StretchTool : ToolBase
 
         if (e.Key == Key.Escape)
         {
-            CancelActiveOperation("Stretch cancelled");
+            CancelActiveOperation(Strings.Status_StretchCancelled);
             e.Handled = true;
             return;
         }
@@ -156,7 +157,7 @@ public sealed class StretchTool : ToolBase
 
         if (!TryComputeStretchDeltaFromDistance(length, out var delta))
         {
-            Context.SetStatus("Move mouse to set direction, then type distance");
+            Context.SetStatus(Strings.Input_SetDirectionThenTypeDistance);
             return false;
         }
 
@@ -177,7 +178,7 @@ public sealed class StretchTool : ToolBase
 
         if (!TryComputeStretchDeltaFromDistance(distance, out var delta))
         {
-            Context.SetStatus("Move mouse to set direction, then type distance");
+            Context.SetStatus(Strings.Input_SetDirectionThenTypeDistance);
             return false;
         }
 
@@ -249,7 +250,7 @@ public sealed class StretchTool : ToolBase
                 TopologyTolerance.ForMutation,
                 out var plan))
         {
-            Context.SetStatus("Stretch unavailable — perpendicular parallel sides required at both ends");
+            Context.SetStatus(Strings.Error_StretchUnavailable);
             return false;
         }
 
@@ -260,7 +261,7 @@ public sealed class StretchTool : ToolBase
         _hasBasePoint = false;
         _hoveredEdgeId = null;
         SyncDistanceInput();
-        Context.SetStatus("Click base point, then stretch destination");
+        Context.SetStatus(Strings.Input_Stretch_SelectBasePoint);
         Context.RequestRedraw();
         return true;
     }
@@ -340,7 +341,7 @@ public sealed class StretchTool : ToolBase
         var move = StretchOperations.ProjectDeltaOntoNormal(delta, _plan.Normal);
         if (Math.Abs(move.X) < 1e-9 && Math.Abs(move.Y) < 1e-9)
         {
-            CancelActiveOperation("Stretch cancelled");
+            CancelActiveOperation(Strings.Status_StretchCancelled);
             return false;
         }
 
@@ -357,7 +358,7 @@ public sealed class StretchTool : ToolBase
         _previewPoint = PointF.Zero;
         _visibleSnaps.Clear();
         TryLoadPlanFromSelection();
-        Context?.SetStatus("Stretch completed");
+        Context?.SetStatus(Strings.Status_StretchCompleted);
         Context?.RequestRedraw();
     }
 
@@ -390,14 +391,14 @@ public sealed class StretchTool : ToolBase
                 out var plan))
         {
             _plan = null;
-            Context.SetStatus("Stretch unavailable — perpendicular parallel sides required at both ends");
+            Context.SetStatus(Strings.Error_StretchUnavailable);
             return false;
         }
 
         _plan = plan;
         if (!_hasBasePoint)
         {
-            Context.SetStatus("Click base point, then stretch destination");
+            Context.SetStatus(Strings.Input_Stretch_SelectBasePoint);
         }
 
         return true;
@@ -440,7 +441,7 @@ public sealed class StretchTool : ToolBase
         {
             if (!_distanceInputEnabled)
             {
-                Context.SetLineInputModeEnabled(true, "Distance:");
+                Context.SetLineInputModeEnabled(true, LineInputLabelMode.Distance);
                 _distanceInputEnabled = true;
             }
 
@@ -469,7 +470,7 @@ public sealed class StretchTool : ToolBase
             return;
         }
 
-        Context?.SetLineInputModeEnabled(false, "L:");
+        Context?.SetLineInputModeEnabled(false, LineInputLabelMode.Length);
         _distanceInputEnabled = false;
     }
 
@@ -535,7 +536,7 @@ public sealed class StretchTool : ToolBase
         _plan = null;
         _hoveredEdgeId = null;
         DisableDistanceInput();
-        Context?.SetStatus("Selection cleared");
+        Context?.SetStatus(Strings.Status_SelectionCleared);
         Context?.RequestRedraw();
     }
 
@@ -582,5 +583,5 @@ public sealed class StretchTool : ToolBase
         => new(_previewPoint.X - _basePoint.X, _previewPoint.Y - _basePoint.Y);
 
     private static string GetIdleStatus()
-        => "Click an edge to stretch (perpendicular parallel sides required)";
+        => Strings.Input_Stretch_Idle;
 }

@@ -28,7 +28,7 @@ public sealed class ToolContext
         Action<double?, double?>? resetRectangleSizeInput = null,
         Func<KeyEventArgs, bool>? processRectangleSizeKey = null,
         Action<bool, DualFieldLabelMode>? setDualFieldInputEnabled = null,
-        Action<bool, string>? setLineInputModeEnabled = null,
+        Action<bool, LineInputLabelMode>? setLineInputModeEnabled = null,
         Func<(string First, string Second)>? getDualFieldInputText = null,
         Action<string, string>? setDualFieldInputText = null,
         Func<string>? getLineInputText = null,
@@ -103,7 +103,7 @@ public sealed class ToolContext
 
     public Action<bool, DualFieldLabelMode> SetDualFieldInputEnabled { get; }
 
-    public Action<bool, string> SetLineInputModeEnabled { get; }
+    public Action<bool, LineInputLabelMode> SetLineInputModeEnabled { get; }
 
     public Func<(string First, string Second)> GetDualFieldInputText { get; }
 

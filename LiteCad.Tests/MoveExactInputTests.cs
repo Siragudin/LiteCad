@@ -2,6 +2,7 @@ using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Core.Selection;
 using LiteCad.Infrastructure;
+using LiteCad.Resources;
 using LiteCad.Services;
 using LiteCad.Tools;
 using LiteCad.UI.Layout;
@@ -27,7 +28,7 @@ public class MoveExactInputTests
 
             Assert.True(host.StatusBar.IsRectangleInputActive);
             Assert.Equal(DualFieldLabelMode.MoveOffset, host.StatusBar.DualFieldLabels);
-            Assert.Equal("X:", host.StatusBar.FirstFieldLabelText);
+            Assert.Equal(Strings.Label_X, host.StatusBar.FirstFieldLabelText);
         });
     }
 
@@ -41,7 +42,8 @@ public class MoveExactInputTests
             host.SetBasePoint(new PointF(0.5, 0));
 
             Assert.True(host.StatusBar.IsLineInputActive);
-            Assert.Equal("Distance:", host.StatusBar.LineInputLabelText);
+            Assert.Equal(LineInputLabelMode.Distance, host.StatusBar.LineInputLabelMode);
+            Assert.Equal(Strings.Label_Distance, host.StatusBar.LineInputLabelText);
         });
     }
 

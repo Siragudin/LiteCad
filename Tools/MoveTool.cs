@@ -2,6 +2,7 @@ using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Core.Selection;
 using LiteCad.Rendering;
+using LiteCad.Resources;
 using LiteCad.Services;
 using System.Windows;
 using System.Windows.Input;
@@ -26,7 +27,7 @@ public sealed class MoveTool : ToolBase
     private string _savedOffsetY = string.Empty;
     private string _savedDistance = string.Empty;
 
-    public override string Name => "Move";
+    public override ToolId Id => ToolId.Move;
 
     public bool ShowsVertexHandles => Context is not null;
 
@@ -101,7 +102,7 @@ public sealed class MoveTool : ToolBase
                     selection.Clear();
                     selection.SelectedVertexIds.Add(vertexId);
                     _mode = MoveMode.Vertex;
-                    Context.SetStatus("Vertex selected — click base point, then destination");
+                    Context.SetStatus(Strings.Input_Move_VertexSelected);
                     Context.RequestRedraw();
                     e.Handled = true;
                     return;
@@ -110,7 +111,7 @@ public sealed class MoveTool : ToolBase
 
             if (!MoveOperations.CanMove(selection))
             {
-                Context.SetStatus("Select vertices or objects to move");
+                Context.SetStatus(Strings.Input_Move_SelectVertices);
                 e.Handled = true;
                 return;
             }
@@ -135,7 +136,7 @@ public sealed class MoveTool : ToolBase
             _lastOrthoEnabled = IsOrthoEnabled();
             _exactInputUiConfigured = false;
             SyncExactInputUi();
-            Context.SetStatus("Select destination point or type offset (Esc/Right click to cancel)");
+            Context.SetStatus(Strings.Input_Move_SelectDestination);
             Context.RequestRedraw();
             e.Handled = true;
             return;
@@ -195,7 +196,7 @@ public sealed class MoveTool : ToolBase
 
         if (e.Key == Key.Escape)
         {
-            CancelOperation("Move cancelled");
+            CancelOperation(Strings.Status_MoveCancelled);
             e.Handled = true;
             return;
         }
@@ -230,7 +231,7 @@ public sealed class MoveTool : ToolBase
 
         if (!TryComputeOrthoDeltaFromDistance(length, out var delta))
         {
-            Context.SetStatus("Move mouse to set direction, then type distance");
+            Context.SetStatus(Strings.Input_SetDirectionThenTypeDistance);
             return false;
         }
 
@@ -251,7 +252,7 @@ public sealed class MoveTool : ToolBase
 
         if (!TryComputeOrthoDeltaFromDistance(distance, out var delta))
         {
-            Context.SetStatus("Move mouse to set direction, then type distance");
+            Context.SetStatus(Strings.Input_SetDirectionThenTypeDistance);
             return false;
         }
 
@@ -385,7 +386,7 @@ public sealed class MoveTool : ToolBase
         if (Math.Abs(delta.X) < 1e-9 && Math.Abs(delta.Y) < 1e-9)
         {
             ResetOperation();
-            Context.SetStatus("Move cancelled");
+            Context.SetStatus(Strings.Status_MoveCancelled);
             Context.RequestRedraw();
             return false;
         }
@@ -406,7 +407,7 @@ public sealed class MoveTool : ToolBase
         ClearSavedInputState();
         DisableExactInput();
         ResetOperation();
-        Context.SetStatus("Move completed");
+        Context.SetStatus(Strings.Status_MoveCompleted);
         Context.RequestRedraw();
         return true;
     }
@@ -420,7 +421,7 @@ public sealed class MoveTool : ToolBase
         }
 
         Context?.Session.Selection.Clear();
-        Context?.SetStatus("Selection cleared");
+        Context?.SetStatus(Strings.Status_SelectionCleared);
         Context?.RequestRedraw();
     }
 
@@ -455,7 +456,7 @@ public sealed class MoveTool : ToolBase
     private void DisableExactInput()
     {
         Context?.SetDualFieldInputEnabled(false, DualFieldLabelMode.MoveOffset);
-        Context?.SetLineInputModeEnabled(false, "L:");
+        Context?.SetLineInputModeEnabled(false, LineInputLabelMode.Length);
     }
 
     private void SyncExactInputUi()
@@ -476,7 +477,7 @@ public sealed class MoveTool : ToolBase
         if (orthoEnabled)
         {
             Context.SetDualFieldInputEnabled(false, DualFieldLabelMode.MoveOffset);
-            Context.SetLineInputModeEnabled(true, "Distance:");
+            Context.SetLineInputModeEnabled(true, LineInputLabelMode.Distance);
             Context.ResetLengthInput(null);
             if (!string.IsNullOrEmpty(_savedDistance))
             {
@@ -485,7 +486,7 @@ public sealed class MoveTool : ToolBase
         }
         else
         {
-            Context.SetLineInputModeEnabled(false, "L:");
+            Context.SetLineInputModeEnabled(false, LineInputLabelMode.Length);
             Context.SetDualFieldInputEnabled(true, DualFieldLabelMode.MoveOffset);
             Context.ResetRectangleSizeInput(null, null);
             if (!string.IsNullOrEmpty(_savedOffsetX) || !string.IsNullOrEmpty(_savedOffsetY))
@@ -622,7 +623,7 @@ public sealed class MoveTool : ToolBase
         => new(point.X + delta.X, point.Y + delta.Y);
 
     private static string GetIdleStatus()
-        => "Click a vertex grip or select objects, then click base point and destination";
+        => Strings.Input_Move_Idle;
 
     internal enum MoveMode
     {

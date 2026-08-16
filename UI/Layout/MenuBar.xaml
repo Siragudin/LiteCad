@@ -3,70 +3,71 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:loc="clr-namespace:LiteCad.Resources"
              mc:Ignorable="d"
              d:DesignHeight="24" d:DesignWidth="800">
     <Menu Background="#F0F0F0" Padding="4,0">
-        <MenuItem Header="_File">
-            <MenuItem Header="_New"
+        <MenuItem Header="{loc:Loc Key=Menu.Header.File}">
+            <MenuItem Header="{loc:Loc Key=Menu.Header.New}"
                       Tag="New"
                       Click="FileMenuItem_OnClick" />
-            <MenuItem Header="_Open..." />
-            <MenuItem Header="_Save" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Open}" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Save}" />
             <Separator />
-            <MenuItem Header="E_xit" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Exit}" />
         </MenuItem>
-        <MenuItem Header="_Edit">
-            <MenuItem Header="_Undo"
+        <MenuItem Header="{loc:Loc Key=Menu.Header.Edit}">
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Undo}"
                       Tag="Undo"
-                      InputGestureText="Ctrl+Z"
+                      InputGestureText="{loc:Loc Key=Action.Gesture.Undo}"
                       Click="EditMenuItem_OnClick" />
-            <MenuItem Header="_Redo"
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Redo}"
                       Tag="Redo"
-                      InputGestureText="Ctrl+Y"
+                      InputGestureText="{loc:Loc Key=Action.Gesture.Redo}"
                       Click="EditMenuItem_OnClick" />
             <Separator />
-            <MenuItem Header="Cu_t"
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Cut}"
                       Tag="Cut"
-                      InputGestureText="Ctrl+X"
+                      InputGestureText="{loc:Loc Key=Action.Gesture.Cut}"
                       Click="EditMenuItem_OnClick" />
-            <MenuItem Header="_Copy"
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Copy}"
                       Tag="Copy"
-                      InputGestureText="Ctrl+C"
+                      InputGestureText="{loc:Loc Key=Action.Gesture.Copy}"
                       Click="EditMenuItem_OnClick" />
-            <MenuItem Header="_Paste"
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Paste}"
                       Tag="Paste"
-                      InputGestureText="Ctrl+V"
+                      InputGestureText="{loc:Loc Key=Action.Gesture.Paste}"
                       Click="EditMenuItem_OnClick" />
-            <MenuItem Header="_Delete"
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Delete}"
                       Tag="Delete"
-                      InputGestureText="Del"
+                      InputGestureText="{loc:Loc Key=Action.Gesture.Delete}"
                       Click="EditMenuItem_OnClick" />
         </MenuItem>
-        <MenuItem Header="_View">
-            <MenuItem Header="_Zoom In" />
-            <MenuItem Header="Zoom _Out" />
-            <MenuItem Header="Zoom _Extents" />
+        <MenuItem Header="{loc:Loc Key=Menu.Header.View}">
+            <MenuItem Header="{loc:Loc Key=Menu.Header.ZoomIn}" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.ZoomOut}" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.ZoomExtents}" />
             <Separator />
-            <MenuItem Header="_Grid" IsCheckable="True" IsChecked="True" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Grid}" IsCheckable="True" IsChecked="True" />
         </MenuItem>
-        <MenuItem Header="_Tools">
-            <MenuItem Header="_Selection" Tag="Selection" Click="ToolMenuItem_OnClick" />
-            <MenuItem Header="_Hand" Tag="Hand" Click="ToolMenuItem_OnClick" />
-            <MenuItem Header="_Line" Tag="Line" Click="ToolMenuItem_OnClick" />
-            <MenuItem Header="_Axis" Tag="Axis" Click="ToolMenuItem_OnClick" />
-            <MenuItem Header="_Wall" Tag="Wall" Click="ToolMenuItem_OnClick" />
+        <MenuItem Header="{loc:Loc Key=Menu.Header.Tools}">
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Selection}" Tag="Selection" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Hand}" Tag="Hand" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Line}" Tag="Line" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Axis}" Tag="Axis" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Wall}" Tag="Wall" Click="ToolMenuItem_OnClick" />
             <Separator />
-            <MenuItem Header="_Rectangle" Tag="Rectangle" Click="ToolMenuItem_OnClick" />
-            <MenuItem Header="_Polyline" Tag="Polyline" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Rectangle}" Tag="Rectangle" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Polyline}" Tag="Polyline" Click="ToolMenuItem_OnClick" />
             <Separator />
-            <MenuItem Header="_Move" Tag="Move" Click="ToolMenuItem_OnClick" />
-            <MenuItem Header="C_opy" Tag="Copy" Click="ToolMenuItem_OnClick" />
-            <MenuItem Header="_Delete" Tag="Delete" Click="ToolMenuItem_OnClick" />
-            <MenuItem Header="Polygon _Edit" Tag="PolygonEdit" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Move}" Tag="Move" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.CopyTool}" Tag="Copy" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.DeleteTool}" Tag="Delete" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="{loc:Loc Key=Menu.Header.PolygonEdit}" Tag="PolygonEdit" Click="ToolMenuItem_OnClick" />
         </MenuItem>
-        <MenuItem Header="_Layers" />
-        <MenuItem Header="_Help">
-            <MenuItem Header="_About LiteCad" />
+        <MenuItem Header="{loc:Loc Key=Menu.Header.Layers}" />
+        <MenuItem Header="{loc:Loc Key=Menu.Header.Help}">
+            <MenuItem Header="{loc:Loc Key=Menu.Header.About}" />
         </MenuItem>
     </Menu>
 </UserControl>

@@ -1,6 +1,8 @@
 using LiteCad.Core.Document;
 using LiteCad.Infrastructure;
+using LiteCad.Resources;
 using LiteCad.Services;
+using LiteCad.Tools;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,13 +11,17 @@ namespace LiteCad.UI.Layout;
 
 public partial class PropertiesPanel : UserControl
 {
+    private static readonly object InitializeComponentLock = new();
     private CadSession? _session;
     private Action? _onMoveOrthoChanged;
     private bool _suppressMoveOrthoEvents;
 
     public PropertiesPanel()
     {
-        InitializeComponent();
+        lock (InitializeComponentLock)
+        {
+            InitializeComponent();
+        }
     }
 
     public bool IsMoveToolPanelVisible => MoveToolPanel.Visibility == Visibility.Visible;
@@ -30,11 +36,11 @@ public partial class PropertiesPanel : UserControl
         _onMoveOrthoChanged = onMoveOrthoChanged;
     }
 
-    public void SetActiveTool(string toolName)
+    public void SetActiveTool(ToolId toolId)
     {
-        ActiveToolText.Text = toolName;
-        var isLineTool = toolName == "Line";
-        var isMoveTool = toolName == "Move";
+        ActiveToolText.Text = ToolDisplayNames.Get(toolId);
+        var isLineTool = toolId == ToolId.Line;
+        var isMoveTool = toolId == ToolId.Move;
         LineToolPanel.Visibility = isLineTool ? Visibility.Visible : Visibility.Collapsed;
         MoveToolPanel.Visibility = isMoveTool ? Visibility.Visible : Visibility.Collapsed;
         NoParametersText.Visibility = isLineTool || isMoveTool ? Visibility.Collapsed : Visibility.Visible;

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Tool.Selection" xml:space="preserve"><value>Selection</value></data>
+  <data name="Tool.Select.Short" xml:space="preserve"><value>Select</value></data>
+  <data name="Tool.Hand" xml:space="preserve"><value>Hand</value></data>
+  <data name="Tool.Line" xml:space="preserve"><value>Line</value></data>
+  <data name="Tool.Rectangle" xml:space="preserve"><value>Rectangle</value></data>
+  <data name="Tool.Rectangle.Short" xml:space="preserve"><value>Rect</value></data>
+  <data name="Tool.Axis" xml:space="preserve"><value>Axis</value></data>
+  <data name="Tool.Wall" xml:space="preserve"><value>Wall</value></data>
+  <data name="Tool.Polyline" xml:space="preserve"><value>Polyline</value></data>
+  <data name="Tool.Move" xml:space="preserve"><value>Move</value></data>
+  <data name="Tool.Stretch" xml:space="preserve"><value>Stretch</value></data>
+  <data name="Tool.Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Tool.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Tool.PolygonEdit" xml:space="preserve"><value>Polygon Edit</value></data>
+  <data name="Tool.Edit.Short" xml:space="preserve"><value>Edit</value></data>
+  <data name="Menu.File" xml:space="preserve"><value>File</value></data>
+  <data name="Menu.New" xml:space="preserve"><value>New</value></data>
+  <data name="Menu.Open" xml:space="preserve"><value>Open...</value></data>
+  <data name="Menu.Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Menu.Exit" xml:space="preserve"><value>Exit</value></data>
+  <data name="Menu.Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Menu.Undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="Menu.Redo" xml:space="preserve"><value>Redo</value></data>
+  <data name="Menu.Cut" xml:space="preserve"><value>Cut</value></data>
+  <data name="Menu.Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Menu.Paste" xml:space="preserve"><value>Paste</value></data>
+  <data name="Menu.Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Menu.View" xml:space="preserve"><value>View</value></data>
+  <data name="Menu.ZoomIn" xml:space="preserve"><value>Zoom In</value></data>
+  <data name="Menu.ZoomOut" xml:space="preserve"><value>Zoom Out</value></data>
+  <data name="Menu.ZoomExtents" xml:space="preserve"><value>Zoom Extents</value></data>
+  <data name="Menu.Grid" xml:space="preserve"><value>Grid</value></data>
+  <data name="Menu.Tools" xml:space="preserve"><value>Tools</value></data>
+  <data name="Menu.Layers" xml:space="preserve"><value>Layers</value></data>
+  <data name="Menu.Help" xml:space="preserve"><value>Help</value></data>
+  <data name="Menu.About" xml:space="preserve"><value>About LiteCad</value></data>
+  <data name="Menu.Header.File" xml:space="preserve"><value>_File</value></data>
+  <data name="Menu.Header.New" xml:space="preserve"><value>_New</value></data>
+  <data name="Menu.Header.Open" xml:space="preserve"><value>_Open...</value></data>
+  <data name="Menu.Header.Save" xml:space="preserve"><value>_Save</value></data>
+  <data name="Menu.Header.Exit" xml:space="preserve"><value>E_xit</value></data>
+  <data name="Menu.Header.Edit" xml:space="preserve"><value>_Edit</value></data>
+  <data name="Menu.Header.Undo" xml:space="preserve"><value>_Undo</value></data>
+  <data name="Menu.Header.Redo" xml:space="preserve"><value>_Redo</value></data>
+  <data name="Menu.Header.Cut" xml:space="preserve"><value>Cu_t</value></data>
+  <data name="Menu.Header.Copy" xml:space="preserve"><value>_Copy</value></data>
+  <data name="Menu.Header.Paste" xml:space="preserve"><value>_Paste</value></data>
+  <data name="Menu.Header.Delete" xml:space="preserve"><value>_Delete</value></data>
+  <data name="Menu.Header.View" xml:space="preserve"><value>_View</value></data>
+  <data name="Menu.Header.ZoomIn" xml:space="preserve"><value>_Zoom In</value></data>
+  <data name="Menu.Header.ZoomOut" xml:space="preserve"><value>Zoom _Out</value></data>
+  <data name="Menu.Header.ZoomExtents" xml:space="preserve"><value>Zoom _Extents</value></data>
+  <data name="Menu.Header.Grid" xml:space="preserve"><value>_Grid</value></data>
+  <data name="Menu.Header.Tools" xml:space="preserve"><value>_Tools</value></data>
+  <data name="Menu.Header.Selection" xml:space="preserve"><value>_Selection</value></data>
+  <data name="Menu.Header.Hand" xml:space="preserve"><value>_Hand</value></data>
+  <data name="Menu.Header.Line" xml:space="preserve"><value>_Line</value></data>
+  <data name="Menu.Header.Axis" xml:space="preserve"><value>_Axis</value></data>
+  <data name="Menu.Header.Wall" xml:space="preserve"><value>_Wall</value></data>
+  <data name="Menu.Header.Rectangle" xml:space="preserve"><value>_Rectangle</value></data>
+  <data name="Menu.Header.Polyline" xml:space="preserve"><value>_Polyline</value></data>
+  <data name="Menu.Header.Move" xml:space="preserve"><value>_Move</value></data>
+  <data name="Menu.Header.CopyTool" xml:space="preserve"><value>C_opy</value></data>
+  <data name="Menu.Header.DeleteTool" xml:space="preserve"><value>_Delete</value></data>
+  <data name="Menu.Header.PolygonEdit" xml:space="preserve"><value>Polygon _Edit</value></data>
+  <data name="Menu.Header.Layers" xml:space="preserve"><value>_Layers</value></data>
+  <data name="Menu.Header.Help" xml:space="preserve"><value>_Help</value></data>
+  <data name="Menu.Header.About" xml:space="preserve"><value>_About LiteCad</value></data>
+  <data name="Label.AppTitle" xml:space="preserve"><value>LiteCad</value></data>
+  <data name="Label.Properties" xml:space="preserve"><value>Properties</value></data>
+  <data name="Label.Tool" xml:space="preserve"><value>Tool</value></data>
+  <data name="Label.Selection" xml:space="preserve"><value>Selection</value></data>
+  <data name="Label.None" xml:space="preserve"><value>None</value></data>
+  <data name="Label.LineParameters" xml:space="preserve"><value>Line parameters</value></data>
+  <data name="Label.MoveParameters" xml:space="preserve"><value>Move parameters</value></data>
+  <data name="Label.Color" xml:space="preserve"><value>Color</value></data>
+  <data name="Label.Thickness" xml:space="preserve"><value>Thickness</value></data>
+  <data name="Label.Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Label.OrthoHorizontalVertical" xml:space="preserve"><value>Ortho (H/V)</value></data>
+  <data name="Label.Ortho" xml:space="preserve"><value>Ortho</value></data>
+  <data name="Label.NoParameters" xml:space="preserve"><value>No parameters</value></data>
+  <data name="Label.Length" xml:space="preserve"><value>L:</value></data>
+  <data name="Label.Width" xml:space="preserve"><value>W:</value></data>
+  <data name="Label.Height" xml:space="preserve"><value>H:</value></data>
+  <data name="Label.X" xml:space="preserve"><value>X:</value></data>
+  <data name="Label.Y" xml:space="preserve"><value>Y:</value></data>
+  <data name="Label.Distance" xml:space="preserve"><value>Distance:</value></data>
+  <data name="Label.EmptyValue" xml:space="preserve"><value>—</value></data>
+  <data name="Label.Color.Black" xml:space="preserve"><value>Black</value></data>
+  <data name="Label.Color.Gray" xml:space="preserve"><value>Gray</value></data>
+  <data name="Label.Color.Blue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Label.Color.Red" xml:space="preserve"><value>Red</value></data>
+  <data name="Label.Color.Green" xml:space="preserve"><value>Green</value></data>
+  <data name="Label.LineType.Solid" xml:space="preserve"><value>Solid</value></data>
+  <data name="Label.LineType.Dashed" xml:space="preserve"><value>Dashed</value></data>
+  <data name="Label.LineType.Dotted" xml:space="preserve"><value>Dotted</value></data>
+  <data name="Label.PolygonType.Face" xml:space="preserve"><value>Face</value></data>
+  <data name="Label.PolygonType.Wall" xml:space="preserve"><value>Wall</value></data>
+  <data name="Label.PolygonType.Room" xml:space="preserve"><value>Room</value></data>
+  <data name="Label.PolygonType.Axis" xml:space="preserve"><value>Axis</value></data>
+  <data name="Status.Ready" xml:space="preserve"><value>Ready</value></data>
+  <data name="Status.NewDocument" xml:space="preserve"><value>New document</value></data>
+  <data name="Status.ToolActive" xml:space="preserve"><value>{0} tool active</value></data>
+  <data name="Status.CopiedToClipboard" xml:space="preserve"><value>Copied to clipboard</value></data>
+  <data name="Status.Pasted" xml:space="preserve"><value>Pasted</value></data>
+  <data name="Status.CutToClipboard" xml:space="preserve"><value>Cut to clipboard</value></data>
+  <data name="Status.Deleted" xml:space="preserve"><value>Deleted</value></data>
+  <data name="Status.Undo" xml:space="preserve"><value>Undo</value></data>
+  <data name="Status.Redo" xml:space="preserve"><value>Redo</value></data>
+  <data name="Status.SelectionCleared" xml:space="preserve"><value>Selection cleared</value></data>
+  <data name="Status.SelectionUpdated" xml:space="preserve"><value>Selection updated</value></data>
+  <data name="Status.VertexSelected" xml:space="preserve"><value>Vertex selected</value></data>
+  <data name="Status.EdgeSelected" xml:space="preserve"><value>Edge selected</value></data>
+  <data name="Status.PolygonSelected" xml:space="preserve"><value>Polygon selected</value></data>
+  <data name="Status.MultipleObjectsSelected" xml:space="preserve"><value>Multiple objects selected</value></data>
+  <data name="Status.WindowSelection" xml:space="preserve"><value>Window selection</value></data>
+  <data name="Status.CrossingSelection" xml:space="preserve"><value>Crossing selection</value></data>
+  <data name="Status.LineCancelled" xml:space="preserve"><value>Line cancelled</value></data>
+  <data name="Status.RectangleCancelled" xml:space="preserve"><value>Rectangle cancelled</value></data>
+  <data name="Status.MoveCancelled" xml:space="preserve"><value>Move cancelled</value></data>
+  <data name="Status.MoveCompleted" xml:space="preserve"><value>Move completed</value></data>
+  <data name="Status.StretchCancelled" xml:space="preserve"><value>Stretch cancelled</value></data>
+  <data name="Status.StretchCompleted" xml:space="preserve"><value>Stretch completed</value></data>
+  <data name="Input.Line.SelectEndPoint" xml:space="preserve"><value>Select end point or type length (Right click to cancel)</value></data>
+  <data name="Input.Line.SelectNextPoint" xml:space="preserve"><value>Select next point or type length (Right click to cancel)</value></data>
+  <data name="Input.Line.SetDirectionThenTypeLength" xml:space="preserve"><value>Move mouse to set direction, then type length</value></data>
+  <data name="Input.Rectangle.SelectFirstCorner" xml:space="preserve"><value>Select first corner or type size after first click (Right click to cancel)</value></data>
+  <data name="Input.Rectangle.SelectOppositeCorner" xml:space="preserve"><value>Select opposite corner or type width/height (Alt to switch, Enter to apply)</value></data>
+  <data name="Input.Move.Idle" xml:space="preserve"><value>Click a vertex grip or select objects, then click base point and destination</value></data>
+  <data name="Input.Move.SelectVertices" xml:space="preserve"><value>Select vertices or objects to move</value></data>
+  <data name="Input.Move.VertexSelected" xml:space="preserve"><value>Vertex selected — click base point, then destination</value></data>
+  <data name="Input.Move.SelectDestination" xml:space="preserve"><value>Select destination point or type offset (Esc/Right click to cancel)</value></data>
+  <data name="Input.SetDirectionThenTypeDistance" xml:space="preserve"><value>Move mouse to set direction, then type distance</value></data>
+  <data name="Input.Stretch.Idle" xml:space="preserve"><value>Click an edge to stretch (perpendicular parallel sides required)</value></data>
+  <data name="Input.Stretch.SelectDestination" xml:space="preserve"><value>Select stretch destination, type distance, or press Enter (Right click to cancel)</value></data>
+  <data name="Input.Stretch.SelectBasePoint" xml:space="preserve"><value>Click base point, then stretch destination</value></data>
+  <data name="Error.CannotCommand" xml:space="preserve"><value>Cannot {0}</value></data>
+  <data name="Error.RectangleTooSmall" xml:space="preserve"><value>Rectangle size is too small</value></data>
+  <data name="Error.StretchUnavailable" xml:space="preserve"><value>Stretch unavailable — perpendicular parallel sides required at both ends</value></data>
+  <data name="Selection.NothingSelected" xml:space="preserve"><value>Nothing selected</value></data>
+  <data name="Selection.Pasted" xml:space="preserve"><value>Pasted</value></data>
+  <data name="Selection.Edge" xml:space="preserve"><value>Edge</value></data>
+  <data name="Selection.VertexAt" xml:space="preserve"><value>Vertex ({0:F2}, {1:F2})</value></data>
+  <data name="Selection.PolygonWithArea" xml:space="preserve"><value>{0} ({1:F2})</value></data>
+  <data name="Selection.MultipleCount" xml:space="preserve"><value>{0} vertex(s), {1} edge(s), {2} polygon(s)</value></data>
+  <data name="Format.Coordinates" xml:space="preserve"><value>X: {0:F2}  Y: {1:F2}</value></data>
+  <data name="Format.CoordinatesDefault" xml:space="preserve"><value>X: 0.00  Y: 0.00</value></data>
+  <data name="Format.Area" xml:space="preserve"><value>A: {0:F2}</value></data>
+  <data name="Format.AreaEmpty" xml:space="preserve"><value>A: —</value></data>
+  <data name="Action.Gesture.Undo" xml:space="preserve"><value>Ctrl+Z</value></data>
+  <data name="Action.Gesture.Redo" xml:space="preserve"><value>Ctrl+Y</value></data>
+  <data name="Action.Gesture.Cut" xml:space="preserve"><value>Ctrl+X</value></data>
+  <data name="Action.Gesture.Copy" xml:space="preserve"><value>Ctrl+C</value></data>
+  <data name="Action.Gesture.Paste" xml:space="preserve"><value>Ctrl+V</value></data>
+  <data name="Action.Gesture.Delete" xml:space="preserve"><value>Del</value></data>
+</root>

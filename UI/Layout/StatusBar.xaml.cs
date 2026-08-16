@@ -1,4 +1,5 @@
 using LiteCad.Core.Geometry;
+using LiteCad.Resources;
 using LiteCad.Services;
 using System.Globalization;
 using System.Windows;
@@ -9,6 +10,7 @@ namespace LiteCad.UI.Layout;
 
 public partial class StatusBar : System.Windows.Controls.UserControl
 {
+    private static readonly object InitializeComponentLock = new();
     private static readonly SolidColorBrush ActiveFieldBorderBrush = new(Color.FromRgb(0x21, 0x96, 0xF3));
     private static readonly SolidColorBrush InactiveFieldBorderBrush = new(Color.FromRgb(0xCC, 0xCC, 0xCC));
     private static readonly SolidColorBrush TypingBackgroundBrush = new(Color.FromArgb(220, 255, 255, 255));
@@ -20,10 +22,14 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     private bool _isTypingHeight;
     private RectangleSizeField _activeRectangleField = RectangleSizeField.Width;
     private DualFieldLabelMode _dualFieldLabelMode = DualFieldLabelMode.WidthHeight;
+    private LineInputLabelMode _lineInputLabelMode = LineInputLabelMode.Length;
 
     public StatusBar()
     {
-        InitializeComponent();
+        lock (InitializeComponentLock)
+        {
+            InitializeComponent();
+        }
     }
 
     public event EventHandler<string>? LengthCommitted;
@@ -41,6 +47,8 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     public RectangleSizeField ActiveRectangleField => _activeRectangleField;
 
     public DualFieldLabelMode DualFieldLabels => _dualFieldLabelMode;
+
+    public LineInputLabelMode LineInputLabelMode => _lineInputLabelMode;
 
     public string FirstFieldLabelText => FirstFieldLabel.Text;
 
@@ -62,25 +70,14 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         switch (mode)
         {
             case DualFieldLabelMode.MoveOffset:
-                FirstFieldLabel.Text = "X:";
-                SecondFieldLabel.Text = "Y:";
+                FirstFieldLabel.Text = Strings.Label_X;
+                SecondFieldLabel.Text = Strings.Label_Y;
                 break;
             default:
-                FirstFieldLabel.Text = "W:";
-                SecondFieldLabel.Text = "H:";
+                FirstFieldLabel.Text = Strings.Label_Width;
+                SecondFieldLabel.Text = Strings.Label_Height;
                 break;
         }
-    }
-
-    public void SetLineInputLabel(string label)
-    {
-        LineInputLabel.Text = label;
-    }
-
-    public void SetDualFieldInputText(string first, string second)
-    {
-        SetRectangleWidthInputText(first);
-        SetRectangleHeightInputText(second);
     }
 
     public void SetLineInputText(string text)
@@ -95,6 +92,12 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
     public (string First, string Second) GetDualFieldInputText()
         => (WidthInput.Text, HeightInput.Text);
+
+    public void SetDualFieldInputText(string first, string second)
+    {
+        SetRectangleWidthInputText(first);
+        SetRectangleHeightInputText(second);
+    }
 
     public void SetRectangleWidthInputText(string text)
     {
@@ -123,12 +126,12 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
     public void SetCoordinates(PointF point)
     {
-        CoordinatesText.Text = $"X: {point.X:F2}  Y: {point.Y:F2}";
+        CoordinatesText.Text = Strings.Format(Strings.Format_Coordinates, point.X, point.Y);
     }
 
     public void SetLengthText(string? text)
     {
-        LengthDisplay.Text = string.IsNullOrWhiteSpace(text) ? "—" : text;
+        LengthDisplay.Text = string.IsNullOrWhiteSpace(text) ? Strings.Label_EmptyValue : text;
     }
 
     public void SetLength(double? length)
@@ -144,14 +147,16 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
     public void SetArea(double? area)
     {
-        AreaText.Text = area.HasValue ? $"A: {area.Value:F2}" : "A: —";
+        AreaText.Text = area.HasValue
+            ? Strings.Format(Strings.Format_Area, area.Value)
+            : Strings.Format_AreaEmpty;
     }
 
-    public void SetLengthInputEnabled(bool enabled, string label = "L:")
+    public void SetLengthInputEnabled(bool enabled, LineInputLabelMode mode = LineInputLabelMode.Length)
     {
         if (enabled)
         {
-            ActivateLineInput(label);
+            ActivateLineInput(mode);
         }
         else
         {
@@ -298,12 +303,13 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         => e.Key is Key.LeftAlt or Key.RightAlt
            || (e.Key == Key.System && e.SystemKey is Key.LeftAlt or Key.RightAlt);
 
-    private void ActivateLineInput(string label = "L:")
+    private void ActivateLineInput(LineInputLabelMode mode = LineInputLabelMode.Length)
     {
         DeactivateRectangleSizeInput();
         _isInputActive = true;
+        _lineInputLabelMode = mode;
         LineInputPanel.Visibility = Visibility.Visible;
-        LineInputLabel.Text = label;
+        LineInputLabel.Text = GetLineInputLabelText(mode);
         LengthInput.IsEnabled = true;
         ClearLineTyping();
         LengthInput.Focus();
@@ -313,11 +319,12 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     {
         _isInputActive = false;
         _isTyping = false;
+        _lineInputLabelMode = LineInputLabelMode.Length;
         LengthInput.IsEnabled = false;
         LengthInput.Text = string.Empty;
         LengthInput.Background = Brushes.Transparent;
-        LengthDisplay.Text = "—";
-        LineInputLabel.Text = "L:";
+        LengthDisplay.Text = Strings.Label_EmptyValue;
+        LineInputLabel.Text = Strings.Label_Length;
         if (!_isRectangleInputActive)
         {
             LineInputPanel.Visibility = Visibility.Visible;
@@ -335,8 +342,8 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         WidthInput.IsEnabled = true;
         HeightInput.IsEnabled = true;
         ClearRectangleTyping();
-        WidthDisplay.Text = "—";
-        HeightDisplay.Text = "—";
+        WidthDisplay.Text = Strings.Label_EmptyValue;
+        HeightDisplay.Text = Strings.Label_EmptyValue;
         UpdateRectangleFieldHighlight();
         FocusActiveRectangleField();
     }
@@ -352,8 +359,8 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         HeightInput.Text = string.Empty;
         WidthInput.Background = Brushes.Transparent;
         HeightInput.Background = Brushes.Transparent;
-        WidthDisplay.Text = "—";
-        HeightDisplay.Text = "—";
+        WidthDisplay.Text = Strings.Label_EmptyValue;
+        HeightDisplay.Text = Strings.Label_EmptyValue;
         RectangleInputPanel.Visibility = Visibility.Collapsed;
         LineInputPanel.Visibility = Visibility.Visible;
         SetDualFieldLabelMode(DualFieldLabelMode.WidthHeight);
@@ -474,7 +481,10 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     }
 
     private bool IsMoveDistanceInput()
-        => _isInputActive && LineInputLabel.Text == "Distance:";
+        => _isInputActive && _lineInputLabelMode == LineInputLabelMode.Distance;
+
+    private static string GetLineInputLabelText(LineInputLabelMode mode)
+        => mode == LineInputLabelMode.Distance ? Strings.Label_Distance : Strings.Label_Length;
 
     private void LengthInput_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
     {
@@ -619,7 +629,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     }
 
     private static string FormatLength(double? length)
-        => length.HasValue ? length.Value.ToString("F2", CultureInfo.InvariantCulture) : "—";
+        => length.HasValue ? length.Value.ToString("F2", CultureInfo.InvariantCulture) : Strings.Label_EmptyValue;
 
     private static bool TryGetKeyChar(Key key, out char character)
     {

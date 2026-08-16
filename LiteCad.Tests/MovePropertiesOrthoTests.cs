@@ -1,6 +1,7 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Infrastructure;
+using LiteCad.Resources;
 using LiteCad.Services;
 using LiteCad.Tools;
 using LiteCad.UI.Layout;
@@ -57,7 +58,8 @@ public class MovePropertiesOrthoTests
             host.BeginMove(new PointF(0.5, 0));
 
             Assert.True(host.StatusBar.IsLineInputActive);
-            Assert.Equal("Distance:", host.StatusBar.LineInputLabelText);
+            Assert.Equal(LineInputLabelMode.Distance, host.StatusBar.LineInputLabelMode);
+            Assert.Equal(Strings.Label_Distance, host.StatusBar.LineInputLabelText);
         });
     }
 
@@ -73,7 +75,7 @@ public class MovePropertiesOrthoTests
 
             Assert.True(host.StatusBar.IsRectangleInputActive);
             Assert.Equal(DualFieldLabelMode.MoveOffset, host.StatusBar.DualFieldLabels);
-            Assert.Equal("X:", host.StatusBar.FirstFieldLabelText);
+            Assert.Equal(Strings.Label_X, host.StatusBar.FirstFieldLabelText);
         });
     }
 
@@ -229,13 +231,13 @@ public class MovePropertiesOrthoTests
         public void ActivateMove()
         {
             Session.ToolService.ActivateTool(MoveTool);
-            PropertiesPanel.SetActiveTool(MoveTool.Name);
+            PropertiesPanel.SetActiveTool(ToolId.Move);
         }
 
         public void ActivateLine()
         {
             Session.ToolService.ActivateTool(LineTool);
-            PropertiesPanel.SetActiveTool(LineTool.Name);
+            PropertiesPanel.SetActiveTool(ToolId.Line);
         }
 
         public void BeginMove(PointF basePoint)
