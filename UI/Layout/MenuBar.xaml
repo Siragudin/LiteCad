@@ -51,6 +51,7 @@
         </MenuItem>
         <MenuItem Header="_Tools">
             <MenuItem Header="_Selection" Tag="Selection" Click="ToolMenuItem_OnClick" />
+            <MenuItem Header="_Hand" Tag="Hand" Click="ToolMenuItem_OnClick" />
             <MenuItem Header="_Line" Tag="Line" Click="ToolMenuItem_OnClick" />
             <MenuItem Header="_Axis" Tag="Axis" Click="ToolMenuItem_OnClick" />
             <MenuItem Header="_Wall" Tag="Wall" Click="ToolMenuItem_OnClick" />

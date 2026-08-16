@@ -29,5 +29,9 @@ public abstract class ToolBase : ITool
 
     public virtual bool TryApplyLength(double length) => false;
 
+    public virtual bool TryApplyLengthInput(string input) => false;
+
+    public virtual bool TryApplyRectangleSize(string width, string height) => false;
+
     public virtual void RenderOverlay(DrawingContext context, Camera camera, Size viewport) { }
 }

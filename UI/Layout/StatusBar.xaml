@@ -30,7 +30,8 @@
                        Text="X: 0.00  Y: 0.00"
                        FontSize="12" />
 
-            <StackPanel Grid.Column="2"
+            <StackPanel x:Name="LineInputPanel"
+                        Grid.Column="2"
                         Orientation="Horizontal"
                         VerticalAlignment="Center"
                         Margin="16,0,0,0">
@@ -66,6 +67,86 @@
                              KeyDown="LengthInput_OnKeyDown"
                              PreviewTextInput="LengthInput_OnPreviewTextInput"
                              TextChanged="LengthInput_OnTextChanged" />
+                </Grid>
+            </StackPanel>
+
+            <StackPanel x:Name="RectangleInputPanel"
+                        Grid.Column="2"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Margin="16,0,0,0"
+                        Visibility="Collapsed">
+                <TextBlock Text="W:"
+                           VerticalAlignment="Center"
+                           FontSize="12"
+                           Margin="0,0,4,0" />
+                <Grid x:Name="WidthInputHost"
+                      Width="64"
+                      Height="22">
+                    <Border x:Name="WidthInputBorder"
+                            Background="#E8E8E8"
+                            BorderBrush="#CCCCCC"
+                            BorderThickness="1"
+                            CornerRadius="2" />
+                    <TextBlock x:Name="WidthDisplay"
+                               Margin="6,0"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="#666666"
+                               Text="—"
+                               IsHitTestVisible="False" />
+                    <TextBox x:Name="WidthInput"
+                             Margin="0"
+                             Padding="5,0"
+                             FontSize="12"
+                             VerticalContentAlignment="Center"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             CaretBrush="Black"
+                             IsEnabled="False"
+                             IsTabStop="False"
+                             Focusable="True"
+                             Text=""
+                             KeyDown="RectangleFieldInput_OnKeyDown"
+                             PreviewTextInput="WidthInput_OnPreviewTextInput"
+                             TextChanged="WidthInput_OnTextChanged"
+                             GotFocus="WidthInput_OnGotFocus" />
+                </Grid>
+                <TextBlock Text="H:"
+                           VerticalAlignment="Center"
+                           FontSize="12"
+                           Margin="8,0,4,0" />
+                <Grid x:Name="HeightInputHost"
+                      Width="64"
+                      Height="22">
+                    <Border x:Name="HeightInputBorder"
+                            Background="#E8E8E8"
+                            BorderBrush="#CCCCCC"
+                            BorderThickness="1"
+                            CornerRadius="2" />
+                    <TextBlock x:Name="HeightDisplay"
+                               Margin="6,0"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="#666666"
+                               Text="—"
+                               IsHitTestVisible="False" />
+                    <TextBox x:Name="HeightInput"
+                             Margin="0"
+                             Padding="5,0"
+                             FontSize="12"
+                             VerticalContentAlignment="Center"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             CaretBrush="Black"
+                             IsEnabled="False"
+                             IsTabStop="False"
+                             Focusable="True"
+                             Text=""
+                             KeyDown="RectangleFieldInput_OnKeyDown"
+                             PreviewTextInput="HeightInput_OnPreviewTextInput"
+                             TextChanged="HeightInput_OnTextChanged"
+                             GotFocus="HeightInput_OnGotFocus" />
                 </Grid>
             </StackPanel>
 

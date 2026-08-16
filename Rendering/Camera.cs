@@ -6,7 +6,7 @@ namespace LiteCad.Rendering;
 
 public sealed class Camera
 {
-    public const double MinZoom = 0.05;
+    public const double MinZoom = 0.016;
     public const double MaxZoom = 50.0;
 
     public PointF PanOffset { get; private set; } = PointF.Zero;

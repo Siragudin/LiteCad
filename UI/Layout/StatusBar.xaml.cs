@@ -1,4 +1,5 @@
 using LiteCad.Core.Geometry;
+using LiteCad.Services;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
@@ -8,15 +9,57 @@ namespace LiteCad.UI.Layout;
 
 public partial class StatusBar : System.Windows.Controls.UserControl
 {
+    private static readonly SolidColorBrush ActiveFieldBorderBrush = new(Color.FromRgb(0x21, 0x96, 0xF3));
+    private static readonly SolidColorBrush InactiveFieldBorderBrush = new(Color.FromRgb(0xCC, 0xCC, 0xCC));
+    private static readonly SolidColorBrush TypingBackgroundBrush = new(Color.FromArgb(220, 255, 255, 255));
+
     private bool _isTyping;
     private bool _isInputActive;
+    private bool _isRectangleInputActive;
+    private bool _isTypingWidth;
+    private bool _isTypingHeight;
+    private RectangleSizeField _activeRectangleField = RectangleSizeField.Width;
 
     public StatusBar()
     {
         InitializeComponent();
     }
 
-    public event EventHandler<double>? LengthCommitted;
+    public event EventHandler<string>? LengthCommitted;
+
+    public event EventHandler<(string Width, string Height)>? RectangleSizeCommitted;
+
+    public bool IsRectangleInputActive => _isRectangleInputActive;
+
+    public RectangleSizeField ActiveRectangleField => _activeRectangleField;
+
+    public string RectangleWidthText => WidthInput.Text;
+
+    public string RectangleHeightText => HeightInput.Text;
+
+    public bool IsWidthFieldFocused => WidthInput.IsKeyboardFocusWithin;
+
+    public bool IsHeightFieldFocused => HeightInput.IsKeyboardFocusWithin;
+
+    public void SetRectangleWidthInputText(string text)
+    {
+        WidthInput.Text = text;
+        if (!string.IsNullOrEmpty(text))
+        {
+            _isTypingWidth = true;
+            WidthInput.Background = TypingBackgroundBrush;
+        }
+    }
+
+    public void SetRectangleHeightInputText(string text)
+    {
+        HeightInput.Text = text;
+        if (!string.IsNullOrEmpty(text))
+        {
+            _isTypingHeight = true;
+            HeightInput.Background = TypingBackgroundBrush;
+        }
+    }
 
     public void SetStatus(string status)
     {
@@ -28,6 +71,11 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         CoordinatesText.Text = $"X: {point.X:F2}  Y: {point.Y:F2}";
     }
 
+    public void SetLengthText(string? text)
+    {
+        LengthDisplay.Text = string.IsNullOrWhiteSpace(text) ? "—" : text;
+    }
+
     public void SetLength(double? length)
     {
         LengthDisplay.Text = FormatLength(length);
@@ -35,7 +83,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
     public void ResetLengthEditing(double? length)
     {
-        ClearTyping();
+        ClearLineTyping();
         LengthDisplay.Text = FormatLength(length);
     }
 
@@ -48,17 +96,72 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     {
         if (enabled)
         {
-            ActivateLengthInput();
+            ActivateLineInput();
         }
         else
         {
-            DeactivateLengthInput();
+            DeactivateLineInput();
         }
+    }
+
+    public void SetRectangleSizeInputEnabled(bool enabled)
+    {
+        if (enabled)
+        {
+            ActivateRectangleSizeInput();
+        }
+        else
+        {
+            DeactivateRectangleSizeInput();
+        }
+    }
+
+    public void SetRectangleSizePreview(double? width, double? height)
+    {
+        if (!_isRectangleInputActive)
+        {
+            return;
+        }
+
+        if (!_isTypingWidth)
+        {
+            WidthDisplay.Text = FormatLength(width);
+        }
+
+        if (!_isTypingHeight)
+        {
+            HeightDisplay.Text = FormatLength(height);
+        }
+    }
+
+    public void ResetRectangleSizeInput(double? width, double? height)
+    {
+        ClearRectangleTyping();
+        WidthDisplay.Text = FormatLength(width);
+        HeightDisplay.Text = FormatLength(height);
+        WidthInput.Text = string.Empty;
+        HeightInput.Text = string.Empty;
+    }
+
+    public bool ToggleRectangleSizeField()
+    {
+        if (!_isRectangleInputActive)
+        {
+            return false;
+        }
+
+        _activeRectangleField = _activeRectangleField == RectangleSizeField.Width
+            ? RectangleSizeField.Height
+            : RectangleSizeField.Width;
+
+        UpdateRectangleFieldHighlight();
+        FocusActiveRectangleField();
+        return true;
     }
 
     public bool ProcessLengthKey(KeyEventArgs e)
     {
-        if (!_isInputActive)
+        if (!_isInputActive || _isRectangleInputActive)
         {
             return false;
         }
@@ -71,21 +174,21 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
         if (e.Key == Key.Enter)
         {
-            CommitLengthInput();
+            CommitLineInput();
             e.Handled = true;
             return true;
         }
 
         if (e.Key == Key.Escape)
         {
-            ClearTyping();
+            ClearLineTyping();
             e.Handled = true;
             return true;
         }
 
         if (!_isTyping && TryGetKeyChar(e.Key, out _))
         {
-            BeginTyping();
+            BeginLineTyping();
             if (!LengthInput.IsKeyboardFocusWithin)
             {
                 LengthInput.Focus();
@@ -95,15 +198,62 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         return false;
     }
 
-    private void ActivateLengthInput()
+    public bool ProcessRectangleSizeKey(KeyEventArgs e)
     {
+        if (!_isRectangleInputActive)
+        {
+            return false;
+        }
+
+        if (IsAltToggleKey(e))
+        {
+            ToggleRectangleSizeField();
+            e.Handled = true;
+            return true;
+        }
+
+        if (e.Key == Key.Tab)
+        {
+            e.Handled = true;
+            return true;
+        }
+
+        if (e.Key == Key.Enter)
+        {
+            CommitRectangleSizeInput();
+            e.Handled = true;
+            return true;
+        }
+
+        if (e.Key == Key.Escape)
+        {
+            return false;
+        }
+
+        if (TryGetKeyChar(e.Key, out _))
+        {
+            BeginRectangleTyping(_activeRectangleField);
+            FocusActiveRectangleField();
+        }
+
+        return false;
+    }
+
+    public static bool IsAltToggleKey(KeyEventArgs e)
+        => e.Key is Key.LeftAlt or Key.RightAlt
+           || (e.Key == Key.System && e.SystemKey is Key.LeftAlt or Key.RightAlt);
+
+    private void ActivateLineInput()
+    {
+        DeactivateRectangleSizeInput();
         _isInputActive = true;
+        LineInputPanel.Visibility = Visibility.Visible;
         LengthInput.IsEnabled = true;
-        ClearTyping();
+        ClearLineTyping();
         LengthInput.Focus();
     }
 
-    private void DeactivateLengthInput()
+    private void DeactivateLineInput()
     {
         _isInputActive = false;
         _isTyping = false;
@@ -111,32 +261,131 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         LengthInput.Text = string.Empty;
         LengthInput.Background = Brushes.Transparent;
         LengthDisplay.Text = "—";
+        if (!_isRectangleInputActive)
+        {
+            LineInputPanel.Visibility = Visibility.Visible;
+        }
     }
 
-    private void BeginTyping()
+    private void ActivateRectangleSizeInput()
+    {
+        DeactivateLineInput();
+        _isRectangleInputActive = true;
+        _activeRectangleField = RectangleSizeField.Width;
+        LineInputPanel.Visibility = Visibility.Collapsed;
+        RectangleInputPanel.Visibility = Visibility.Visible;
+        WidthInput.IsEnabled = true;
+        HeightInput.IsEnabled = true;
+        ClearRectangleTyping();
+        WidthDisplay.Text = "—";
+        HeightDisplay.Text = "—";
+        UpdateRectangleFieldHighlight();
+        FocusActiveRectangleField();
+    }
+
+    private void DeactivateRectangleSizeInput()
+    {
+        _isRectangleInputActive = false;
+        _isTypingWidth = false;
+        _isTypingHeight = false;
+        WidthInput.IsEnabled = false;
+        HeightInput.IsEnabled = false;
+        WidthInput.Text = string.Empty;
+        HeightInput.Text = string.Empty;
+        WidthInput.Background = Brushes.Transparent;
+        HeightInput.Background = Brushes.Transparent;
+        WidthDisplay.Text = "—";
+        HeightDisplay.Text = "—";
+        RectangleInputPanel.Visibility = Visibility.Collapsed;
+        LineInputPanel.Visibility = Visibility.Visible;
+        UpdateRectangleFieldHighlight();
+    }
+
+    private void FocusActiveRectangleField()
+    {
+        if (_activeRectangleField == RectangleSizeField.Width)
+        {
+            WidthInput.Focus();
+            return;
+        }
+
+        HeightInput.Focus();
+    }
+
+    private void UpdateRectangleFieldHighlight()
+    {
+        if (!_isRectangleInputActive)
+        {
+            WidthInputBorder.BorderBrush = InactiveFieldBorderBrush;
+            HeightInputBorder.BorderBrush = InactiveFieldBorderBrush;
+            return;
+        }
+
+        WidthInputBorder.BorderBrush = _activeRectangleField == RectangleSizeField.Width
+            ? ActiveFieldBorderBrush
+            : InactiveFieldBorderBrush;
+        HeightInputBorder.BorderBrush = _activeRectangleField == RectangleSizeField.Height
+            ? ActiveFieldBorderBrush
+            : InactiveFieldBorderBrush;
+    }
+
+    private void BeginLineTyping()
     {
         _isTyping = true;
-        LengthInput.Background = new SolidColorBrush(Color.FromArgb(220, 255, 255, 255));
+        LengthInput.Background = TypingBackgroundBrush;
     }
 
-    private void ClearTyping()
+    private void ClearLineTyping()
     {
         _isTyping = false;
         LengthInput.Text = string.Empty;
         LengthInput.Background = Brushes.Transparent;
     }
 
-    private void CommitLengthInput()
+    private void BeginRectangleTyping(RectangleSizeField field)
     {
-        if (_isTyping && TryParseLength(LengthInput.Text, out var length))
+        if (field == RectangleSizeField.Width)
         {
-            LengthCommitted?.Invoke(this, length);
+            _isTypingWidth = true;
+            WidthInput.Background = TypingBackgroundBrush;
+            return;
         }
 
-        ClearTyping();
+        _isTypingHeight = true;
+        HeightInput.Background = TypingBackgroundBrush;
+    }
+
+    private void ClearRectangleTyping()
+    {
+        _isTypingWidth = false;
+        _isTypingHeight = false;
+        WidthInput.Text = string.Empty;
+        HeightInput.Text = string.Empty;
+        WidthInput.Background = Brushes.Transparent;
+        HeightInput.Background = Brushes.Transparent;
+    }
+
+    private void CommitLineInput()
+    {
+        if (_isTyping && !string.IsNullOrWhiteSpace(LengthInput.Text))
+        {
+            LengthCommitted?.Invoke(this, LengthInput.Text);
+        }
+
+        ClearLineTyping();
         if (_isInputActive)
         {
             LengthInput.Focus();
+        }
+    }
+
+    private void CommitRectangleSizeInput()
+    {
+        RectangleSizeCommitted?.Invoke(this, (WidthInput.Text, HeightInput.Text));
+        ClearRectangleTyping();
+        if (_isRectangleInputActive)
+        {
+            FocusActiveRectangleField();
         }
     }
 
@@ -144,7 +393,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     {
         if (!_isTyping)
         {
-            BeginTyping();
+            BeginLineTyping();
             LengthInput.Text = string.Empty;
         }
     }
@@ -154,7 +403,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         if (LengthInput.IsEnabled && !string.IsNullOrEmpty(LengthInput.Text))
         {
             _isTyping = true;
-            LengthInput.Background = new SolidColorBrush(Color.FromArgb(220, 255, 255, 255));
+            LengthInput.Background = TypingBackgroundBrush;
         }
         else if (!_isTyping)
         {
@@ -172,32 +421,118 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
         if (e.Key == Key.Enter)
         {
-            CommitLengthInput();
+            CommitLineInput();
             e.Handled = true;
             return;
         }
 
         if (e.Key == Key.Escape)
         {
-            ClearTyping();
+            ClearLineTyping();
             e.Handled = true;
+        }
+    }
+
+    private void WidthInput_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+    {
+        _activeRectangleField = RectangleSizeField.Width;
+        UpdateRectangleFieldHighlight();
+        if (!_isTypingWidth)
+        {
+            BeginRectangleTyping(RectangleSizeField.Width);
+            WidthInput.Text = string.Empty;
+        }
+    }
+
+    private void HeightInput_OnPreviewTextInput(object sender, TextCompositionEventArgs e)
+    {
+        _activeRectangleField = RectangleSizeField.Height;
+        UpdateRectangleFieldHighlight();
+        if (!_isTypingHeight)
+        {
+            BeginRectangleTyping(RectangleSizeField.Height);
+            HeightInput.Text = string.Empty;
+        }
+    }
+
+    private void WidthInput_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        if (WidthInput.IsEnabled && !string.IsNullOrEmpty(WidthInput.Text))
+        {
+            _isTypingWidth = true;
+            WidthInput.Background = TypingBackgroundBrush;
+        }
+        else if (!_isTypingWidth)
+        {
+            WidthInput.Background = Brushes.Transparent;
+        }
+    }
+
+    private void HeightInput_OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        if (HeightInput.IsEnabled && !string.IsNullOrEmpty(HeightInput.Text))
+        {
+            _isTypingHeight = true;
+            HeightInput.Background = TypingBackgroundBrush;
+        }
+        else if (!_isTypingHeight)
+        {
+            HeightInput.Background = Brushes.Transparent;
+        }
+    }
+
+    private void WidthInput_OnGotFocus(object sender, RoutedEventArgs e)
+    {
+        if (!_isRectangleInputActive)
+        {
+            return;
+        }
+
+        _activeRectangleField = RectangleSizeField.Width;
+        UpdateRectangleFieldHighlight();
+    }
+
+    private void HeightInput_OnGotFocus(object sender, RoutedEventArgs e)
+    {
+        if (!_isRectangleInputActive)
+        {
+            return;
+        }
+
+        _activeRectangleField = RectangleSizeField.Height;
+        UpdateRectangleFieldHighlight();
+    }
+
+    private void RectangleFieldInput_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        if (IsAltToggleKey(e))
+        {
+            ToggleRectangleSizeField();
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.Tab)
+        {
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.Enter)
+        {
+            CommitRectangleSizeInput();
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.Escape)
+        {
+            e.Handled = false;
         }
     }
 
     private static string FormatLength(double? length)
         => length.HasValue ? length.Value.ToString("F2", CultureInfo.InvariantCulture) : "—";
-
-    private static bool TryParseLength(string text, out double length)
-    {
-        length = 0;
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return false;
-        }
-
-        var normalized = text.Trim().Replace(',', '.');
-        return double.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out length) && length > 0;
-    }
 
     private static bool TryGetKeyChar(Key key, out char character)
     {
@@ -223,6 +558,18 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         if (key is Key.OemComma)
         {
             character = ',';
+            return true;
+        }
+
+        if (key is Key.X)
+        {
+            character = 'x';
+            return true;
+        }
+
+        if (key is Key.Oem1 or Key.Oem102)
+        {
+            character = '×';
             return true;
         }
 

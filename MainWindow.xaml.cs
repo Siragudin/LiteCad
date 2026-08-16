@@ -24,6 +24,7 @@ public partial class MainWindow : Window
         _tools = new Dictionary<string, ITool>
         {
             ["Selection"] = new SelectionTool(),
+            ["Hand"] = new HandTool(),
             ["Line"] = new LineTool(),
             ["Axis"] = new AxisTool(),
             ["Wall"] = new WallTool(),
@@ -42,19 +43,28 @@ public partial class MainWindow : Window
             ViewModel.Session,
             () => MainCanvas.GetViewportSize(),
             screen => ViewModel.Session.Camera.ScreenToWorld(screen, MainCanvas.GetViewportSize()),
+            e => MainCanvas.GetMousePositionOnViewport(e),
             () => MainCanvas.RequestRedraw(),
+            () => MainCanvas.CaptureMouse(),
+            () => MainCanvas.ReleaseMouseCapture(),
             status => MainStatusBar.SetStatus(status),
             length => MainStatusBar.SetLength(length),
+            text => MainStatusBar.SetLengthText(text),
             area => MainStatusBar.SetArea(area),
             selection => MainProperties.SetSelection(selection),
             enabled => MainStatusBar.SetLengthInputEnabled(enabled),
             length => MainStatusBar.ResetLengthEditing(length),
             e => MainStatusBar.ProcessLengthKey(e),
+            enabled => MainStatusBar.SetRectangleSizeInputEnabled(enabled),
+            (width, height) => MainStatusBar.SetRectangleSizePreview(width, height),
+            (width, height) => MainStatusBar.ResetRectangleSizeInput(width, height),
+            e => MainStatusBar.ProcessRectangleSizeKey(e),
             () => ViewModel.Session.History.Record(ViewModel.Session.Document));
 
         MainCanvas.InitializeTools(toolContext);
         MainCanvas.MouseWorldPositionChanged += OnMouseWorldPositionChanged;
         MainStatusBar.LengthCommitted += OnLengthCommitted;
+        MainStatusBar.RectangleSizeCommitted += OnRectangleSizeCommitted;
 
         MainToolBar.ToolRequested += OnToolRequested;
         MainMenuBar.ToolRequested += OnToolRequested;
@@ -95,6 +105,15 @@ public partial class MainWindow : Window
 
     private void MainWindow_OnPreviewKeyDown(object sender, KeyEventArgs e)
     {
+        if (MainStatusBar.IsRectangleInputActive
+            && StatusBar.IsAltToggleKey(e)
+            && e.OriginalSource is not System.Windows.Controls.TextBox { Name: "WidthInput" or "HeightInput" })
+        {
+            MainStatusBar.ToggleRectangleSizeField();
+            e.Handled = true;
+            return;
+        }
+
         if (e.OriginalSource is TextBox)
         {
             return;
@@ -203,9 +222,41 @@ public partial class MainWindow : Window
         MainStatusBar.SetStatus($"{tool.Name} tool active");
     }
 
-    private void OnLengthCommitted(object? sender, double length)
+    private void OnRectangleSizeCommitted(object? sender, (string Width, string Height) sizes)
     {
-        ViewModel.Session.ToolService.ActiveTool?.TryApplyLength(length);
+        ViewModel.Session.ToolService.ActiveTool?.TryApplyRectangleSize(sizes.Width, sizes.Height);
+    }
+
+    private void OnLengthCommitted(object? sender, string input)
+    {
+        var tool = ViewModel.Session.ToolService.ActiveTool;
+        if (tool is null)
+        {
+            return;
+        }
+
+        if (tool.TryApplyLengthInput(input))
+        {
+            return;
+        }
+
+        if (TryParseSingleLength(input, out var length))
+        {
+            tool.TryApplyLength(length);
+        }
+    }
+
+    private static bool TryParseSingleLength(string text, out double length)
+    {
+        length = 0;
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        var normalized = text.Trim().Replace(',', '.');
+        return double.TryParse(normalized, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out length)
+            && length > 0;
     }
 
     private void OnMouseWorldPositionChanged(object? sender, PointEventArgs e)

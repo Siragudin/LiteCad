@@ -48,6 +48,8 @@ public partial class CanvasHost : System.Windows.Controls.UserControl
 
     public Size GetViewportSize() => new(Viewport.ActualWidth, Viewport.ActualHeight);
 
+    public Point GetMousePositionOnViewport(MouseEventArgs e) => e.GetPosition(Viewport);
+
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
         Focus();

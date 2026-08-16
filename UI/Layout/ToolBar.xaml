@@ -9,11 +9,12 @@
         <ToolBarTray Background="Transparent">
             <ToolBar Background="Transparent" Band="0" BandIndex="0">
                 <Button Content="Select" Width="64" Padding="6,4" Tag="Selection" Click="ToolButton_OnClick" />
+                <Button Content="Hand" Width="64" Padding="6,4" Tag="Hand" Click="ToolButton_OnClick" />
                 <Button Content="Line" Width="64" Padding="6,4" Tag="Line" Click="ToolButton_OnClick" />
+                <Button Content="Rect" Width="64" Padding="6,4" Tag="Rectangle" Click="ToolButton_OnClick" />
                 <Button Content="Axis" Width="64" Padding="6,4" Tag="Axis" Click="ToolButton_OnClick" />
                 <Button Content="Wall" Width="64" Padding="6,4" Tag="Wall" Click="ToolButton_OnClick" />
                 <Separator />
-                <Button Content="Rect" Width="64" Padding="6,4" Tag="Rectangle" Click="ToolButton_OnClick" />
                 <Button Content="Polyline" Width="72" Padding="6,4" Tag="Polyline" Click="ToolButton_OnClick" />
                 <Separator />
                 <Button Content="Move" Width="64" Padding="6,4" Tag="Move" Click="ToolButton_OnClick" />

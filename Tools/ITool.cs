@@ -24,5 +24,9 @@ public interface ITool
 
     bool TryApplyLength(double length);
 
+    bool TryApplyLengthInput(string input);
+
+    bool TryApplyRectangleSize(string width, string height);
+
     void RenderOverlay(DrawingContext context, Camera camera, Size viewport);
 }
