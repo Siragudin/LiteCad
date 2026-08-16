@@ -182,6 +182,8 @@
   <data name="Status.CircleCancelled" xml:space="preserve"><value>Circle cancelled</value></data>
   <data name="Status.MoveCancelled" xml:space="preserve"><value>Move cancelled</value></data>
   <data name="Status.MoveCompleted" xml:space="preserve"><value>Move completed</value></data>
+  <data name="Status.CopyCancelled" xml:space="preserve"><value>Copy cancelled</value></data>
+  <data name="Status.CopyCompleted" xml:space="preserve"><value>Copy completed</value></data>
   <data name="Status.StretchCancelled" xml:space="preserve"><value>Stretch cancelled</value></data>
   <data name="Status.StretchCompleted" xml:space="preserve"><value>Stretch completed</value></data>
   <data name="Input.Line.SelectEndPoint" xml:space="preserve"><value>Select end point or type length (Right click to cancel)</value></data>
@@ -196,6 +198,8 @@
   <data name="Input.Move.SelectVertices" xml:space="preserve"><value>Select vertices or objects to move</value></data>
   <data name="Input.Move.VertexSelected" xml:space="preserve"><value>Vertex selected — click base point, then destination</value></data>
   <data name="Input.Move.SelectDestination" xml:space="preserve"><value>Select destination point or type offset (Esc/Right click to cancel)</value></data>
+  <data name="Input.Copy.SelectObjects" xml:space="preserve"><value>Select objects to copy</value></data>
+  <data name="Input.Copy.SelectDestination" xml:space="preserve"><value>Move copy to destination and click (Esc/Right click to cancel)</value></data>
   <data name="Input.SetDirectionThenTypeDistance" xml:space="preserve"><value>Move mouse to set direction, then type distance</value></data>
   <data name="Input.Stretch.Idle" xml:space="preserve"><value>Click an edge to stretch (perpendicular parallel sides required)</value></data>
   <data name="Input.Stretch.SelectDestination" xml:space="preserve"><value>Select stretch destination, type distance, or press Enter (Right click to cancel)</value></data>

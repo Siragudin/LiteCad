@@ -144,6 +144,8 @@ public static class Strings
     public static string Status_CircleCancelled => Get("Status.CircleCancelled");
     public static string Status_MoveCancelled => Get("Status.MoveCancelled");
     public static string Status_MoveCompleted => Get("Status.MoveCompleted");
+    public static string Status_CopyCancelled => Get("Status.CopyCancelled");
+    public static string Status_CopyCompleted => Get("Status.CopyCompleted");
     public static string Status_StretchCancelled => Get("Status.StretchCancelled");
     public static string Status_StretchCompleted => Get("Status.StretchCompleted");
 
@@ -159,6 +161,8 @@ public static class Strings
     public static string Input_Move_SelectVertices => Get("Input.Move.SelectVertices");
     public static string Input_Move_VertexSelected => Get("Input.Move.VertexSelected");
     public static string Input_Move_SelectDestination => Get("Input.Move.SelectDestination");
+    public static string Input_Copy_SelectObjects => Get("Input.Copy.SelectObjects");
+    public static string Input_Copy_SelectDestination => Get("Input.Copy.SelectDestination");
     public static string Input_SetDirectionThenTypeDistance => Get("Input.SetDirectionThenTypeDistance");
     public static string Input_Stretch_Idle => Get("Input.Stretch.Idle");
     public static string Input_Stretch_SelectDestination => Get("Input.Stretch.SelectDestination");

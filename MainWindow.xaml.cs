@@ -181,7 +181,7 @@ public partial class MainWindow : Window
             "Undo" => session.History.Undo(session.Document, MathUtils.SnapToleranceWorld(session.Camera.Zoom)),
             "Redo" => session.History.Redo(session.Document, MathUtils.SnapToleranceWorld(session.Camera.Zoom)),
             "Cut" => session.Edit.Cut(session),
-            "Copy" => session.Edit.Copy(session),
+            "Copy" => TryStartInteractiveCopy(session),
             "Paste" => session.Edit.Paste(session),
             "Delete" => session.Edit.Delete(session),
             _ => false
@@ -193,8 +193,30 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (command == "Copy")
+        {
+            MainCanvas.RequestRedraw();
+            return;
+        }
+
         UpdateUiAfterEdit(command, session);
         MainCanvas.RequestRedraw();
+    }
+
+    private bool TryStartInteractiveCopy(CadSession session)
+    {
+        if (!CopyOperations.CanCopy(session.Selection))
+        {
+            return false;
+        }
+
+        if (_tools.TryGetValue("Copy", out var tool))
+        {
+            ActivateTool(tool);
+            return true;
+        }
+
+        return false;
     }
 
     private void UpdateUiAfterEdit(string command, CadSession session)

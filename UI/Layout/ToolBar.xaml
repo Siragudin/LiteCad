@@ -19,7 +19,6 @@
                 <Separator />
                 <Button Content="{loc:Loc Key=Tool.Move}" Width="64" Padding="6,4" Tag="Move" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Stretch}" Width="64" Padding="6,4" Tag="Stretch" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Copy}" Width="64" Padding="6,4" Tag="Copy" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Delete}" Width="64" Padding="6,4" Tag="Delete" Click="ToolButton_OnClick" />
                 <Separator />
                 <Button Content="{loc:Loc Key=Tool.Edit.Short}" Width="64" Padding="6,4" Tag="PolygonEdit" Click="ToolButton_OnClick" />
