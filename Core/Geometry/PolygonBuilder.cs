@@ -68,17 +68,109 @@ public static class PolygonBuilder
 
         var boundedContours = EnumerateBoundedContours(document, graph, tolerance).ToList();
 
-        var createdKeys = new HashSet<string>(StringComparer.Ordinal);
+        _ = BuildContainmentRelations(document, boundedContours, tolerance);
 
-        var assignedAsHole = new HashSet<BoundedContour>();
+        var createdIdentityKeys = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var contour in boundedContours)
+        {
+            var outerLoop = CreateLoopFromDirectedEdges(contour.DirectedEdges);
+            var faceIdentity = FaceIdentity.CreateLoop(document, outerLoop);
+
+            if (document.SuppressedFaceGeometryKeys.Contains(faceIdentity))
+            {
+                continue;
+            }
+
+            if (!createdIdentityKeys.Add(faceIdentity))
+            {
+                continue;
+            }
+
+            var polygon = new Polygon { Type = PolygonType.Face };
+            polygon.OuterLoop.Edges.AddRange(contour.DirectedEdges);
+            document.Polygons.Add(polygon);
+        }
+    }
+
+    public static IReadOnlyDictionary<string, string?> BuildContainmentParentMap(CadDocument document, double tolerance)
+    {
+        tolerance = TopologyTolerance.ForMutation;
+        var graph = BuildGraph(document);
+        if (graph.Adjacency.Count == 0)
+        {
+            return new Dictionary<string, string?>(StringComparer.Ordinal);
+        }
+
+        graph.SortOutgoingByAngle(document);
+        var boundedContours = EnumerateBoundedContours(document, graph, tolerance).ToList();
+        var relations = BuildContainmentRelations(document, boundedContours, tolerance);
+        var parentMap = new Dictionary<string, string?>(StringComparer.Ordinal);
+
+        foreach (var (childIdentity, parentIdentity) in relations)
+        {
+            parentMap[childIdentity] = parentIdentity;
+        }
+
+        return parentMap;
+    }
+
+    private static List<(string ChildIdentity, string? ParentIdentity)> BuildContainmentRelations(
+        CadDocument document,
+        IReadOnlyList<BoundedContour> boundedContours,
+        double tolerance)
+    {
+        var parentByContour = new Dictionary<BoundedContour, BoundedContour?>();
+        var relations = new List<(string ChildIdentity, string? ParentIdentity)>();
+
+        foreach (var contour in boundedContours)
+        {
+            parentByContour[contour] = FindImmediateParent(contour, boundedContours, tolerance);
+        }
+
+        foreach (var contour in boundedContours)
+        {
+            var childIdentity = FaceIdentity.CreateLoop(
+                document,
+                CreateLoopFromDirectedEdges(contour.DirectedEdges));
+            string? parentIdentity = null;
+
+            if (parentByContour.TryGetValue(contour, out var parent) && parent is not null)
+            {
+                parentIdentity = FaceIdentity.CreateLoop(
+                    document,
+                    CreateLoopFromDirectedEdges(parent.DirectedEdges));
+            }
+
+            relations.Add((childIdentity, parentIdentity));
+        }
+
+        return relations;
+    }
 
 
 
-        foreach (var outer in boundedContours.OrderByDescending(contour => Math.Abs(contour.SignedArea)))
+    private static BoundedContour? FindImmediateParent(
+
+        BoundedContour contour,
+
+        IReadOnlyList<BoundedContour> contours,
+
+        double tolerance)
+
+    {
+
+        BoundedContour? parent = null;
+
+        var parentArea = double.MaxValue;
+
+
+
+        foreach (var candidate in contours)
 
         {
 
-            if (assignedAsHole.Contains(outer))
+            if (ReferenceEquals(candidate, contour))
 
             {
 
@@ -88,9 +180,7 @@ public static class PolygonBuilder
 
 
 
-            var identityKey = FaceIdentity.CreateLoop(document, CreateLoopFromDirectedEdges(outer.DirectedEdges));
-
-            if (document.SuppressedFaceGeometryKeys.Contains(identityKey))
+            if (Math.Abs(candidate.SignedArea) <= Math.Abs(contour.SignedArea))
 
             {
 
@@ -100,9 +190,7 @@ public static class PolygonBuilder
 
 
 
-            var key = CreateFaceKey(outer.EdgeIds);
-
-            if (!createdKeys.Add(key))
+            if (!IsContourInsideContour(contour, candidate, tolerance))
 
             {
 
@@ -112,67 +200,23 @@ public static class PolygonBuilder
 
 
 
-            var holes = new List<BoundedContour>();
+            var candidateArea = Math.Abs(candidate.SignedArea);
 
-            foreach (var candidate in boundedContours)
-
-            {
-
-                if (ReferenceEquals(candidate, outer) || assignedAsHole.Contains(candidate))
-
-                {
-
-                    continue;
-
-                }
-
-
-
-                if (Math.Abs(candidate.SignedArea) >= Math.Abs(outer.SignedArea))
-
-                {
-
-                    continue;
-
-                }
-
-
-
-                if (IsContourInsideContour(candidate, outer, tolerance))
-
-                {
-
-                    holes.Add(candidate);
-
-                    assignedAsHole.Add(candidate);
-
-                }
-
-            }
-
-
-
-            var polygon = new Polygon { Type = PolygonType.Face };
-
-            polygon.OuterLoop.Edges.AddRange(outer.DirectedEdges);
-
-            foreach (var hole in holes)
+            if (candidateArea < parentArea)
 
             {
 
-                var holeLoop = new Loop();
+                parent = candidate;
 
-                holeLoop.Edges.AddRange(hole.DirectedEdges);
-
-                polygon.InnerLoops.Add(holeLoop);
+                parentArea = candidateArea;
 
             }
-
-
-
-            document.Polygons.Add(polygon);
 
         }
+
+
+
+        return parent;
 
     }
 
@@ -559,14 +603,7 @@ public static class PolygonBuilder
     {
         _ = tolerance;
 
-        document.SuppressedFaceGeometryKeys.Add(
-            FaceIdentity.CreateLoop(document, polygon.OuterLoop));
-
-        foreach (var hole in polygon.InnerLoops)
-        {
-            document.SuppressedFaceGeometryKeys.Add(
-                FaceIdentity.CreateLoop(document, hole));
-        }
+        document.SuppressedFaceGeometryKeys.Add(FaceIdentity.Create(document, polygon));
     }
 
 

@@ -86,27 +86,39 @@ public class FaceIdentityTests
     }
 
     [Fact]
-    public void CreateLoop_HoleAndOuterLoop_AreDistinctIdentities()
+    public void CreateLoop_OuterAndInnerContours_AreDistinctIdentities()
     {
         var document = CreateSquareWithHoleDocument();
-        var face = Assert.Single(document.Polygons);
 
-        var outerKey = FaceIdentity.CreateLoop(document, face.OuterLoop);
-        var holeKey = FaceIdentity.CreateLoop(document, face.InnerLoops[0]);
+        Assert.Equal(2, document.Polygons.Count);
+        var outerFace = document.Polygons.MaxBy(face => PolygonGeometry.GetArea(document, face, Tolerance))!;
+        var innerFace = document.Polygons.MinBy(face => PolygonGeometry.GetArea(document, face, Tolerance))!;
 
-        Assert.NotEqual(outerKey, holeKey);
+        var outerKey = FaceIdentity.CreateLoop(document, outerFace.OuterLoop);
+        var innerKey = FaceIdentity.CreateLoop(document, innerFace.OuterLoop);
+
+        Assert.NotEqual(outerKey, innerKey);
+        Assert.Equal(outerKey, FaceIdentity.Create(document, outerFace));
+        Assert.Equal(innerKey, FaceIdentity.Create(document, innerFace));
     }
 
     [Fact]
-    public void CreateFace_InnerLoopOrder_DoesNotChangeIdentity()
+    public void CreateRegion_InnerLoopOrder_DoesNotChangeRegionIdentity()
     {
         var document = CreateSquareWithTwoHolesDocument();
-        var face = Assert.Single(document.Polygons);
+        Assert.Equal(3, document.Polygons.Count);
 
-        var identityA = FaceIdentity.Create(document, face);
+        var outerFace = document.Polygons.MaxBy(face => PolygonGeometry.GetArea(document, face, Tolerance))!;
+        var holeFaces = document.Polygons
+            .Where(face => !ReferenceEquals(face, outerFace))
+            .OrderBy(face => FaceIdentity.CreateLoop(document, face.OuterLoop), StringComparer.Ordinal)
+            .ToList();
 
-        var reversedHoles = face.InnerLoops.AsEnumerable().Reverse().ToList();
-        var identityB = FaceIdentity.Create(document, face.OuterLoop, reversedHoles);
+        var identityA = FaceIdentity.CreateRegion(document, outerFace.OuterLoop, holeFaces.Select(face => face.OuterLoop));
+        var identityB = FaceIdentity.CreateRegion(
+            document,
+            outerFace.OuterLoop,
+            holeFaces.Select(face => face.OuterLoop).Reverse());
 
         Assert.Equal(identityA, identityB);
     }

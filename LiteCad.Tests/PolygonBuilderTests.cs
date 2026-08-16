@@ -83,7 +83,7 @@ public class PolygonBuilderTests
     }
 
     [Fact]
-    public void SyncFaces_SquareWithInnerSquare_CreatesOnePolygonWithHole()
+    public void SyncFaces_SquareWithInnerSquare_CreatesTwoSolidFaces()
     {
         var document = new CadDocument();
 
@@ -99,10 +99,10 @@ public class PolygonBuilderTests
 
         PolygonBuilder.SyncFaces(document, Tolerance);
 
-        var polygon = Assert.Single(document.Polygons);
-        Assert.Single(polygon.HoleEdgeIds);
-        Assert.Equal(4, polygon.EdgeIds.Count);
-        Assert.Equal(12.0, PolygonGeometry.GetArea(document, polygon, Tolerance), 3);
+        Assert.Equal(2, document.Polygons.Count);
+        Assert.All(document.Polygons, face => Assert.Empty(face.InnerLoops));
+        Assert.Equal(16.0, PolygonGeometry.GetArea(document, document.Polygons.MaxBy(p => PolygonGeometry.GetArea(document, p, Tolerance))!, Tolerance), 3);
+        Assert.Equal(4.0, PolygonGeometry.GetArea(document, document.Polygons.MinBy(p => PolygonGeometry.GetArea(document, p, Tolerance))!, Tolerance), 3);
     }
 
     [Fact]

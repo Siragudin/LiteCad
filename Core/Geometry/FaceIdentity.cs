@@ -4,10 +4,17 @@ namespace LiteCad.Core.Geometry;
 
 public static class FaceIdentity
 {
+    /// <summary>
+    /// Stable entity identity for a Face polygon (outer boundary only).
+    /// </summary>
     public static string Create(CadDocument document, Polygon polygon)
-        => Create(document, polygon.OuterLoop, polygon.InnerLoops);
+        => CreateLoop(document, polygon.OuterLoop);
 
-    public static string Create(
+    /// <summary>
+    /// Optional composite identity for fill/region topology (outer + holes).
+    /// Not used for entity Face suppression or dedup.
+    /// </summary>
+    public static string CreateRegion(
         CadDocument document,
         Loop outerLoop,
         IEnumerable<Loop> innerLoops)
