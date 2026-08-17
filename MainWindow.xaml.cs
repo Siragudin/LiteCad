@@ -28,14 +28,16 @@ public partial class MainWindow : Window
             ["Selection"] = new SelectionTool(),
             ["Hand"] = new HandTool(),
             ["Line"] = new LineTool(),
+            ["Arc"] = new ArcTool(),
             ["Axis"] = new AxisTool(),
             ["Wall"] = new WallTool(),
             ["Rectangle"] = new RectangleTool(),
             ["Circle"] = new CircleTool(),
+            ["Sector"] = new SectorTool(),
             ["Move"] = new MoveTool(),
             ["Stretch"] = new StretchTool(),
+            ["Eraser"] = new EraserTool(),
             ["Copy"] = new CopyTool(),
-            ["Delete"] = new DeleteTool(),
             ["PolygonEdit"] = new PolygonEditTool()
         };
 

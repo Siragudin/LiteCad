@@ -92,6 +92,30 @@ public sealed class EditService
 
 
 
+    public bool DeleteAt(CadSession session, PointF world, double tolerance)
+
+    {
+
+        var pick = SelectionPickOperations.PickAt(session.Document, world, tolerance);
+
+        if (pick is null)
+
+        {
+
+            return false;
+
+        }
+
+
+
+        SelectionPickOperations.ApplyToSelection(pick.Value, session.Selection);
+
+        return Delete(session);
+
+    }
+
+
+
     public bool Copy(CadSession session)
 
     {

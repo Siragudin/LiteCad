@@ -495,7 +495,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     }
 
     private bool PreservesInputOnFailedCommit()
-        => _lineInputLabelMode is LineInputLabelMode.Distance or LineInputLabelMode.Radius;
+        => _lineInputLabelMode is LineInputLabelMode.Distance or LineInputLabelMode.Radius or LineInputLabelMode.Angle;
 
     private bool IsMoveDistanceInput()
         => _isInputActive && _lineInputLabelMode == LineInputLabelMode.Distance;
@@ -508,6 +508,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         {
             LineInputLabelMode.Distance => Strings.Label_Distance,
             LineInputLabelMode.Radius => Strings.Label_Radius,
+            LineInputLabelMode.Angle => Strings.Label_Angle,
             _ => Strings.Label_Length
         };
 

@@ -4,5 +4,6 @@ public enum LineInputLabelMode
 {
     Length,
     Distance,
-    Radius
+    Radius,
+    Angle
 }

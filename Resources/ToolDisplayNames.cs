@@ -10,14 +10,16 @@ public static class ToolDisplayNames
             ToolId.Selection => Strings.Tool_Selection,
             ToolId.Hand => Strings.Tool_Hand,
             ToolId.Line => Strings.Tool_Line,
+            ToolId.Arc => Strings.Tool_Arc,
             ToolId.Rectangle => Strings.Tool_Rectangle,
             ToolId.Circle => Strings.Tool_Circle,
+            ToolId.Sector => Strings.Tool_Sector,
             ToolId.Axis => Strings.Tool_Axis,
             ToolId.Wall => Strings.Tool_Wall,
             ToolId.Move => Strings.Tool_Move,
             ToolId.Stretch => Strings.Tool_Stretch,
+            ToolId.Eraser => Strings.Tool_Eraser,
             ToolId.Copy => Strings.Tool_Copy,
-            ToolId.Delete => Strings.Tool_Delete,
             ToolId.PolygonEdit => Strings.Tool_PolygonEdit,
             _ => toolId.ToString()
         };
