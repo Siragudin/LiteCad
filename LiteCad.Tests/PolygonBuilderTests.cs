@@ -83,26 +83,27 @@ public class PolygonBuilderTests
     }
 
     [Fact]
-    public void SyncFaces_SquareWithInnerSquare_CreatesTwoSolidFaces()
+    public void SyncFaces_SquareWithInnerSquare_CreatesNestedFaceWithHole()
     {
-        var document = new CadDocument();
-
-        AddEdge(document, new PointF(0, 0), new PointF(4, 0));
-        AddEdge(document, new PointF(4, 0), new PointF(4, 4));
-        AddEdge(document, new PointF(4, 4), new PointF(0, 4));
-        AddEdge(document, new PointF(0, 4), new PointF(0, 0));
-
-        AddEdge(document, new PointF(1, 1), new PointF(3, 1));
-        AddEdge(document, new PointF(3, 1), new PointF(3, 3));
-        AddEdge(document, new PointF(3, 3), new PointF(1, 3));
-        AddEdge(document, new PointF(1, 3), new PointF(1, 1));
+        var document = CreateSquareWithInnerSquareDocument();
 
         PolygonBuilder.SyncFaces(document, Tolerance);
 
         Assert.Equal(2, document.Polygons.Count);
-        Assert.All(document.Polygons, face => Assert.Empty(face.InnerLoops));
-        Assert.Equal(16.0, PolygonGeometry.GetArea(document, document.Polygons.MaxBy(p => PolygonGeometry.GetArea(document, p, Tolerance))!, Tolerance), 3);
-        Assert.Equal(4.0, PolygonGeometry.GetArea(document, document.Polygons.MinBy(p => PolygonGeometry.GetArea(document, p, Tolerance))!, Tolerance), 3);
+
+        var smallFace = FindFaceByOuterArea(document, 4)!;
+        var largeFace = FindFaceByOuterArea(document, 16)!;
+
+        Assert.Empty(smallFace.InnerLoops);
+        Assert.Single(largeFace.InnerLoops);
+        Assert.Equal(
+            FaceIdentity.CreateLoop(document, smallFace.OuterLoop),
+            FaceIdentity.CreateLoop(document, largeFace.InnerLoops[0]));
+
+        Assert.Equal(4.0, PolygonGeometry.GetArea(document, smallFace, Tolerance), 3);
+        Assert.Equal(12.0, PolygonGeometry.GetArea(document, largeFace, Tolerance), 3);
+        Assert.Equal(16.0, document.Polygons.Sum(face => PolygonGeometry.GetArea(document, face, Tolerance)), 3);
+        TopologyValidator.AssertValid(document, Tolerance);
     }
 
     [Fact]
@@ -148,4 +149,25 @@ public class PolygonBuilderTests
 
     private static Edge AddEdge(CadDocument document, PointF start, PointF end)
         => TestDocumentHelpers.AddEdge(document, start, end, Tolerance);
+
+    private static CadDocument CreateSquareWithInnerSquareDocument()
+    {
+        var document = new CadDocument();
+
+        AddEdge(document, new PointF(0, 0), new PointF(4, 0));
+        AddEdge(document, new PointF(4, 0), new PointF(4, 4));
+        AddEdge(document, new PointF(4, 4), new PointF(0, 4));
+        AddEdge(document, new PointF(0, 4), new PointF(0, 0));
+
+        AddEdge(document, new PointF(1, 1), new PointF(3, 1));
+        AddEdge(document, new PointF(3, 1), new PointF(3, 3));
+        AddEdge(document, new PointF(3, 3), new PointF(1, 3));
+        AddEdge(document, new PointF(1, 3), new PointF(1, 1));
+
+        return document;
+    }
+
+    private static Polygon? FindFaceByOuterArea(CadDocument document, double outerArea)
+        => document.Polygons.FirstOrDefault(face =>
+            Math.Abs(Math.Abs(PolygonGeometry.GetSignedArea(document, face.OuterLoop)) - outerArea) < 0.01);
 }

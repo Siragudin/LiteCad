@@ -72,6 +72,7 @@
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Move}" Tag="Move" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Rotate}" Tag="Rotate" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Mirror}" Tag="Mirror" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Offset}" Tag="Offset" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.CopyTool}" Tag="Copy" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.PolygonEdit}" Tag="PolygonEdit" Click="ToolMenuItem_OnClick" />
             </MenuItem>

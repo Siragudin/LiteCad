@@ -68,7 +68,7 @@ public static class PolygonBuilder
 
         var boundedContours = EnumerateBoundedContours(document, graph, tolerance).ToList();
 
-        _ = BuildContainmentRelations(document, boundedContours, tolerance);
+        var parentByContour = BuildImmediateParentMap(boundedContours, tolerance);
 
         var createdIdentityKeys = new HashSet<string>(StringComparer.Ordinal);
 
@@ -89,6 +89,23 @@ public static class PolygonBuilder
 
             var polygon = new Polygon { Type = PolygonType.Face };
             polygon.OuterLoop.Edges.AddRange(contour.DirectedEdges);
+
+            foreach (var candidate in boundedContours)
+            {
+                if (ReferenceEquals(candidate, contour))
+                {
+                    continue;
+                }
+
+                if (parentByContour.TryGetValue(candidate, out var parent) &&
+                    ReferenceEquals(parent, contour))
+                {
+                    var holeLoop = new Loop();
+                    holeLoop.Edges.AddRange(candidate.DirectedEdges);
+                    polygon.InnerLoops.Add(holeLoop);
+                }
+            }
+
             document.Polygons.Add(polygon);
         }
     }
@@ -115,18 +132,27 @@ public static class PolygonBuilder
         return parentMap;
     }
 
-    private static List<(string ChildIdentity, string? ParentIdentity)> BuildContainmentRelations(
-        CadDocument document,
+    private static Dictionary<BoundedContour, BoundedContour?> BuildImmediateParentMap(
         IReadOnlyList<BoundedContour> boundedContours,
         double tolerance)
     {
         var parentByContour = new Dictionary<BoundedContour, BoundedContour?>();
-        var relations = new List<(string ChildIdentity, string? ParentIdentity)>();
 
         foreach (var contour in boundedContours)
         {
             parentByContour[contour] = FindImmediateParent(contour, boundedContours, tolerance);
         }
+
+        return parentByContour;
+    }
+
+    private static List<(string ChildIdentity, string? ParentIdentity)> BuildContainmentRelations(
+        CadDocument document,
+        IReadOnlyList<BoundedContour> boundedContours,
+        double tolerance)
+    {
+        var parentByContour = BuildImmediateParentMap(boundedContours, tolerance);
+        var relations = new List<(string ChildIdentity, string? ParentIdentity)>();
 
         foreach (var contour in boundedContours)
         {

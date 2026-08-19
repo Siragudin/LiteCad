@@ -251,6 +251,40 @@ public class RectangleToolTests
     }
 
     [Fact]
+    public void Rectangle_NestedSquares_CreateIndependentFacesWithRingHole()
+    {
+        RunSta(() =>
+        {
+            var harness = CreateHarness();
+            harness.FirstClick(new PointF(100, 100));
+            harness.SecondClick(new PointF(300, 300));
+            harness.FirstClick(new PointF(0, 0));
+            harness.SecondClick(new PointF(400, 400));
+
+            var document = harness.Session.Document;
+            Assert.Equal(2, document.Polygons.Count(polygon => polygon.Type == PolygonType.Face));
+
+            var outerFace = document.Polygons
+                .MaxBy(face => Math.Abs(PolygonGeometry.GetSignedArea(document, face.OuterLoop)))!;
+            var innerFace = document.Polygons
+                .MinBy(face => Math.Abs(PolygonGeometry.GetSignedArea(document, face.OuterLoop)))!;
+
+            Assert.Empty(innerFace.InnerLoops);
+            Assert.Single(outerFace.InnerLoops);
+            Assert.Equal(
+                FaceIdentity.CreateLoop(document, innerFace.OuterLoop),
+                FaceIdentity.CreateLoop(document, outerFace.InnerLoops[0]));
+
+            Assert.True(PolygonGeometry.GetArea(document, innerFace, Tol) > 0);
+            Assert.True(PolygonGeometry.GetArea(document, outerFace, Tol) > PolygonGeometry.GetArea(document, innerFace, Tol));
+            Assert.True(PolygonGeometry.ContainsPoint(document, innerFace, new PointF(200, 200), Tol));
+            Assert.False(PolygonGeometry.ContainsPoint(document, outerFace, new PointF(200, 200), Tol));
+            Assert.True(PolygonGeometry.ContainsPoint(document, outerFace, new PointF(50, 50), Tol));
+            TopologyValidator.AssertValid(document, Tol);
+        });
+    }
+
+    [Fact]
     public void Rectangle_DeleteEdge()
     {
         RunSta(() =>

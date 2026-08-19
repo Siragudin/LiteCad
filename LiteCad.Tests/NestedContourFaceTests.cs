@@ -21,26 +21,50 @@ public class NestedContourFaceTests
     }
 
     [Fact]
-    public void B_NestedTwoContours_TwoSolidFaces()
+    public void B_NestedTwoContours_TwoFacesWithRingHole()
     {
         var document = CreateNestedDocument(2);
 
         Assert.Equal(2, document.Polygons.Count);
-        Assert.All(document.Polygons, face => Assert.Empty(face.InnerLoops));
-        Assert.NotNull(FindFaceByArea(document, 16));
-        Assert.NotNull(FindFaceByArea(document, 4));
+
+        var outerFace = FindFaceByOuterArea(document, 16)!;
+        var innerFace = FindFaceByOuterArea(document, 4)!;
+
+        Assert.Empty(innerFace.InnerLoops);
+        Assert.Single(outerFace.InnerLoops);
+        Assert.Equal(
+            FaceIdentity.CreateLoop(document, innerFace.OuterLoop),
+            FaceIdentity.CreateLoop(document, outerFace.InnerLoops[0]));
+
+        Assert.Equal(4.0, PolygonGeometry.GetArea(document, innerFace, Tol), 3);
+        Assert.Equal(12.0, PolygonGeometry.GetArea(document, outerFace, Tol), 3);
     }
 
     [Fact]
-    public void C_NestedThreeContours_ThreeSolidFaces()
+    public void C_NestedThreeContours_ThreeFacesWithImmediateHoles()
     {
         var document = CreateNestedDocument(3);
 
         Assert.Equal(3, document.Polygons.Count);
-        Assert.All(document.Polygons, face => Assert.Empty(face.InnerLoops));
-        Assert.NotNull(FindFaceByArea(document, 16));
-        Assert.NotNull(FindFaceByArea(document, 4));
-        Assert.NotNull(FindFaceByArea(document, 1));
+
+        var outerFace = FindFaceByOuterArea(document, 16)!;
+        var middleFace = FindFaceByOuterArea(document, 4)!;
+        var innerFace = FindFaceByOuterArea(document, 1)!;
+
+        Assert.Empty(innerFace.InnerLoops);
+        Assert.Single(middleFace.InnerLoops);
+        Assert.Single(outerFace.InnerLoops);
+
+        Assert.Equal(
+            FaceIdentity.CreateLoop(document, innerFace.OuterLoop),
+            FaceIdentity.CreateLoop(document, middleFace.InnerLoops[0]));
+        Assert.Equal(
+            FaceIdentity.CreateLoop(document, middleFace.OuterLoop),
+            FaceIdentity.CreateLoop(document, outerFace.InnerLoops[0]));
+
+        Assert.Equal(1.0, PolygonGeometry.GetArea(document, innerFace, Tol), 3);
+        Assert.Equal(3.0, PolygonGeometry.GetArea(document, middleFace, Tol), 3);
+        Assert.Equal(12.0, PolygonGeometry.GetArea(document, outerFace, Tol), 3);
     }
 
     [Fact]
@@ -68,7 +92,7 @@ public class NestedContourFaceTests
         AddSquare(document, 1, 1, 2);
         PolygonBuilder.SyncFaces(document, Tol);
 
-        var faceAAfter = FindFaceByArea(document, 16);
+        var faceAAfter = FindFaceByOuterArea(document, 16);
         Assert.NotNull(faceAAfter);
         Assert.Equal(identityA, FaceIdentity.Create(document, faceAAfter!));
         Assert.Equal(2, document.Polygons.Count);
@@ -82,87 +106,88 @@ public class NestedContourFaceTests
         AddSquare(document, 1, 1, 2);
         PolygonBuilder.SyncFaces(document, Tol);
 
-        var identityA = FaceIdentity.Create(document, FindFaceByArea(document, 16)!);
-        var identityB = FaceIdentity.Create(document, FindFaceByArea(document, 4)!);
+        var identityA = FaceIdentity.Create(document, FindFaceByOuterArea(document, 16)!);
+        var identityB = FaceIdentity.Create(document, FindFaceByOuterArea(document, 4)!);
 
         AddSquare(document, 1.5f, 1.5f, 1);
         PolygonBuilder.SyncFaces(document, Tol);
 
-        Assert.Equal(identityA, FaceIdentity.Create(document, FindFaceByArea(document, 16)!));
-        Assert.Equal(identityB, FaceIdentity.Create(document, FindFaceByArea(document, 4)!));
+        Assert.Equal(identityA, FaceIdentity.Create(document, FindFaceByOuterArea(document, 16)!));
+        Assert.Equal(identityB, FaceIdentity.Create(document, FindFaceByOuterArea(document, 4)!));
         Assert.Equal(3, document.Polygons.Count);
     }
 
     [Fact]
-    public void G_FaceAAreaRemains16_AfterBAndCAdded()
+    public void G_OuterFaceRingAreaUpdates_AfterInnerContoursAdded()
     {
         var document = new CadDocument();
         AddSquare(document, 0, 0, 4);
         PolygonBuilder.SyncFaces(document, Tol);
-        Assert.Equal(16.0, PolygonGeometry.GetArea(document, FindFaceByArea(document, 16)!, Tol), 3);
+        Assert.Equal(16.0, PolygonGeometry.GetArea(document, FindFaceByOuterArea(document, 16)!, Tol), 3);
 
         AddSquare(document, 1, 1, 2);
         PolygonBuilder.SyncFaces(document, Tol);
-        Assert.Equal(16.0, PolygonGeometry.GetArea(document, FindFaceByArea(document, 16)!, Tol), 3);
+        Assert.Equal(12.0, PolygonGeometry.GetArea(document, FindFaceByOuterArea(document, 16)!, Tol), 3);
 
         AddSquare(document, 1.5f, 1.5f, 1);
         PolygonBuilder.SyncFaces(document, Tol);
-        Assert.Equal(16.0, PolygonGeometry.GetArea(document, FindFaceByArea(document, 16)!, Tol), 3);
+        Assert.Equal(12.0, PolygonGeometry.GetArea(document, FindFaceByOuterArea(document, 16)!, Tol), 3);
     }
 
     [Fact]
-    public void H_FaceBAreaRemains4_AfterCAdded()
+    public void H_MiddleFaceAreaUpdates_AfterInnerContourAdded()
     {
         var document = CreateNestedDocument(2);
-        Assert.Equal(4.0, PolygonGeometry.GetArea(document, FindFaceByArea(document, 4)!, Tol), 3);
+        Assert.Equal(4.0, PolygonGeometry.GetArea(document, FindFaceByOuterArea(document, 4)!, Tol), 3);
 
         AddSquare(document, 1.5f, 1.5f, 1);
         PolygonBuilder.SyncFaces(document, Tol);
 
-        Assert.Equal(4.0, PolygonGeometry.GetArea(document, FindFaceByArea(document, 4)!, Tol), 3);
+        Assert.Equal(3.0, PolygonGeometry.GetArea(document, FindFaceByOuterArea(document, 4)!, Tol), 3);
+        Assert.Equal(1.0, PolygonGeometry.GetArea(document, FindFaceByOuterArea(document, 1)!, Tol), 3);
     }
 
     [Fact]
-    public void I_SelectAAndBIndependently()
+    public void I_SelectOuterRingAndInnerFaceIndependently()
     {
         var document = CreateNestedDocument(2);
 
-        var hitA = PickSmallestFace(document, 0.5f, 0.5f);
-        var hitB = PickSmallestFace(document, 2f, 2f);
+        var outerRingHit = PickSmallestFace(document, 0.5f, 0.5f);
+        var innerHit = PickSmallestFace(document, 2f, 2f);
 
-        Assert.NotNull(hitA);
-        Assert.NotNull(hitB);
-        Assert.NotEqual(hitA!.Id, hitB!.Id);
-        Assert.Equal(16.0, PolygonGeometry.GetArea(document, hitA, Tol), 3);
-        Assert.Equal(4.0, PolygonGeometry.GetArea(document, hitB, Tol), 3);
+        Assert.NotNull(outerRingHit);
+        Assert.NotNull(innerHit);
+        Assert.NotEqual(outerRingHit!.Id, innerHit!.Id);
+        Assert.Equal(12.0, PolygonGeometry.GetArea(document, outerRingHit, Tol), 3);
+        Assert.Equal(4.0, PolygonGeometry.GetArea(document, innerHit, Tol), 3);
     }
 
     [Fact]
     public void J_DeleteB_DoesNotDeleteA()
     {
         var document = CreateNestedDocument(2);
-        var faceB = FindFaceByArea(document, 4)!;
+        var faceB = FindFaceByOuterArea(document, 4)!;
 
         PolygonBuilder.SuppressFaceGeometry(document, faceB, Tol);
         PolygonBuilder.SyncFaces(document, Tol);
 
         Assert.Single(document.Polygons);
-        Assert.NotNull(FindFaceByArea(document, 16));
-        Assert.Null(FindFaceByArea(document, 4));
+        Assert.NotNull(FindFaceByOuterArea(document, 16));
+        Assert.Null(FindFaceByOuterArea(document, 4));
     }
 
     [Fact]
     public void K_DeleteA_DoesNotDeleteB()
     {
         var document = CreateNestedDocument(2);
-        var faceA = FindFaceByArea(document, 16)!;
+        var faceA = FindFaceByOuterArea(document, 16)!;
 
         PolygonBuilder.SuppressFaceGeometry(document, faceA, Tol);
         PolygonBuilder.SyncFaces(document, Tol);
 
         Assert.Single(document.Polygons);
-        Assert.NotNull(FindFaceByArea(document, 4));
-        Assert.Null(FindFaceByArea(document, 16));
+        Assert.NotNull(FindFaceByOuterArea(document, 4));
+        Assert.Null(FindFaceByOuterArea(document, 16));
     }
 
     [Fact]
@@ -193,7 +218,7 @@ public class NestedContourFaceTests
 
         AddSquare(document, 0, 0, 4);
         PolygonBuilder.SyncFaces(document, Tol);
-        var identityA = FaceIdentity.Create(document, FindFaceByArea(document, 16)!);
+        var identityA = FaceIdentity.Create(document, FindFaceByOuterArea(document, 16)!);
 
         session.History.Record(document);
         AddSquare(document, 1, 1, 2);
@@ -206,7 +231,7 @@ public class NestedContourFaceTests
 
         Assert.True(session.History.Redo(document, Tol));
         Assert.Equal(2, document.Polygons.Count);
-        Assert.Equal(identityA, FaceIdentity.Create(document, FindFaceByArea(document, 16)!));
+        Assert.Equal(identityA, FaceIdentity.Create(document, FindFaceByOuterArea(document, 16)!));
     }
 
     [Fact]
@@ -215,9 +240,9 @@ public class NestedContourFaceTests
         var document = CreateNestedDocument(3);
         var parentMap = ContourContainment.BuildParentMap(document, Tol);
 
-        var identityA = FaceIdentity.Create(document, FindFaceByArea(document, 16)!);
-        var identityB = FaceIdentity.Create(document, FindFaceByArea(document, 4)!);
-        var identityC = FaceIdentity.Create(document, FindFaceByArea(document, 1)!);
+        var identityA = FaceIdentity.Create(document, FindFaceByOuterArea(document, 16)!);
+        var identityB = FaceIdentity.Create(document, FindFaceByOuterArea(document, 4)!);
+        var identityC = FaceIdentity.Create(document, FindFaceByOuterArea(document, 1)!);
 
         Assert.Null(parentMap[identityA]);
         Assert.Equal(identityA, parentMap[identityB]);
@@ -261,7 +286,7 @@ public class NestedContourFaceTests
         TestDocumentHelpers.AddEdge(document, new PointF(originX, originY + size), new PointF(originX, originY), Tol);
     }
 
-    private static Polygon? FindFaceByArea(CadDocument document, double outerArea)
+    private static Polygon? FindFaceByOuterArea(CadDocument document, double outerArea)
         => document.Polygons.FirstOrDefault(face =>
             Math.Abs(Math.Abs(PolygonGeometry.GetSignedArea(document, face.OuterLoop)) - outerArea) < 0.01);
 

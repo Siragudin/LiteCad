@@ -75,6 +75,7 @@
   <data name="Tool.Move" xml:space="preserve"><value>Move</value></data>
   <data name="Tool.Rotate" xml:space="preserve"><value>Rotate</value></data>
   <data name="Tool.Mirror" xml:space="preserve"><value>Mirror</value></data>
+  <data name="Tool.Offset" xml:space="preserve"><value>Offset</value></data>
   <data name="Tool.Stretch" xml:space="preserve"><value>Stretch</value></data>
   <data name="Tool.Eraser" xml:space="preserve"><value>Eraser</value></data>
   <data name="Tool.Eraser.Short" xml:space="preserve"><value>Eraser</value></data>
@@ -132,6 +133,7 @@
   <data name="Menu.Header.Move" xml:space="preserve"><value>_Move</value></data>
   <data name="Menu.Header.Rotate" xml:space="preserve"><value>_Rotate</value></data>
   <data name="Menu.Header.Mirror" xml:space="preserve"><value>_Mirror</value></data>
+  <data name="Menu.Header.Offset" xml:space="preserve"><value>Off_set</value></data>
   <data name="Menu.Header.CopyTool" xml:space="preserve"><value>C_opy</value></data>
   <data name="Menu.Header.PolygonEdit" xml:space="preserve"><value>Polygon _Edit</value></data>
   <data name="Menu.Header.Layers" xml:space="preserve"><value>_Layers</value></data>
@@ -200,6 +202,8 @@
   <data name="Status.RotateCompleted" xml:space="preserve"><value>Rotate completed</value></data>
   <data name="Status.MirrorCancelled" xml:space="preserve"><value>Mirror cancelled</value></data>
   <data name="Status.MirrorCompleted" xml:space="preserve"><value>Mirror completed</value></data>
+  <data name="Status.OffsetCancelled" xml:space="preserve"><value>Offset cancelled</value></data>
+  <data name="Status.OffsetCompleted" xml:space="preserve"><value>Offset completed</value></data>
   <data name="Status.CopyCancelled" xml:space="preserve"><value>Copy cancelled</value></data>
   <data name="Status.CopyCompleted" xml:space="preserve"><value>Copy completed</value></data>
   <data name="Status.StretchCancelled" xml:space="preserve"><value>Stretch cancelled</value></data>
@@ -230,6 +234,9 @@
   <data name="Input.Mirror.Idle" xml:space="preserve"><value>Select objects, then click first mirror axis point</value></data>
   <data name="Input.Mirror.SelectObjects" xml:space="preserve"><value>Select objects to mirror</value></data>
   <data name="Input.Mirror.SelectAxisEnd" xml:space="preserve"><value>Move cursor to set mirror axis, then click second point (Esc/Right click to cancel)</value></data>
+  <data name="Input.Offset.Idle" xml:space="preserve"><value>Move over a face, then click to offset</value></data>
+  <data name="Input.Offset.SelectFace" xml:space="preserve"><value>Click a face to offset</value></data>
+  <data name="Input.Offset.SetDistance" xml:space="preserve"><value>Move cursor or type distance, then click to commit (Esc/Right click to cancel)</value></data>
   <data name="Input.Copy.SelectObjects" xml:space="preserve"><value>Select objects to copy</value></data>
   <data name="Input.Copy.SelectDestination" xml:space="preserve"><value>Move copy to destination and click (Esc/Right click to cancel)</value></data>
   <data name="Input.SetDirectionThenTypeDistance" xml:space="preserve"><value>Move mouse to set direction, then type distance</value></data>
@@ -244,6 +251,10 @@
   <data name="Error.SectorTooSmall" xml:space="preserve"><value>Sector radius is too small</value></data>
   <data name="Error.SectorAngleTooSmall" xml:space="preserve"><value>Sector angle is too small</value></data>
   <data name="Error.StretchUnavailable" xml:space="preserve"><value>Stretch unavailable — perpendicular parallel sides required at both ends</value></data>
+  <data name="Error.OffsetZeroDistance" xml:space="preserve"><value>Offset distance is too small</value></data>
+  <data name="Error.OffsetDegenerate" xml:space="preserve"><value>Offset would collapse the contour</value></data>
+  <data name="Error.OffsetSelfIntersection" xml:space="preserve"><value>Offset would self-intersect</value></data>
+  <data name="Error.OffsetUnsupportedFace" xml:space="preserve"><value>Offset is only available for simple closed faces</value></data>
   <data name="Selection.NothingSelected" xml:space="preserve"><value>Nothing selected</value></data>
   <data name="Selection.Pasted" xml:space="preserve"><value>Pasted</value></data>
   <data name="Selection.Edge" xml:space="preserve"><value>Edge</value></data>

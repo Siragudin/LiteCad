@@ -14,6 +14,7 @@ public enum ToolId
     Move,
     Rotate,
     Mirror,
+    Offset,
     Stretch,
     Eraser,
     Copy,

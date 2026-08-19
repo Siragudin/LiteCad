@@ -33,6 +33,7 @@ public static class Strings
     public static string Tool_Move => Get("Tool.Move");
     public static string Tool_Rotate => Get("Tool.Rotate");
     public static string Tool_Mirror => Get("Tool.Mirror");
+    public static string Tool_Offset => Get("Tool.Offset");
     public static string Tool_Stretch => Get("Tool.Stretch");
     public static string Tool_Eraser => Get("Tool.Eraser");
     public static string Tool_Eraser_Short => Get("Tool.Eraser.Short");
@@ -92,6 +93,7 @@ public static class Strings
     public static string Menu_Header_Move => Get("Menu.Header.Move");
     public static string Menu_Header_Rotate => Get("Menu.Header.Rotate");
     public static string Menu_Header_Mirror => Get("Menu.Header.Mirror");
+    public static string Menu_Header_Offset => Get("Menu.Header.Offset");
     public static string Menu_Header_CopyTool => Get("Menu.Header.CopyTool");
     public static string Menu_Header_PolygonEdit => Get("Menu.Header.PolygonEdit");
     public static string Menu_Header_Layers => Get("Menu.Header.Layers");
@@ -162,6 +164,8 @@ public static class Strings
     public static string Status_RotateCompleted => Get("Status.RotateCompleted");
     public static string Status_MirrorCancelled => Get("Status.MirrorCancelled");
     public static string Status_MirrorCompleted => Get("Status.MirrorCompleted");
+    public static string Status_OffsetCancelled => Get("Status.OffsetCancelled");
+    public static string Status_OffsetCompleted => Get("Status.OffsetCompleted");
     public static string Status_CopyCancelled => Get("Status.CopyCancelled");
     public static string Status_CopyCompleted => Get("Status.CopyCompleted");
     public static string Status_StretchCancelled => Get("Status.StretchCancelled");
@@ -193,6 +197,9 @@ public static class Strings
     public static string Input_Mirror_Idle => Get("Input.Mirror.Idle");
     public static string Input_Mirror_SelectObjects => Get("Input.Mirror.SelectObjects");
     public static string Input_Mirror_SelectAxisEnd => Get("Input.Mirror.SelectAxisEnd");
+    public static string Input_Offset_Idle => Get("Input.Offset.Idle");
+    public static string Input_Offset_SelectFace => Get("Input.Offset.SelectFace");
+    public static string Input_Offset_SetDistance => Get("Input.Offset.SetDistance");
     public static string Input_Copy_SelectObjects => Get("Input.Copy.SelectObjects");
     public static string Input_Copy_SelectDestination => Get("Input.Copy.SelectDestination");
     public static string Input_SetDirectionThenTypeDistance => Get("Input.SetDirectionThenTypeDistance");
@@ -208,6 +215,10 @@ public static class Strings
     public static string Error_SectorTooSmall => Get("Error.SectorTooSmall");
     public static string Error_SectorAngleTooSmall => Get("Error.SectorAngleTooSmall");
     public static string Error_StretchUnavailable => Get("Error.StretchUnavailable");
+    public static string Error_OffsetZeroDistance => Get("Error.OffsetZeroDistance");
+    public static string Error_OffsetDegenerate => Get("Error.OffsetDegenerate");
+    public static string Error_OffsetSelfIntersection => Get("Error.OffsetSelfIntersection");
+    public static string Error_OffsetUnsupportedFace => Get("Error.OffsetUnsupportedFace");
 
     public static string Selection_NothingSelected => Get("Selection.NothingSelected");
     public static string Selection_Pasted => Get("Selection.Pasted");

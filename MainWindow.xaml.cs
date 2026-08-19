@@ -37,6 +37,7 @@ public partial class MainWindow : Window
             ["Move"] = new MoveTool(),
             ["Rotate"] = new RotateTool(),
             ["Mirror"] = new MirrorTool(),
+            ["Offset"] = new OffsetTool(),
             ["Stretch"] = new StretchTool(),
             ["Eraser"] = new EraserTool(),
             ["Copy"] = new CopyTool(),
