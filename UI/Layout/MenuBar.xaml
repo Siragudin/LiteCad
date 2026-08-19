@@ -70,6 +70,7 @@
             <MenuItem Header="{loc:Loc Key=Menu.Header.Sector}" Tag="Sector" Click="ToolMenuItem_OnClick" />
                 <Separator />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Move}" Tag="Move" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Rotate}" Tag="Rotate" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.CopyTool}" Tag="Copy" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.PolygonEdit}" Tag="PolygonEdit" Click="ToolMenuItem_OnClick" />
             </MenuItem>

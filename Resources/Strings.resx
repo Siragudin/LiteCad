@@ -73,6 +73,7 @@
   <data name="Tool.Axis" xml:space="preserve"><value>Axis</value></data>
   <data name="Tool.Wall" xml:space="preserve"><value>Wall</value></data>
   <data name="Tool.Move" xml:space="preserve"><value>Move</value></data>
+  <data name="Tool.Rotate" xml:space="preserve"><value>Rotate</value></data>
   <data name="Tool.Stretch" xml:space="preserve"><value>Stretch</value></data>
   <data name="Tool.Eraser" xml:space="preserve"><value>Eraser</value></data>
   <data name="Tool.Eraser.Short" xml:space="preserve"><value>Eraser</value></data>
@@ -128,6 +129,7 @@
   <data name="Menu.Header.Circle" xml:space="preserve"><value>C_ircle</value></data>
   <data name="Menu.Header.Sector" xml:space="preserve"><value>Sec_tor</value></data>
   <data name="Menu.Header.Move" xml:space="preserve"><value>_Move</value></data>
+  <data name="Menu.Header.Rotate" xml:space="preserve"><value>_Rotate</value></data>
   <data name="Menu.Header.CopyTool" xml:space="preserve"><value>C_opy</value></data>
   <data name="Menu.Header.PolygonEdit" xml:space="preserve"><value>Polygon _Edit</value></data>
   <data name="Menu.Header.Layers" xml:space="preserve"><value>_Layers</value></data>
@@ -191,6 +193,8 @@
   <data name="Status.SectorCancelled" xml:space="preserve"><value>Sector cancelled</value></data>
   <data name="Status.MoveCancelled" xml:space="preserve"><value>Move cancelled</value></data>
   <data name="Status.MoveCompleted" xml:space="preserve"><value>Move completed</value></data>
+  <data name="Status.RotateCancelled" xml:space="preserve"><value>Rotate cancelled</value></data>
+  <data name="Status.RotateCompleted" xml:space="preserve"><value>Rotate completed</value></data>
   <data name="Status.CopyCancelled" xml:space="preserve"><value>Copy cancelled</value></data>
   <data name="Status.CopyCompleted" xml:space="preserve"><value>Copy completed</value></data>
   <data name="Status.StretchCancelled" xml:space="preserve"><value>Stretch cancelled</value></data>
@@ -214,6 +218,10 @@
   <data name="Input.Move.SelectVertices" xml:space="preserve"><value>Select vertices or objects to move</value></data>
   <data name="Input.Move.VertexSelected" xml:space="preserve"><value>Vertex selected — click base point, then destination</value></data>
   <data name="Input.Move.SelectDestination" xml:space="preserve"><value>Select destination point or type offset (Esc/Right click to cancel)</value></data>
+  <data name="Input.Rotate.Idle" xml:space="preserve"><value>Select objects, then click rotation anchor point</value></data>
+  <data name="Input.Rotate.SelectObjects" xml:space="preserve"><value>Select objects to rotate</value></data>
+  <data name="Input.Rotate.SelectAngle" xml:space="preserve"><value>Move cursor to set angle or type angle, then click to commit (Esc/Right click to cancel)</value></data>
+  <data name="Input.Rotate.SetDirectionThenTypeAngle" xml:space="preserve"><value>Set rotation direction with the mouse, then type angle</value></data>
   <data name="Input.Copy.SelectObjects" xml:space="preserve"><value>Select objects to copy</value></data>
   <data name="Input.Copy.SelectDestination" xml:space="preserve"><value>Move copy to destination and click (Esc/Right click to cancel)</value></data>
   <data name="Input.SetDirectionThenTypeDistance" xml:space="preserve"><value>Move mouse to set direction, then type distance</value></data>

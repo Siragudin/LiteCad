@@ -31,6 +31,7 @@ public static class Strings
     public static string Tool_Axis => Get("Tool.Axis");
     public static string Tool_Wall => Get("Tool.Wall");
     public static string Tool_Move => Get("Tool.Move");
+    public static string Tool_Rotate => Get("Tool.Rotate");
     public static string Tool_Stretch => Get("Tool.Stretch");
     public static string Tool_Eraser => Get("Tool.Eraser");
     public static string Tool_Eraser_Short => Get("Tool.Eraser.Short");
@@ -88,6 +89,7 @@ public static class Strings
     public static string Menu_Header_Circle => Get("Menu.Header.Circle");
     public static string Menu_Header_Sector => Get("Menu.Header.Sector");
     public static string Menu_Header_Move => Get("Menu.Header.Move");
+    public static string Menu_Header_Rotate => Get("Menu.Header.Rotate");
     public static string Menu_Header_CopyTool => Get("Menu.Header.CopyTool");
     public static string Menu_Header_PolygonEdit => Get("Menu.Header.PolygonEdit");
     public static string Menu_Header_Layers => Get("Menu.Header.Layers");
@@ -153,6 +155,8 @@ public static class Strings
     public static string Status_SectorCancelled => Get("Status.SectorCancelled");
     public static string Status_MoveCancelled => Get("Status.MoveCancelled");
     public static string Status_MoveCompleted => Get("Status.MoveCompleted");
+    public static string Status_RotateCancelled => Get("Status.RotateCancelled");
+    public static string Status_RotateCompleted => Get("Status.RotateCompleted");
     public static string Status_CopyCancelled => Get("Status.CopyCancelled");
     public static string Status_CopyCompleted => Get("Status.CopyCompleted");
     public static string Status_StretchCancelled => Get("Status.StretchCancelled");
@@ -177,6 +181,10 @@ public static class Strings
     public static string Input_Move_SelectVertices => Get("Input.Move.SelectVertices");
     public static string Input_Move_VertexSelected => Get("Input.Move.VertexSelected");
     public static string Input_Move_SelectDestination => Get("Input.Move.SelectDestination");
+    public static string Input_Rotate_Idle => Get("Input.Rotate.Idle");
+    public static string Input_Rotate_SelectObjects => Get("Input.Rotate.SelectObjects");
+    public static string Input_Rotate_SelectAngle => Get("Input.Rotate.SelectAngle");
+    public static string Input_Rotate_SetDirectionThenTypeAngle => Get("Input.Rotate.SetDirectionThenTypeAngle");
     public static string Input_Copy_SelectObjects => Get("Input.Copy.SelectObjects");
     public static string Input_Copy_SelectDestination => Get("Input.Copy.SelectDestination");
     public static string Input_SetDirectionThenTypeDistance => Get("Input.SetDirectionThenTypeDistance");

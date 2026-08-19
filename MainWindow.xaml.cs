@@ -35,6 +35,7 @@ public partial class MainWindow : Window
             ["Circle"] = new CircleTool(),
             ["Sector"] = new SectorTool(),
             ["Move"] = new MoveTool(),
+            ["Rotate"] = new RotateTool(),
             ["Stretch"] = new StretchTool(),
             ["Eraser"] = new EraserTool(),
             ["Copy"] = new CopyTool(),

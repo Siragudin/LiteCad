@@ -12,6 +12,7 @@ public enum ToolId
     Axis,
     Wall,
     Move,
+    Rotate,
     Stretch,
     Eraser,
     Copy,
