@@ -19,6 +19,8 @@ public sealed class CadSession
 
     public LineToolOptions LineToolOptions { get; } = new();
 
+    public MirrorToolOptions MirrorToolOptions { get; } = new();
+
     public SnapService SnapService { get; } = new();
 
     public DocumentHistoryService History { get; } = new();

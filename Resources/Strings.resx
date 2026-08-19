@@ -74,6 +74,7 @@
   <data name="Tool.Wall" xml:space="preserve"><value>Wall</value></data>
   <data name="Tool.Move" xml:space="preserve"><value>Move</value></data>
   <data name="Tool.Rotate" xml:space="preserve"><value>Rotate</value></data>
+  <data name="Tool.Mirror" xml:space="preserve"><value>Mirror</value></data>
   <data name="Tool.Stretch" xml:space="preserve"><value>Stretch</value></data>
   <data name="Tool.Eraser" xml:space="preserve"><value>Eraser</value></data>
   <data name="Tool.Eraser.Short" xml:space="preserve"><value>Eraser</value></data>
@@ -130,6 +131,7 @@
   <data name="Menu.Header.Sector" xml:space="preserve"><value>Sec_tor</value></data>
   <data name="Menu.Header.Move" xml:space="preserve"><value>_Move</value></data>
   <data name="Menu.Header.Rotate" xml:space="preserve"><value>_Rotate</value></data>
+  <data name="Menu.Header.Mirror" xml:space="preserve"><value>_Mirror</value></data>
   <data name="Menu.Header.CopyTool" xml:space="preserve"><value>C_opy</value></data>
   <data name="Menu.Header.PolygonEdit" xml:space="preserve"><value>Polygon _Edit</value></data>
   <data name="Menu.Header.Layers" xml:space="preserve"><value>_Layers</value></data>
@@ -142,6 +144,7 @@
   <data name="Label.None" xml:space="preserve"><value>None</value></data>
   <data name="Label.LineParameters" xml:space="preserve"><value>Line parameters</value></data>
   <data name="Label.MoveParameters" xml:space="preserve"><value>Move parameters</value></data>
+  <data name="Label.MirrorParameters" xml:space="preserve"><value>Mirror parameters</value></data>
   <data name="Label.Color" xml:space="preserve"><value>Color</value></data>
   <data name="Label.Thickness" xml:space="preserve"><value>Thickness</value></data>
   <data name="Label.Type" xml:space="preserve"><value>Type</value></data>
@@ -195,6 +198,8 @@
   <data name="Status.MoveCompleted" xml:space="preserve"><value>Move completed</value></data>
   <data name="Status.RotateCancelled" xml:space="preserve"><value>Rotate cancelled</value></data>
   <data name="Status.RotateCompleted" xml:space="preserve"><value>Rotate completed</value></data>
+  <data name="Status.MirrorCancelled" xml:space="preserve"><value>Mirror cancelled</value></data>
+  <data name="Status.MirrorCompleted" xml:space="preserve"><value>Mirror completed</value></data>
   <data name="Status.CopyCancelled" xml:space="preserve"><value>Copy cancelled</value></data>
   <data name="Status.CopyCompleted" xml:space="preserve"><value>Copy completed</value></data>
   <data name="Status.StretchCancelled" xml:space="preserve"><value>Stretch cancelled</value></data>
@@ -222,6 +227,9 @@
   <data name="Input.Rotate.SelectObjects" xml:space="preserve"><value>Select objects to rotate</value></data>
   <data name="Input.Rotate.SelectAngle" xml:space="preserve"><value>Move cursor to set angle or type angle, then click to commit (Esc/Right click to cancel)</value></data>
   <data name="Input.Rotate.SetDirectionThenTypeAngle" xml:space="preserve"><value>Set rotation direction with the mouse, then type angle</value></data>
+  <data name="Input.Mirror.Idle" xml:space="preserve"><value>Select objects, then click first mirror axis point</value></data>
+  <data name="Input.Mirror.SelectObjects" xml:space="preserve"><value>Select objects to mirror</value></data>
+  <data name="Input.Mirror.SelectAxisEnd" xml:space="preserve"><value>Move cursor to set mirror axis, then click second point (Esc/Right click to cancel)</value></data>
   <data name="Input.Copy.SelectObjects" xml:space="preserve"><value>Select objects to copy</value></data>
   <data name="Input.Copy.SelectDestination" xml:space="preserve"><value>Move copy to destination and click (Esc/Right click to cancel)</value></data>
   <data name="Input.SetDirectionThenTypeDistance" xml:space="preserve"><value>Move mouse to set direction, then type distance</value></data>

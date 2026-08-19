@@ -36,6 +36,7 @@ public partial class MainWindow : Window
             ["Sector"] = new SectorTool(),
             ["Move"] = new MoveTool(),
             ["Rotate"] = new RotateTool(),
+            ["Mirror"] = new MirrorTool(),
             ["Stretch"] = new StretchTool(),
             ["Eraser"] = new EraserTool(),
             ["Copy"] = new CopyTool(),
@@ -43,15 +44,7 @@ public partial class MainWindow : Window
         };
 
         MainCanvas.Session = ViewModel.Session;
-        MainProperties.BindSession(ViewModel.Session, () =>
-        {
-            if (ViewModel.Session.ToolService.ActiveTool is MoveTool moveTool)
-            {
-                moveTool.NotifyOrthoChanged();
-            }
-
-            MainCanvas.RequestRedraw();
-        });
+        MainProperties.BindSession(ViewModel.Session, OnMoveOrthoChanged, OnMirrorOrthoChanged);
 
         var toolContext = new ToolContext(
             ViewModel.Session,
@@ -329,6 +322,26 @@ public partial class MainWindow : Window
     private void OnMouseWorldPositionChanged(object? sender, PointEventArgs e)
     {
         MainStatusBar.SetCoordinates(new PointF(e.X, e.Y));
+    }
+
+    private void OnMoveOrthoChanged()
+    {
+        if (ViewModel.Session.ToolService.ActiveTool is MoveTool moveTool)
+        {
+            moveTool.NotifyOrthoChanged();
+        }
+
+        MainCanvas.RequestRedraw();
+    }
+
+    private void OnMirrorOrthoChanged()
+    {
+        if (ViewModel.Session.ToolService.ActiveTool is MirrorTool mirrorTool)
+        {
+            mirrorTool.NotifyOrthoChanged();
+        }
+
+        MainCanvas.RequestRedraw();
     }
 }
 

@@ -13,6 +13,7 @@ public enum ToolId
     Wall,
     Move,
     Rotate,
+    Mirror,
     Stretch,
     Eraser,
     Copy,

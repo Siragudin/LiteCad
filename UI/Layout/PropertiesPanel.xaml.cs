@@ -14,7 +14,9 @@ public partial class PropertiesPanel : UserControl
     private static readonly object InitializeComponentLock = new();
     private CadSession? _session;
     private Action? _onMoveOrthoChanged;
+    private Action? _onMirrorOrthoChanged;
     private bool _suppressMoveOrthoEvents;
+    private bool _suppressMirrorOrthoEvents;
 
     public PropertiesPanel()
     {
@@ -26,14 +28,24 @@ public partial class PropertiesPanel : UserControl
 
     public bool IsMoveToolPanelVisible => MoveToolPanel.Visibility == Visibility.Visible;
 
+    public bool IsMirrorToolPanelVisible => MirrorToolPanel.Visibility == Visibility.Visible;
+
     public bool IsMoveOrthoToggleVisible => IsMoveToolPanelVisible;
+
+    public bool IsMirrorOrthoToggleVisible => IsMirrorToolPanelVisible;
 
     public bool MoveOrthoIsChecked => MoveOrthoCheckBox.IsChecked == true;
 
-    public void BindSession(CadSession session, Action? onMoveOrthoChanged = null)
+    public bool MirrorOrthoIsChecked => MirrorOrthoCheckBox.IsChecked == true;
+
+    public void BindSession(
+        CadSession session,
+        Action? onMoveOrthoChanged = null,
+        Action? onMirrorOrthoChanged = null)
     {
         _session = session;
         _onMoveOrthoChanged = onMoveOrthoChanged;
+        _onMirrorOrthoChanged = onMirrorOrthoChanged;
     }
 
     public void SetActiveTool(ToolId toolId)
@@ -41,13 +53,22 @@ public partial class PropertiesPanel : UserControl
         ActiveToolText.Text = ToolDisplayNames.Get(toolId);
         var isLineTool = toolId == ToolId.Line;
         var isMoveTool = toolId == ToolId.Move;
+        var isMirrorTool = toolId == ToolId.Mirror;
         LineToolPanel.Visibility = isLineTool ? Visibility.Visible : Visibility.Collapsed;
         MoveToolPanel.Visibility = isMoveTool ? Visibility.Visible : Visibility.Collapsed;
-        NoParametersText.Visibility = isLineTool || isMoveTool ? Visibility.Collapsed : Visibility.Visible;
+        MirrorToolPanel.Visibility = isMirrorTool ? Visibility.Visible : Visibility.Collapsed;
+        NoParametersText.Visibility = isLineTool || isMoveTool || isMirrorTool
+            ? Visibility.Collapsed
+            : Visibility.Visible;
 
         if (isMoveTool)
         {
             SyncMoveOrthoCheckBoxFromSession();
+        }
+
+        if (isMirrorTool)
+        {
+            SyncMirrorOrthoCheckBoxFromSession();
         }
     }
 
@@ -62,6 +83,14 @@ public partial class PropertiesPanel : UserControl
         MoveOrthoCheckBox.IsChecked = enabled;
         _suppressMoveOrthoEvents = false;
         ApplyMoveOrthoEnabled(enabled);
+    }
+
+    public void SetMirrorOrthoChecked(bool enabled)
+    {
+        _suppressMirrorOrthoEvents = true;
+        MirrorOrthoCheckBox.IsChecked = enabled;
+        _suppressMirrorOrthoEvents = false;
+        ApplyMirrorOrthoEnabled(enabled);
     }
 
     private void LineColorCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -129,6 +158,16 @@ public partial class PropertiesPanel : UserControl
         ApplyMoveOrthoEnabled(MoveOrthoCheckBox.IsChecked == true);
     }
 
+    private void MirrorOrthoCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        if (_session is null || _suppressMirrorOrthoEvents)
+        {
+            return;
+        }
+
+        ApplyMirrorOrthoEnabled(MirrorOrthoCheckBox.IsChecked == true);
+    }
+
     private void ApplyMoveOrthoEnabled(bool enabled)
     {
         if (_session is null)
@@ -138,6 +177,17 @@ public partial class PropertiesPanel : UserControl
 
         _session.LineToolOptions.OrthoEnabled = enabled;
         _onMoveOrthoChanged?.Invoke();
+    }
+
+    private void ApplyMirrorOrthoEnabled(bool enabled)
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        _session.MirrorToolOptions.OrthoEnabled = enabled;
+        _onMirrorOrthoChanged?.Invoke();
     }
 
     private void SyncMoveOrthoCheckBoxFromSession()
@@ -150,5 +200,17 @@ public partial class PropertiesPanel : UserControl
         _suppressMoveOrthoEvents = true;
         MoveOrthoCheckBox.IsChecked = _session.LineToolOptions.OrthoEnabled;
         _suppressMoveOrthoEvents = false;
+    }
+
+    private void SyncMirrorOrthoCheckBoxFromSession()
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        _suppressMirrorOrthoEvents = true;
+        MirrorOrthoCheckBox.IsChecked = _session.MirrorToolOptions.OrthoEnabled;
+        _suppressMirrorOrthoEvents = false;
     }
 }

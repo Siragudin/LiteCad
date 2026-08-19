@@ -18,6 +18,7 @@ public static class ToolDisplayNames
             ToolId.Wall => Strings.Tool_Wall,
             ToolId.Move => Strings.Tool_Move,
             ToolId.Rotate => Strings.Tool_Rotate,
+            ToolId.Mirror => Strings.Tool_Mirror,
             ToolId.Stretch => Strings.Tool_Stretch,
             ToolId.Eraser => Strings.Tool_Eraser,
             ToolId.Copy => Strings.Tool_Copy,

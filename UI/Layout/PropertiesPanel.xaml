@@ -105,6 +105,19 @@
                                   Unchecked="MoveOrthoCheckBox_OnChanged" />
                     </StackPanel>
 
+                    <StackPanel x:Name="MirrorToolPanel" Visibility="Collapsed">
+                        <TextBlock Text="{loc:Loc Key=Label.MirrorParameters}"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,8" />
+
+                        <CheckBox x:Name="MirrorOrthoCheckBox"
+                                  Content="{loc:Loc Key=Label.Ortho}"
+                                  Margin="0,0,0,4"
+                                  Checked="MirrorOrthoCheckBox_OnChanged"
+                                  Unchecked="MirrorOrthoCheckBox_OnChanged" />
+                    </StackPanel>
+
                     <TextBlock x:Name="NoParametersText"
                                Text="{loc:Loc Key=Label.NoParameters}"
                                FontSize="13"
