@@ -39,13 +39,19 @@ public partial class MainWindow : Window
             ["Mirror"] = new MirrorTool(),
             ["Offset"] = new OffsetTool(),
             ["Stretch"] = new StretchTool(),
+            ["Extend"] = new ExtendTool(),
+            ["Dimension"] = new DimensionTool(),
             ["Eraser"] = new EraserTool(),
             ["Copy"] = new CopyTool(),
             ["PolygonEdit"] = new PolygonEditTool()
         };
 
         MainCanvas.Session = ViewModel.Session;
-        MainProperties.BindSession(ViewModel.Session, OnMoveOrthoChanged, OnMirrorOrthoChanged);
+        MainProperties.BindSession(
+            ViewModel.Session,
+            OnMoveOrthoChanged,
+            OnMirrorOrthoChanged,
+            () => MainCanvas.RequestRedraw());
 
         var toolContext = new ToolContext(
             ViewModel.Session,
@@ -59,7 +65,11 @@ public partial class MainWindow : Window
             length => MainStatusBar.SetLength(length),
             text => MainStatusBar.SetLengthText(text),
             area => MainStatusBar.SetArea(area),
-            selection => MainProperties.SetSelection(selection),
+            selection =>
+            {
+                MainProperties.SetSelection(selection);
+                MainProperties.SyncDimensionSelection(ViewModel.Session);
+            },
             enabled => MainStatusBar.SetLengthInputEnabled(enabled),
             length => MainStatusBar.ResetLengthEditing(length),
             e => MainStatusBar.ProcessLengthKey(e),
@@ -73,7 +83,8 @@ public partial class MainWindow : Window
             (first, second) => MainStatusBar.SetDualFieldInputText(first, second),
             () => MainStatusBar.LineInputText,
             text => MainStatusBar.SetLineInputText(text),
-            () => ViewModel.Session.History.Record(ViewModel.Session.Document));
+            () => ViewModel.Session.History.Record(ViewModel.Session.Document),
+            () => ActivateTool(_tools["Selection"]));
 
         MainCanvas.InitializeTools(toolContext);
         MainCanvas.MouseWorldPositionChanged += OnMouseWorldPositionChanged;
@@ -224,6 +235,7 @@ public partial class MainWindow : Window
             case "Redo":
                 session.Selection.Clear();
                 MainProperties.SetSelection(Strings.Selection_NothingSelected);
+                MainProperties.SyncDimensionSelection(session);
                 MainStatusBar.SetLength(null);
                 MainStatusBar.SetArea(null);
                 MainStatusBar.SetStatus(command == "Undo" ? Strings.Status_Undo : Strings.Status_Redo);
@@ -247,6 +259,7 @@ public partial class MainWindow : Window
             case "Delete":
                 session.Selection.Clear();
                 MainProperties.SetSelection(Strings.Selection_NothingSelected);
+                MainProperties.SyncDimensionSelection(session);
                 MainStatusBar.SetLength(null);
                 MainStatusBar.SetArea(null);
                 MainStatusBar.SetStatus(Strings.Status_Deleted);
@@ -318,6 +331,7 @@ public partial class MainWindow : Window
         }
 
         MainProperties.SetSelection(SelectionUiFormatter.FormatSelectionInfo(ViewModel.Session));
+        MainProperties.SyncDimensionSelection(ViewModel.Session);
     }
 
     private void OnMouseWorldPositionChanged(object? sender, PointEventArgs e)

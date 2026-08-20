@@ -24,6 +24,8 @@
                 <Button Content="{loc:Loc Key=Tool.Mirror}" Width="64" Padding="6,4" Tag="Mirror" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Offset}" Width="64" Padding="6,4" Tag="Offset" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Stretch}" Width="64" Padding="6,4" Tag="Stretch" Click="ToolButton_OnClick" />
+                <Button Content="{loc:Loc Key=Tool.Extend}" Width="64" Padding="6,4" Tag="Extend" Click="ToolButton_OnClick" />
+                <Button Content="{loc:Loc Key=Tool.Dimension.Short}" Width="64" Padding="6,4" Tag="Dimension" Click="ToolButton_OnClick" />
                 <Button Content="{loc:Loc Key=Tool.Eraser.Short}" Width="64" Padding="6,4" Tag="Eraser" Click="ToolButton_OnClick" />
                 <Separator />
                 <Button Content="{loc:Loc Key=Tool.Edit.Short}" Width="64" Padding="6,4" Tag="PolygonEdit" Click="ToolButton_OnClick" />

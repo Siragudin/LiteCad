@@ -11,6 +11,7 @@ public sealed class Renderer
     private readonly GridRenderer _gridRenderer = new();
     private readonly PolygonRenderer _polygonRenderer = new();
     private readonly EdgeRenderer _edgeRenderer = new();
+    private readonly DimensionRenderer _dimensionRenderer = new();
     private readonly SelectionRenderer _selectionRenderer = new();
 
     public void Render(
@@ -29,6 +30,7 @@ public sealed class Renderer
             _gridRenderer.Render(context, camera, viewport);
             _polygonRenderer.Render(context, document, camera);
             _edgeRenderer.Render(context, document, camera);
+            _dimensionRenderer.Render(context, document, selection, camera, viewport);
             _selectionRenderer.Render(context, document, selection, camera);
             activeTool?.RenderOverlay(context, camera, viewport);
         }

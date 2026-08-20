@@ -77,6 +77,9 @@
   <data name="Tool.Mirror" xml:space="preserve"><value>Mirror</value></data>
   <data name="Tool.Offset" xml:space="preserve"><value>Offset</value></data>
   <data name="Tool.Stretch" xml:space="preserve"><value>Stretch</value></data>
+  <data name="Tool.Extend" xml:space="preserve"><value>Extend</value></data>
+  <data name="Tool.Dimension" xml:space="preserve"><value>Dimension</value></data>
+  <data name="Tool.Dimension.Short" xml:space="preserve"><value>Dim</value></data>
   <data name="Tool.Eraser" xml:space="preserve"><value>Eraser</value></data>
   <data name="Tool.Eraser.Short" xml:space="preserve"><value>Eraser</value></data>
   <data name="Tool.Copy" xml:space="preserve"><value>Copy</value></data>
@@ -159,6 +162,11 @@
   <data name="Label.X" xml:space="preserve"><value>X:</value></data>
   <data name="Label.Y" xml:space="preserve"><value>Y:</value></data>
   <data name="Label.Distance" xml:space="preserve"><value>Distance:</value></data>
+  <data name="Label.Offset" xml:space="preserve"><value>Offset:</value></data>
+  <data name="Label.DimensionParameters" xml:space="preserve"><value>Dimension</value></data>
+  <data name="Label.DimensionExtensions" xml:space="preserve"><value>Extensions:</value></data>
+  <data name="Label.DimensionExtensionStyle.Full" xml:space="preserve"><value>Full</value></data>
+  <data name="Label.DimensionExtensionStyle.Short" xml:space="preserve"><value>Short</value></data>
   <data name="Label.Radius" xml:space="preserve"><value>Radius:</value></data>
   <data name="Label.Angle" xml:space="preserve"><value>Angle:</value></data>
   <data name="Label.EmptyValue" xml:space="preserve"><value>—</value></data>
@@ -208,6 +216,11 @@
   <data name="Status.CopyCompleted" xml:space="preserve"><value>Copy completed</value></data>
   <data name="Status.StretchCancelled" xml:space="preserve"><value>Stretch cancelled</value></data>
   <data name="Status.StretchCompleted" xml:space="preserve"><value>Stretch completed</value></data>
+  <data name="Status.ExtendCancelled" xml:space="preserve"><value>Extend cancelled</value></data>
+  <data name="Status.ExtendCompleted" xml:space="preserve"><value>Extend completed</value></data>
+  <data name="Status.DimensionCreated" xml:space="preserve"><value>Dimension created</value></data>
+  <data name="Status.DimensionCancelled" xml:space="preserve"><value>Dimension cancelled</value></data>
+  <data name="Status.DimensionSelected" xml:space="preserve"><value>Dimension selected</value></data>
   <data name="Input.Line.SelectEndPoint" xml:space="preserve"><value>Select end point or type length (Right click to cancel)</value></data>
   <data name="Input.Line.SelectNextPoint" xml:space="preserve"><value>Select next point or type length (Right click to cancel)</value></data>
   <data name="Input.Line.SetDirectionThenTypeLength" xml:space="preserve"><value>Move mouse to set direction, then type length</value></data>
@@ -241,6 +254,10 @@
   <data name="Input.Copy.SelectDestination" xml:space="preserve"><value>Move copy to destination and click (Esc/Right click to cancel)</value></data>
   <data name="Input.SetDirectionThenTypeDistance" xml:space="preserve"><value>Move mouse to set direction, then type distance</value></data>
   <data name="Input.Stretch.Idle" xml:space="preserve"><value>Click an edge to stretch (perpendicular parallel sides required)</value></data>
+  <data name="Input.Extend.Idle" xml:space="preserve"><value>Click an edge to extend to the nearest intersection</value></data>
+  <data name="Input.Dimension.SelectFirstPoint" xml:space="preserve"><value>Select first dimension point</value></data>
+  <data name="Input.Dimension.SelectSecondPoint" xml:space="preserve"><value>Select second dimension point</value></data>
+  <data name="Input.Dimension.SetOffset" xml:space="preserve"><value>Set dimension offset and click or press Enter</value></data>
   <data name="Input.Stretch.SelectDestination" xml:space="preserve"><value>Select stretch destination, type distance, or press Enter (Right click to cancel)</value></data>
   <data name="Input.Stretch.SelectBasePoint" xml:space="preserve"><value>Click base point, then stretch destination</value></data>
   <data name="Error.CannotCommand" xml:space="preserve"><value>Cannot {0}</value></data>
@@ -258,6 +275,7 @@
   <data name="Selection.NothingSelected" xml:space="preserve"><value>Nothing selected</value></data>
   <data name="Selection.Pasted" xml:space="preserve"><value>Pasted</value></data>
   <data name="Selection.Edge" xml:space="preserve"><value>Edge</value></data>
+  <data name="Selection.DimensionWithDistance" xml:space="preserve"><value>Dimension: {0:F2}, offset {1:F2}</value></data>
   <data name="Selection.VertexAt" xml:space="preserve"><value>Vertex ({0:F2}, {1:F2})</value></data>
   <data name="Selection.PolygonWithArea" xml:space="preserve"><value>{0} ({1:F2})</value></data>
   <data name="Selection.MultipleCount" xml:space="preserve"><value>{0} vertex(s), {1} edge(s), {2} polygon(s)</value></data>

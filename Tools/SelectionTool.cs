@@ -1,5 +1,6 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
+using LiteCad.Dimensions;
 using LiteCad.Rendering;
 using LiteCad.Resources;
 using LiteCad.Services;
@@ -113,6 +114,12 @@ public sealed class SelectionTool : ToolBase
         if (!additive)
         {
             selection.Clear();
+        }
+
+        if (TryToggleDimensionAt(document, selection, world, tolerance, additive))
+        {
+            UpdateSelectionUi();
+            return;
         }
 
         if (TryToggleVertexAt(document, selection, world, tolerance, additive))
@@ -323,6 +330,31 @@ public sealed class SelectionTool : ToolBase
         return true;
     }
 
+    private bool TryToggleDimensionAt(
+        CadDocument document,
+        Core.Selection.Selection selection,
+        PointF world,
+        double tolerance,
+        bool additive)
+    {
+        if (!DimensionPickOperations.TryPickAt(document, world, tolerance, out var dimensionId))
+        {
+            return false;
+        }
+
+        if (additive && selection.SelectedDimensionIds.Contains(dimensionId))
+        {
+            selection.SelectedDimensionIds.Remove(dimensionId);
+        }
+        else
+        {
+            selection.SelectedDimensionIds.Add(dimensionId);
+        }
+
+        Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_DimensionSelected);
+        return true;
+    }
+
     private void UpdateSelectionUi(string? status = null)
     {
         if (Context is null)
@@ -335,8 +367,9 @@ public sealed class SelectionTool : ToolBase
         var edgeCount = selection.SelectedEdgeIds.Count;
         var polygonCount = selection.SelectedPolygonIds.Count;
         var vertexCount = selection.SelectedVertexIds.Count;
+        var dimensionCount = selection.SelectedDimensionIds.Count;
 
-        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0)
+        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0)
         {
             Context.SetArea(null);
             Context.SetLength(null);
@@ -345,7 +378,21 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (vertexCount == 1 && edgeCount == 0 && polygonCount == 0)
+        if (dimensionCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0)
+        {
+            var dimension = document.Dimensions.First(item => selection.SelectedDimensionIds.Contains(item.Id));
+            var measured = DimensionService.GetMeasuredDistance(document, dimension);
+            Context.SetLength(null);
+            Context.SetArea(null);
+            Context.SetSelectionInfo(Strings.Format(
+                Strings.Selection_DimensionWithDistance,
+                measured,
+                dimension.Offset));
+            Context.SetStatus(status ?? Strings.Status_DimensionSelected);
+            return;
+        }
+
+        if (vertexCount == 1 && edgeCount == 0 && polygonCount == 0 && dimensionCount == 0)
         {
             var vertex = document.Vertices.First(item => selection.SelectedVertexIds.Contains(item.Id));
             Context.SetLength(null);
@@ -355,7 +402,7 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (edgeCount == 1 && polygonCount == 0 && vertexCount == 0)
+        if (edgeCount == 1 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0)
         {
             var edge = document.Edges.First(item => selection.SelectedEdgeIds.Contains(item.Id));
             var length = MathUtils.Distance(
@@ -368,7 +415,7 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (polygonCount == 1 && edgeCount == 0 && vertexCount == 0)
+        if (polygonCount == 1 && edgeCount == 0 && vertexCount == 0 && dimensionCount == 0)
         {
             var polygon = document.Polygons.First(item => selection.SelectedPolygonIds.Contains(item.Id));
             var area = PolygonGeometry.GetArea(document, polygon, MathUtils.DefaultTolerance);

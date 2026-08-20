@@ -21,6 +21,8 @@ public static class ToolDisplayNames
             ToolId.Mirror => Strings.Tool_Mirror,
             ToolId.Offset => Strings.Tool_Offset,
             ToolId.Stretch => Strings.Tool_Stretch,
+            ToolId.Extend => Strings.Tool_Extend,
+            ToolId.Dimension => Strings.Tool_Dimension,
             ToolId.Eraser => Strings.Tool_Eraser,
             ToolId.Copy => Strings.Tool_Copy,
             ToolId.PolygonEdit => Strings.Tool_PolygonEdit,

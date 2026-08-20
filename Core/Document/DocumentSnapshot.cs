@@ -1,4 +1,5 @@
 using LiteCad.Core.Geometry;
+using LiteCad.Dimensions;
 
 namespace LiteCad.Core.Document;
 
@@ -8,11 +9,13 @@ public sealed class DocumentSnapshot
         List<Vertex> vertices,
         List<Edge> edges,
         List<Polygon> userPolygons,
+        List<Dimension> dimensions,
         HashSet<string> suppressedFaceGeometryKeys)
     {
         Vertices = vertices;
         Edges = edges;
         UserPolygons = userPolygons;
+        Dimensions = dimensions;
         SuppressedFaceGeometryKeys = suppressedFaceGeometryKeys;
     }
 
@@ -25,6 +28,8 @@ public sealed class DocumentSnapshot
     /// </summary>
     public List<Polygon> UserPolygons { get; }
 
+    public List<Dimension> Dimensions { get; }
+
     public HashSet<string> SuppressedFaceGeometryKeys { get; }
 
     public static DocumentSnapshot Capture(CadDocument document)
@@ -35,11 +40,12 @@ public sealed class DocumentSnapshot
             .Where(polygon => polygon.Type != PolygonType.Face)
             .Select(ClonePolygon)
             .ToList();
+        var dimensions = document.Dimensions.Select(dimension => dimension.Clone()).ToList();
         var suppressedFaceGeometryKeys = new HashSet<string>(
             document.SuppressedFaceGeometryKeys,
             StringComparer.Ordinal);
 
-        return new DocumentSnapshot(vertices, edges, userPolygons, suppressedFaceGeometryKeys);
+        return new DocumentSnapshot(vertices, edges, userPolygons, dimensions, suppressedFaceGeometryKeys);
     }
 
     public void Restore(CadDocument document, double tolerance)
@@ -48,6 +54,7 @@ public sealed class DocumentSnapshot
         document.Vertices.Clear();
         document.Edges.Clear();
         document.Polygons.Clear();
+        document.Dimensions.Clear();
         document.SuppressedFaceGeometryKeys.Clear();
 
         foreach (var vertex in Vertices)
@@ -63,6 +70,11 @@ public sealed class DocumentSnapshot
         foreach (var polygon in UserPolygons)
         {
             document.Polygons.Add(ClonePolygon(polygon));
+        }
+
+        foreach (var dimension in Dimensions)
+        {
+            document.Dimensions.Add(dimension.Clone());
         }
 
         foreach (var key in SuppressedFaceGeometryKeys)

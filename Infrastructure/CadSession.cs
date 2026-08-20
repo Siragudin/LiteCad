@@ -21,6 +21,8 @@ public sealed class CadSession
 
     public MirrorToolOptions MirrorToolOptions { get; } = new();
 
+    public DimensionToolOptions DimensionToolOptions { get; } = new();
+
     public SnapService SnapService { get; } = new();
 
     public DocumentHistoryService History { get; } = new();
@@ -32,6 +34,7 @@ public sealed class CadSession
         Document.Vertices.Clear();
         Document.Edges.Clear();
         Document.Polygons.Clear();
+        Document.Dimensions.Clear();
         Document.SuppressedFaceGeometryKeys.Clear();
         Selection.Clear();
         History.Clear();

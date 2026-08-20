@@ -35,6 +35,8 @@ public static class Strings
     public static string Tool_Mirror => Get("Tool.Mirror");
     public static string Tool_Offset => Get("Tool.Offset");
     public static string Tool_Stretch => Get("Tool.Stretch");
+    public static string Tool_Extend => Get("Tool.Extend");
+    public static string Tool_Dimension => Get("Tool.Dimension");
     public static string Tool_Eraser => Get("Tool.Eraser");
     public static string Tool_Eraser_Short => Get("Tool.Eraser.Short");
     public static string Tool_Copy => Get("Tool.Copy");
@@ -120,6 +122,8 @@ public static class Strings
     public static string Label_X => Get("Label.X");
     public static string Label_Y => Get("Label.Y");
     public static string Label_Distance => Get("Label.Distance");
+    public static string Label_Offset => Get("Label.Offset");
+    public static string Label_DimensionParameters => Get("Label.DimensionParameters");
     public static string Label_Radius => Get("Label.Radius");
     public static string Label_Angle => Get("Label.Angle");
     public static string Label_EmptyValue => Get("Label.EmptyValue");
@@ -170,6 +174,11 @@ public static class Strings
     public static string Status_CopyCompleted => Get("Status.CopyCompleted");
     public static string Status_StretchCancelled => Get("Status.StretchCancelled");
     public static string Status_StretchCompleted => Get("Status.StretchCompleted");
+    public static string Status_ExtendCancelled => Get("Status.ExtendCancelled");
+    public static string Status_ExtendCompleted => Get("Status.ExtendCompleted");
+    public static string Status_DimensionCancelled => Get("Status.DimensionCancelled");
+    public static string Status_DimensionCreated => Get("Status.DimensionCreated");
+    public static string Status_DimensionSelected => Get("Status.DimensionSelected");
 
     public static string Input_Line_SelectEndPoint => Get("Input.Line.SelectEndPoint");
     public static string Input_Line_SelectNextPoint => Get("Input.Line.SelectNextPoint");
@@ -204,6 +213,10 @@ public static class Strings
     public static string Input_Copy_SelectDestination => Get("Input.Copy.SelectDestination");
     public static string Input_SetDirectionThenTypeDistance => Get("Input.SetDirectionThenTypeDistance");
     public static string Input_Stretch_Idle => Get("Input.Stretch.Idle");
+    public static string Input_Extend_Idle => Get("Input.Extend.Idle");
+    public static string Input_Dimension_SelectFirstPoint => Get("Input.Dimension.SelectFirstPoint");
+    public static string Input_Dimension_SelectSecondPoint => Get("Input.Dimension.SelectSecondPoint");
+    public static string Input_Dimension_SetOffset => Get("Input.Dimension.SetOffset");
     public static string Input_Stretch_SelectDestination => Get("Input.Stretch.SelectDestination");
     public static string Input_Stretch_SelectBasePoint => Get("Input.Stretch.SelectBasePoint");
 
@@ -223,6 +236,7 @@ public static class Strings
     public static string Selection_NothingSelected => Get("Selection.NothingSelected");
     public static string Selection_Pasted => Get("Selection.Pasted");
     public static string Selection_Edge => Get("Selection.Edge");
+    public static string Selection_DimensionWithDistance => Get("Selection.DimensionWithDistance");
     public static string Selection_VertexAt => Get("Selection.VertexAt");
     public static string Selection_PolygonWithArea => Get("Selection.PolygonWithArea");
     public static string Selection_MultipleCount => Get("Selection.MultipleCount");

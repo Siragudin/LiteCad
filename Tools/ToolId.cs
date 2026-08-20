@@ -16,6 +16,8 @@ public enum ToolId
     Mirror,
     Offset,
     Stretch,
+    Extend,
+    Dimension,
     Eraser,
     Copy,
     PolygonEdit

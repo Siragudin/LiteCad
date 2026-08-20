@@ -33,7 +33,8 @@ public sealed class ToolContext
         Action<string, string>? setDualFieldInputText = null,
         Func<string>? getLineInputText = null,
         Action<string>? setLineInputText = null,
-        Action? recordUndo = null)
+        Action? recordUndo = null,
+        Action? activateSelectionTool = null)
     {
         Session = session;
         GetViewportSize = getViewportSize;
@@ -61,6 +62,7 @@ public sealed class ToolContext
         GetLineInputText = getLineInputText ?? (() => string.Empty);
         SetLineInputText = setLineInputText ?? (_ => { });
         RecordUndo = recordUndo ?? (() => { });
+        ActivateSelectionTool = activateSelectionTool ?? (() => { });
     }
 
     public CadSession Session { get; }
@@ -114,6 +116,8 @@ public sealed class ToolContext
     public Action<string> SetLineInputText { get; }
 
     public Action RecordUndo { get; }
+
+    public Action ActivateSelectionTool { get; }
 
     public double SnapTolerance
         => MathUtils.SnapToleranceWorld(Session.Camera.Zoom);

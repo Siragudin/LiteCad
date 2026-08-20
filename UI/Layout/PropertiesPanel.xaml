@@ -118,6 +118,57 @@
                                   Unchecked="MirrorOrthoCheckBox_OnChanged" />
                     </StackPanel>
 
+                    <StackPanel x:Name="DimensionToolPanel" Visibility="Collapsed">
+                        <TextBlock Text="{loc:Loc Key=Label.DimensionParameters}"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,8" />
+
+                        <TextBlock Text="Ножки:"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,4" />
+                        <ComboBox x:Name="DimensionToolExtensionStyleCombo"
+                                  Margin="0,0,0,12"
+                                  SelectionChanged="DimensionToolExtensionStyleCombo_OnSelectionChanged">
+                            <ComboBoxItem Content="Полные" Tag="Full" IsSelected="True" />
+                            <ComboBoxItem Content="Короткие" Tag="Short" />
+                        </ComboBox>
+
+                        <CheckBox x:Name="DimensionOrthoCheckBox"
+                                  Content="{loc:Loc Key=Label.Ortho}"
+                                  Margin="0,0,0,4"
+                                  Checked="DimensionOrthoCheckBox_OnChanged"
+                                  Unchecked="DimensionOrthoCheckBox_OnChanged" />
+                    </StackPanel>
+
+                    <StackPanel x:Name="DimensionSelectionPanel" Visibility="Collapsed">
+                        <TextBlock Text="{loc:Loc Key=Label.DimensionParameters}"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,8" />
+
+                        <TextBlock Text="{loc:Loc Key=Label.Offset}"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,4" />
+                        <TextBox x:Name="DimensionOffsetTextBox"
+                                 Margin="0,0,0,12"
+                                 LostFocus="DimensionOffsetTextBox_OnCommit"
+                                 KeyDown="DimensionOffsetTextBox_OnKeyDown" />
+
+                        <TextBlock Text="Ножки:"
+                                   FontSize="11"
+                                   Foreground="#666666"
+                                   Margin="0,0,0,4" />
+                        <ComboBox x:Name="DimensionExtensionStyleCombo"
+                                  Margin="0,0,0,12"
+                                  SelectionChanged="DimensionExtensionStyleCombo_OnSelectionChanged">
+                            <ComboBoxItem Content="Полные" Tag="Full" IsSelected="True" />
+                            <ComboBoxItem Content="Короткие" Tag="Short" />
+                        </ComboBox>
+                    </StackPanel>
+
                     <TextBlock x:Name="NoParametersText"
                                Text="{loc:Loc Key=Label.NoParameters}"
                                FontSize="13"

@@ -4,6 +4,8 @@ using LiteCad.Core.Geometry;
 
 using LiteCad.Core.Selection;
 
+using LiteCad.Dimensions;
+
 using LiteCad.Infrastructure;
 
 
@@ -81,6 +83,8 @@ public sealed class EditService
 
 
         session.History.Record(session.Document);
+
+        DimensionService.DeleteSelected(session.Document, session.Selection);
 
         RemoveSelection(session);
 
