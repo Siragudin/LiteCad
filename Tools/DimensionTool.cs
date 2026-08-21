@@ -216,7 +216,8 @@ public sealed class DimensionTool : ToolBase
             camera,
             viewport,
             distanceText: distanceText,
-            extensionStyle: Context.Session.DimensionToolOptions.ExtensionStyle);
+            extensionStyle: Context.Session.DimensionToolOptions.ExtensionStyle,
+            textWorldHeight: Context.Session.DimensionToolOptions.TextSize);
         DrawAnchorMarker(context, camera, layout.FirstAnchor);
         DrawAnchorMarker(context, camera, layout.SecondAnchor);
     }
@@ -237,7 +238,8 @@ public sealed class DimensionTool : ToolBase
             _firstVertexId.Value,
             _secondVertexId.Value,
             _offset,
-            tolerance);
+            tolerance,
+            Context.Session.DimensionToolOptions.TextSize);
         dimension.ExtensionStyle = Context.Session.DimensionToolOptions.ExtensionStyle;
         dimension.IsOrthogonal = Context.Session.DimensionToolOptions.OrthoEnabled;
         dimension.OrthogonalIsHorizontal = _orthogonalIsHorizontal;

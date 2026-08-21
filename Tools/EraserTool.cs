@@ -120,7 +120,8 @@ public sealed class EraserTool : ToolBase
         _hoveredPick = SelectionPickOperations.PickAt(
             Context.Session.Document,
             world,
-            Context.SnapTolerance);
+            Context.SnapTolerance,
+            Context.SelectionPickTolerance);
     }
 
     private static void DrawEdgeHighlight(

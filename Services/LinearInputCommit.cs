@@ -21,6 +21,16 @@ public static class LinearInputCommit
             return tool.TryApplyLength(offset);
         }
 
+        if (mode is LineInputLabelMode.ArcHeight)
+        {
+            if (!LinearInputParser.TryParsePositiveDistance(input, unit, out var arcHeight))
+            {
+                return false;
+            }
+
+            return tool.TryApplyLength(arcHeight);
+        }
+
         if (!LinearInputParser.TryParsePositiveDistance(input, unit, out var length))
         {
             return false;

@@ -27,6 +27,7 @@ public class DimensionToolPropertiesTests
             Assert.True(host.PropertiesPanel.IsDimensionToolPanelVisible);
             Assert.False(host.PropertiesPanel.IsDimensionSelectionPanelVisible);
             Assert.Equal(DimensionExtensionStyle.Full, host.Session.DimensionToolOptions.ExtensionStyle);
+            Assert.Equal(Dimension.DefaultTextSize, host.Session.DimensionToolOptions.TextSize);
         });
     }
 

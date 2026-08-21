@@ -173,7 +173,7 @@ public sealed class ExtendTool : ToolBase
         }
 
         var document = Context.Session.Document;
-        var tolerance = Context.SnapTolerance;
+        var tolerance = Context.SelectionPickTolerance;
         Edge? closestEdge = null;
         var closestDistance = tolerance;
 
@@ -181,7 +181,7 @@ public sealed class ExtendTool : ToolBase
         {
             var start = TopologyService.GetEdgeStartPoint(document, edge);
             var end = TopologyService.GetEdgeEndPoint(document, edge);
-            if (!Geometry2D.TryProjectPointOnSegment(world, start, end, out _, out var distance, tolerance)
+            if (!Geometry2D.TryHitTestSegment(world, start, end, tolerance, out var distance)
                 || distance > closestDistance)
             {
                 continue;

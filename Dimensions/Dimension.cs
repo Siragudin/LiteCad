@@ -4,6 +4,10 @@ namespace LiteCad.Dimensions;
 
 public sealed class Dimension
 {
+    public const double MinTextSize = 8.0;
+
+    public const double DefaultTextSize = MinTextSize;
+
     public Dimension(
         Guid id,
         Guid firstVertexId,
@@ -13,7 +17,8 @@ public sealed class Dimension
         double offset,
         DimensionExtensionStyle extensionStyle = DimensionExtensionStyle.Full,
         bool isOrthogonal = false,
-        bool orthogonalIsHorizontal = false)
+        bool orthogonalIsHorizontal = false,
+        double textSize = DefaultTextSize)
     {
         Id = id;
         FirstVertexId = firstVertexId;
@@ -24,6 +29,7 @@ public sealed class Dimension
         ExtensionStyle = extensionStyle;
         IsOrthogonal = isOrthogonal;
         OrthogonalIsHorizontal = orthogonalIsHorizontal;
+        TextSize = NormalizeTextSize(textSize);
     }
 
     public Guid Id { get; }
@@ -44,6 +50,11 @@ public sealed class Dimension
 
     public bool OrthogonalIsHorizontal { get; set; }
 
+    public double TextSize { get; set; } = DefaultTextSize;
+
+    public static double NormalizeTextSize(double textSize)
+        => double.IsFinite(textSize) && textSize >= MinTextSize ? textSize : DefaultTextSize;
+
     public Dimension Clone()
         => new(
             Id,
@@ -54,5 +65,6 @@ public sealed class Dimension
             Offset,
             ExtensionStyle,
             IsOrthogonal,
-            OrthogonalIsHorizontal);
+            OrthogonalIsHorizontal,
+            TextSize);
 }

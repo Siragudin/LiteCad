@@ -64,6 +64,43 @@ public static class Geometry2D
         return true;
     }
 
+    /// <summary>
+    /// Selection-only segment hit test with endpoint caps.
+    /// Unlike <see cref="TryProjectPointOnSegment"/>, short and degenerate segments remain pickable.
+    /// </summary>
+    public static bool TryHitTestSegment(
+        PointF point,
+        PointF segmentStart,
+        PointF segmentEnd,
+        double tolerance,
+        out double distance)
+    {
+        distance = double.MaxValue;
+
+        var dx = segmentEnd.X - segmentStart.X;
+        var dy = segmentEnd.Y - segmentStart.Y;
+        var lengthSquared = dx * dx + dy * dy;
+
+        if (lengthSquared < MathUtils.DefaultTolerance * MathUtils.DefaultTolerance)
+        {
+            distance = MathUtils.Distance(point, segmentStart);
+            return distance <= tolerance;
+        }
+
+        var length = Math.Sqrt(lengthSquared);
+        var t = ((point.X - segmentStart.X) * dx + (point.Y - segmentStart.Y) * dy) / lengthSquared;
+        var capT = tolerance / length;
+
+        if (t < -capT || t > 1 + capT)
+        {
+            return false;
+        }
+
+        var projection = new PointF(segmentStart.X + t * dx, segmentStart.Y + t * dy);
+        distance = MathUtils.Distance(point, projection);
+        return distance <= tolerance;
+    }
+
     public static bool IsPointOnSegmentInterior(
         PointF point,
         PointF segmentStart,

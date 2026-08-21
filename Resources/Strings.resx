@@ -169,6 +169,7 @@
   <data name="Label.Offset" xml:space="preserve"><value>Offset:</value></data>
   <data name="Label.DimensionParameters" xml:space="preserve"><value>Dimension</value></data>
   <data name="Label.DimensionExtensions" xml:space="preserve"><value>Extensions:</value></data>
+  <data name="Label.DimensionTextSize" xml:space="preserve"><value>Text size:</value></data>
   <data name="Label.DimensionExtensionStyle.Full" xml:space="preserve"><value>Full</value></data>
   <data name="Label.DimensionExtensionStyle.Short" xml:space="preserve"><value>Short</value></data>
   <data name="Label.FaceFill" xml:space="preserve"><value>Fill</value></data>
@@ -176,6 +177,7 @@
   <data name="Label.FillPattern.Solid" xml:space="preserve"><value>Solid</value></data>
   <data name="Label.FillPattern.Diagonal" xml:space="preserve"><value>Diagonal</value></data>
   <data name="Label.Radius" xml:space="preserve"><value>Radius:</value></data>
+  <data name="Label.ArcHeight" xml:space="preserve"><value>Arc H:</value></data>
   <data name="Label.Angle" xml:space="preserve"><value>Angle:</value></data>
   <data name="Label.EmptyValue" xml:space="preserve"><value>—</value></data>
   <data name="Label.Color.Black" xml:space="preserve"><value>Black</value></data>
@@ -266,7 +268,7 @@
   <data name="Label.LengthValue" xml:space="preserve"><value>Length</value></data>
   <data name="Input.Arc.SelectStart" xml:space="preserve"><value>Select first point (Right click to cancel)</value></data>
   <data name="Input.Arc.SelectEnd" xml:space="preserve"><value>Select second point (Right click to cancel)</value></data>
-  <data name="Input.Arc.SelectRadius" xml:space="preserve"><value>Move mouse or type radius, then click or Enter (Right click to cancel)</value></data>
+  <data name="Input.Arc.SelectHeight" xml:space="preserve"><value>Move mouse or type arc height, then click or Enter (Right click to cancel)</value></data>
   <data name="Input.Rectangle.SelectFirstCorner" xml:space="preserve"><value>Select first corner or type size after first click (Right click to cancel)</value></data>
   <data name="Input.Rectangle.SelectOppositeCorner" xml:space="preserve"><value>Select opposite corner or type width/height (Alt to switch, Enter to apply)</value></data>
   <data name="Input.Circle.SelectCenter" xml:space="preserve"><value>Select center or type radius after first click (Right click to cancel)</value></data>
@@ -302,7 +304,7 @@
   <data name="Input.Stretch.SelectBasePoint" xml:space="preserve"><value>Click base point, then stretch destination</value></data>
   <data name="Error.CannotCommand" xml:space="preserve"><value>Cannot {0}</value></data>
   <data name="Error.ArcTooSmall" xml:space="preserve"><value>Arc is too small</value></data>
-  <data name="Error.ArcRadiusTooSmall" xml:space="preserve"><value>Arc radius is too small for the selected points</value></data>
+  <data name="Error.ArcHeightTooSmall" xml:space="preserve"><value>Arc height is too small for the selected points</value></data>
   <data name="Error.RectangleTooSmall" xml:space="preserve"><value>Rectangle size is too small</value></data>
   <data name="Error.CircleTooSmall" xml:space="preserve"><value>Circle radius is too small</value></data>
   <data name="Error.SectorTooSmall" xml:space="preserve"><value>Sector radius is too small</value></data>

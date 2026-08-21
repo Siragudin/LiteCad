@@ -4,7 +4,6 @@ using LiteCad.Services;
 using LiteCad.Tools;
 using LiteCad.UI.Layout;
 using System.Globalization;
-using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Input;
 using Xunit;
@@ -30,29 +29,79 @@ public class ArcToolTests
     }
 
     [Fact]
-    public void Arc_AfterSecondClick_ShowsRadiusInput()
+    public void Arc_AfterSecondClick_ShowsArcHeightInput()
     {
         RunSta(() =>
         {
-            using var harness = CreateInteractiveHarness();
-            harness.FirstClick(new PointF(0, 0));
-            harness.SecondClick(new PointF(100, 0));
+            var harness = CreateInteractiveHarness();
+            try
+            {
+                harness.FirstClick(new PointF(0, 0));
+                harness.SecondClick(new PointF(100, 0));
 
-            Assert.Equal(LineInputLabelMode.Radius, harness.StatusBar.LineInputLabelMode);
+                Assert.Equal(LineInputLabelMode.ArcHeight, harness.StatusBar.LineInputLabelMode);
+            }
+            finally
+            {
+                harness.Dispose();
+            }
         });
     }
 
     [Fact]
-    public void Arc_RadiusInput_CommitsOpenArc()
+    public void Arc_HeightInput_CommitsOpenArc()
     {
         RunSta(() =>
         {
             var harness = CreateHarness();
             var geometry = CreateMinorArcGeometry(90, 100);
-            var edges = CommitArcWithRadius(harness, geometry, 100);
+            var edges = CommitArcWithHeight(harness, geometry);
 
             Assert.Equal(9, edges);
             TopologyValidator.AssertValid(harness.Session.Document, 1e-4);
+        });
+    }
+
+    [Fact]
+    public void Arc_TrueRadius_MatchesCircleThroughArcPoints()
+    {
+        RunSta(() =>
+        {
+            var geometry = CreateMinorArcGeometry(90, 100);
+            var height = GetArcHeight(geometry);
+            Assert.True(ArcGeometry.TryComputeRadiusFromSignedSagitta(
+                MathUtils.Distance(geometry.Start, geometry.End),
+                height,
+                out var radius));
+            Assert.Equal(100, radius, 1);
+        });
+    }
+
+    [Fact]
+    public void Arc_SagittaDistance_MatchesPreviewHeight()
+    {
+        RunSta(() =>
+        {
+            var geometry = CreateMinorArcGeometry(90, 100);
+            var height = GetArcHeight(geometry);
+            Assert.True(ArcGeometry.TryComputeRadiusFromSignedSagitta(
+                MathUtils.Distance(geometry.Start, geometry.End),
+                height,
+                out var radius));
+            Assert.True(ArcGeometry.TryCreateBendPoint(geometry.Start, geometry.End, height, out var bendPoint));
+            Assert.True(ArcGeometry.TryBuildArc(
+                geometry.Start,
+                geometry.End,
+                radius,
+                bendPoint,
+                out var center,
+                out var startAngle,
+                out var sweep));
+
+            var arcMidpoint = SectorGeometry.PointOnArc(center, radius, startAngle + sweep * Math.PI / 360.0);
+            var chordMidpoint = MathUtils.Midpoint(geometry.Start, geometry.End);
+            var measuredHeight = MathUtils.Distance(arcMidpoint, chordMidpoint);
+            Assert.Equal(Math.Abs(height), measuredHeight, 1);
         });
     }
 
@@ -63,7 +112,7 @@ public class ArcToolTests
         {
             var harness = CreateHarness();
             var geometry = CreateMinorArcGeometry(31, 200);
-            Assert.Equal(4, CommitArcWithRadius(harness, geometry, 200));
+            Assert.Equal(4, CommitArcWithHeight(harness, geometry));
         });
     }
 
@@ -74,7 +123,7 @@ public class ArcToolTests
         {
             var harness = CreateHarness();
             var geometry = CreateMinorArcGeometry(90, 100);
-            Assert.Equal(9, CommitArcWithRadius(harness, geometry, 100));
+            Assert.Equal(9, CommitArcWithHeight(harness, geometry));
         });
     }
 
@@ -85,7 +134,7 @@ public class ArcToolTests
         {
             var harness = CreateHarness();
             var geometry = CreateMinorArcGeometry(180, 100);
-            Assert.Equal(18, CommitArcWithRadius(harness, geometry, 100));
+            Assert.Equal(18, CommitArcWithHeight(harness, geometry));
         });
     }
 
@@ -98,7 +147,7 @@ public class ArcToolTests
 
             var harness = CreateHarness();
             var geometry = CreateMajorArcGeometry(360, 1000);
-            Assert.Equal(36, CommitArcWithRadius(harness, geometry, 1000));
+            Assert.Equal(36, CommitArcWithHeight(harness, geometry));
         });
     }
 
@@ -107,17 +156,80 @@ public class ArcToolTests
     {
         RunSta(() =>
         {
-            using var harness = CreateInteractiveHarness();
+            var harness = CreateInteractiveHarness();
+            try
+            {
+                var geometry = CreateMinorArcGeometry(90, 100);
+                var height = Math.Abs(GetArcHeight(geometry));
+
+                harness.FirstClick(geometry.Start);
+                harness.SecondClick(geometry.End);
+                harness.Move(geometry.Cursor);
+                harness.StatusBar.SetLineInputText(height.ToString(CultureInfo.InvariantCulture));
+
+                Assert.True(LinearInputCommit.TryCommitLength(
+                    harness.Tool,
+                    height.ToString(CultureInfo.InvariantCulture),
+                    LinearDisplayUnit.Millimeters,
+                    LineInputLabelMode.ArcHeight));
+                Assert.Equal(9, harness.Session.Document.Edges.Count);
+                Assert.Equal(string.Empty, harness.StatusBar.LineInputText);
+            }
+            finally
+            {
+                harness.Dispose();
+            }
+        });
+    }
+
+    [Fact]
+    public void Arc_ExactInputMillimeters_UpdatesPreviewWithoutCommit()
+    {
+        RunSta(() =>
+        {
+            var harness = CreateHarness();
             var geometry = CreateMinorArcGeometry(90, 100);
+            var height = Math.Abs(GetArcHeight(geometry));
 
             harness.FirstClick(geometry.Start);
             harness.SecondClick(geometry.End);
             harness.Move(geometry.Cursor);
-            harness.StatusBar.SetLineInputText("100");
 
-            Assert.True(harness.Tool.TryApplyLengthInput("100"));
-            Assert.Equal(9, harness.Session.Document.Edges.Count);
-            Assert.Equal(string.Empty, harness.StatusBar.LineInputText);
+            Assert.True(harness.Tool.TryApplyLengthFromInput(height.ToString(CultureInfo.InvariantCulture), commit: false));
+            Assert.Empty(harness.Session.Document.Edges);
+            Assert.NotNull(harness.LastDisplayedLength());
+            Assert.Equal(height, harness.LastDisplayedLength()!.Value, 1);
+        });
+    }
+
+    [Fact]
+    public void Arc_ExactInputMeters_CommitsCorrectGeometry()
+    {
+        RunSta(() =>
+        {
+            var harness = CreateInteractiveHarness();
+            try
+            {
+                var geometry = CreateMinorArcGeometry(90, 100);
+                var heightMillimeters = Math.Abs(GetArcHeight(geometry));
+                harness.Session.DisplayUnitSettings.LinearUnit = LinearDisplayUnit.Meters;
+
+                harness.FirstClick(geometry.Start);
+                harness.SecondClick(geometry.End);
+                harness.Move(geometry.Cursor);
+
+                var heightMeters = heightMillimeters / 1000.0;
+                Assert.True(LinearInputCommit.TryCommitLength(
+                    harness.Tool,
+                    heightMeters.ToString(CultureInfo.InvariantCulture),
+                    LinearDisplayUnit.Meters,
+                    LineInputLabelMode.ArcHeight));
+                Assert.Equal(9, harness.Session.Document.Edges.Count);
+            }
+            finally
+            {
+                harness.Dispose();
+            }
         });
     }
 
@@ -140,33 +252,56 @@ public class ArcToolTests
     }
 
     [Fact]
-    public void Arc_InvalidRadiusInput_IsPreserved()
+    public void Arc_InvalidHeightInput_IsPreserved()
     {
         RunSta(() =>
         {
-            using var harness = CreateInteractiveHarness();
-            var geometry = CreateMinorArcGeometry(90, 100);
+            var harness = CreateInteractiveHarness();
+            try
+            {
+                var geometry = CreateMinorArcGeometry(90, 100);
 
-            harness.FirstClick(geometry.Start);
-            harness.SecondClick(geometry.End);
-            harness.Move(geometry.Cursor);
-            harness.StatusBar.SetLineInputText("5");
+                harness.FirstClick(geometry.Start);
+                harness.SecondClick(geometry.End);
+                harness.Move(geometry.Cursor);
+                harness.StatusBar.SetLineInputText("0");
 
-            Assert.False(harness.Tool.TryApplyLengthInput("5"));
-            Assert.Equal("5", harness.StatusBar.LineInputText);
-            Assert.Empty(harness.Session.Document.Edges);
+                Assert.False(LinearInputCommit.TryCommitLength(
+                    harness.Tool,
+                    "0",
+                    LinearDisplayUnit.Millimeters,
+                    LineInputLabelMode.ArcHeight));
+                Assert.Equal("0", harness.StatusBar.LineInputText);
+                Assert.Empty(harness.Session.Document.Edges);
+            }
+            finally
+            {
+                harness.Dispose();
+            }
         });
     }
 
-    private static int CommitArcWithRadius(ArcToolHarness harness, ArcTestGeometry geometry, double radius)
+    private static int CommitArcWithHeight(ArcToolHarness harness, ArcTestGeometry geometry)
     {
         harness.FirstClick(geometry.Start);
         harness.SecondClick(geometry.End);
         harness.Move(geometry.Cursor);
-        Assert.True(ArcGeometry.TryBuildArc(geometry.Start, geometry.End, radius, geometry.Cursor, out _, out _, out var sweep));
+        var height = GetArcHeight(geometry);
+        Assert.True(ArcGeometry.TryComputeRadiusFromSignedSagitta(
+            MathUtils.Distance(geometry.Start, geometry.End),
+            height,
+            out var radius));
+        Assert.True(ArcGeometry.TryCreateBendPoint(geometry.Start, geometry.End, height, out var bendPoint));
+        Assert.True(ArcGeometry.TryBuildArc(geometry.Start, geometry.End, radius, bendPoint, out _, out _, out var sweep));
         Assert.Equal(geometry.ExpectedSweepDegrees, Math.Abs(sweep), 1.0);
-        Assert.True(harness.Tool.TryApplyLengthInput(radius.ToString(CultureInfo.InvariantCulture)));
+        Assert.True(harness.Tool.TryApplyLength(Math.Abs(height)));
         return harness.Session.Document.Edges.Count;
+    }
+
+    private static double GetArcHeight(ArcTestGeometry geometry)
+    {
+        Assert.True(ArcGeometry.TryGetSignedSagitta(geometry.Start, geometry.End, geometry.Cursor, out var signedSagitta));
+        return signedSagitta;
     }
 
     private static ArcTestGeometry CreateMinorArcGeometry(double sweepDegrees, double radius)
@@ -176,7 +311,7 @@ public class ArcToolTests
         var start = new PointF(0, 0);
         var end = new PointF((float)chord, 0);
         var sag = radius - Math.Sqrt(Math.Max(0, radius * radius - (chord / 2) * (chord / 2)));
-        var cursor = new PointF((float)(chord / 2), (float)(sag + 10));
+        Assert.True(ArcGeometry.TryCreateBendPoint(start, end, sag, out var cursor));
 
         Assert.True(ArcGeometry.TryBuildArc(start, end, radius, cursor, out _, out _, out var builtSweep));
         Assert.Equal(sweepDegrees, Math.Abs(builtSweep), 1.0);
@@ -242,6 +377,8 @@ public class ArcToolTests
 
     private sealed class ArcToolHarness
     {
+        private double? _lastLength;
+
         public ArcToolHarness()
         {
             Session = new CadSession();
@@ -256,7 +393,7 @@ public class ArcToolTests
                 () => { },
                 () => { },
                 () => { },
-                setLength: _ => { },
+                setLength: length => _lastLength = length,
                 setLengthInputEnabled: _ => { },
                 resetLengthInput: _ => { },
                 processLengthKey: _ => false,
@@ -279,6 +416,8 @@ public class ArcToolTests
         public void SecondClick(PointF world) => Tool.OnMouseDown(CreateMouseDown(), world);
 
         public void Move(PointF world) => Tool.OnMouseMove(CreateMouseMove(), world);
+
+        public double? LastDisplayedLength() => _lastLength;
     }
 
     private sealed class ArcInteractiveHarness : IDisposable

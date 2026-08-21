@@ -14,24 +14,65 @@ public static class ArcGeometry
         double sweepDegrees)
         => SectorGeometry.ComputeArcPoints(center, radius, startAngleRadians, sweepDegrees);
 
-    public static bool TryComputeRadiusFromSagitta(PointF a, PointF b, PointF cursor, out double radius)
+    public static double GetSignedSagitta(PointF a, PointF b, PointF point)
+        => ComputeSignedSagitta(a, b, point);
+
+    public static bool TryGetSignedSagitta(PointF a, PointF b, PointF point, out double signedSagitta)
+    {
+        signedSagitta = ComputeSignedSagitta(a, b, point);
+        var topologyTolerance = TopologyTolerance.ForMutation;
+        return Math.Abs(signedSagitta) > topologyTolerance;
+    }
+
+    public static bool TryComputeRadiusFromSignedSagitta(double chord, double signedSagitta, out double radius)
     {
         radius = 0;
-        var chord = MathUtils.Distance(a, b);
         var topologyTolerance = TopologyTolerance.ForMutation;
         if (chord <= topologyTolerance)
         {
             return false;
         }
 
-        var sag = ComputeSignedSagitta(a, b, cursor);
-        if (Math.Abs(sag) <= topologyTolerance)
+        var sag = Math.Abs(signedSagitta);
+        if (sag <= topologyTolerance)
         {
             return false;
         }
 
-        radius = (chord * chord) / (8 * Math.Abs(sag)) + Math.Abs(sag) / 2;
+        radius = (chord * chord) / (8 * sag) + sag / 2;
         return radius + topologyTolerance >= chord / 2;
+    }
+
+    public static bool TryComputeRadiusFromSagitta(PointF a, PointF b, PointF cursor, out double radius)
+    {
+        radius = 0;
+        if (!TryGetSignedSagitta(a, b, cursor, out var signedSagitta))
+        {
+            return false;
+        }
+
+        return TryComputeRadiusFromSignedSagitta(MathUtils.Distance(a, b), signedSagitta, out radius);
+    }
+
+    public static bool TryCreateBendPoint(PointF a, PointF b, double signedSagitta, out PointF bendPoint)
+    {
+        bendPoint = default;
+        var chord = MathUtils.Distance(a, b);
+        var topologyTolerance = TopologyTolerance.ForMutation;
+        if (chord <= topologyTolerance || Math.Abs(signedSagitta) <= topologyTolerance)
+        {
+            return false;
+        }
+
+        var mid = MathUtils.Midpoint(a, b);
+        var dirX = (b.X - a.X) / chord;
+        var dirY = (b.Y - a.Y) / chord;
+        var sign = Math.Sign(signedSagitta);
+        var height = Math.Abs(signedSagitta);
+        bendPoint = new PointF(
+            mid.X + sign * height * -dirY,
+            mid.Y + sign * height * dirX);
+        return true;
     }
 
     public static bool TryBuildArc(

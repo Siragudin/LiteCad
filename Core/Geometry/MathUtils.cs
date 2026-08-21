@@ -59,6 +59,13 @@ public static class MathUtils
         return inside;
     }
 
+    public const double SnapTolerancePixels = 12.0;
+
+    public const double SelectionPickPixels = 8.0;
+
     public static double SnapToleranceWorld(double zoom)
-        => Math.Max(DefaultTolerance, 12.0 / zoom);
+        => Math.Max(DefaultTolerance, SnapTolerancePixels / zoom);
+
+    public static double SelectionPickToleranceWorld(double zoom)
+        => Math.Max(DefaultTolerance, SelectionPickPixels / zoom);
 }

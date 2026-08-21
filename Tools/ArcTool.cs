@@ -3,7 +3,6 @@ using LiteCad.Core.Geometry;
 using LiteCad.Rendering;
 using LiteCad.Resources;
 using LiteCad.Services;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -18,6 +17,8 @@ public sealed class ArcTool : ToolBase
     private PointF _startPoint;
     private PointF _endPoint;
     private PointF _cursorPoint;
+    private double _lastSignedSagitta;
+    private double? _signedSagittaOverride;
 
     public override ToolId Id => ToolId.Arc;
 
@@ -80,16 +81,18 @@ public sealed class ArcTool : ToolBase
             _hasEnd = true;
             _endPoint = snapped;
             _cursorPoint = snapped;
-            Context.SetLineInputModeEnabled(true, LineInputLabelMode.Radius);
-            Context.SetStatus(Strings.Input_Arc_SelectRadius);
+            _lastSignedSagitta = 0;
+            _signedSagittaOverride = null;
+            Context.SetLineInputModeEnabled(true, LineInputLabelMode.ArcHeight);
+            Context.SetStatus(Strings.Input_Arc_SelectHeight);
             Context.ResetLengthInput(null);
-            UpdatePreviewRadiusDisplay();
+            UpdatePreviewSagittaDisplay();
             Context.RequestRedraw();
             e.Handled = true;
             return;
         }
 
-        if (TryResolvePreviewRadius(out var radius) && CommitArc(radius))
+        if (TryResolvePreview(out var radius, out var bendPoint) && CommitArc(radius, bendPoint))
         {
             e.Handled = true;
         }
@@ -111,6 +114,11 @@ public sealed class ArcTool : ToolBase
 
         _cursorPoint = ResolveSnap(world);
 
+        if (string.IsNullOrWhiteSpace(Context.GetLineInputText()))
+        {
+            _signedSagittaOverride = null;
+        }
+
         if (!_hasStart)
         {
             Context.SetLength(null);
@@ -121,9 +129,11 @@ public sealed class ArcTool : ToolBase
             Context.SetLength(MathUtils.Distance(_startPoint, _cursorPoint));
             Context.SetArea(null);
         }
-        else
+        else if (_signedSagittaOverride is null
+                 && ArcGeometry.TryGetSignedSagitta(_startPoint, _endPoint, _cursorPoint, out var signedSagitta))
         {
-            UpdatePreviewRadiusDisplay();
+            _lastSignedSagitta = signedSagitta;
+            UpdatePreviewSagittaDisplay();
         }
 
         Context.RequestRedraw();
@@ -153,9 +163,9 @@ public sealed class ArcTool : ToolBase
             var wasTyping = !string.IsNullOrWhiteSpace(Context.GetLineInputText());
             if (Context.ProcessLengthKey(e))
             {
-                if (!wasTyping && TryResolvePreviewRadius(out var radius))
+                if (!wasTyping && TryResolvePreview(out var radius, out var bendPoint))
                 {
-                    CommitArc(radius);
+                    CommitArc(radius, bendPoint);
                 }
 
                 e.Handled = true;
@@ -166,36 +176,39 @@ public sealed class ArcTool : ToolBase
 
         if (Context.ProcessLengthKey(e))
         {
-            UpdatePreviewRadiusDisplay();
-            Context.RequestRedraw();
             e.Handled = true;
+            return;
         }
+
+        TryUpdatePreviewFromInputText();
+        UpdatePreviewSagittaDisplay();
+        Context.RequestRedraw();
     }
 
-    public override bool TryApplyLength(double length)
+    public override bool TryApplyLength(double arcHeightMillimeters)
     {
-        if (!_hasEnd || Context is null || length <= 0)
+        if (!_hasEnd || Context is null || arcHeightMillimeters <= 0)
         {
             return false;
         }
 
-        return CommitArc(length);
+        if (!TrySetPreviewSagitta(arcHeightMillimeters))
+        {
+            Context.SetStatus(Strings.Error_ArcHeightTooSmall);
+            return false;
+        }
+
+        if (!TryResolvePreview(out var radius, out var bendPoint))
+        {
+            Context.SetStatus(Strings.Error_ArcHeightTooSmall);
+            return false;
+        }
+
+        return CommitArc(radius, bendPoint);
     }
 
     public override bool TryApplyLengthInput(string input)
-    {
-        if (!_hasEnd || Context is null)
-        {
-            return false;
-        }
-
-        if (!TryParseRadius(input, out var radius))
-        {
-            return false;
-        }
-
-        return CommitArc(radius);
-    }
+        => TryApplyLengthFromInput(input, commit: true);
 
     public override void RenderOverlay(DrawingContext context, Camera camera, Size viewport)
     {
@@ -219,12 +232,12 @@ public sealed class ArcTool : ToolBase
 
         if (!_hasEnd)
         {
-            context.DrawLine(previewPen, ToPoint(_startPoint), ToPoint(_cursorPoint));
+            PreviewLineRenderer.Draw(context, _startPoint, _cursorPoint, previewPen);
             return;
         }
 
-        if (!TryResolvePreviewRadius(out var radius)
-            || !ArcGeometry.TryBuildArc(_startPoint, _endPoint, radius, _cursorPoint, out var center, out var startAngle, out var sweep))
+        if (!TryResolvePreview(out var radius, out var bendPoint)
+            || !ArcGeometry.TryBuildArc(_startPoint, _endPoint, radius, bendPoint, out var center, out var startAngle, out var sweep))
         {
             return;
         }
@@ -236,25 +249,126 @@ public sealed class ArcTool : ToolBase
         }
     }
 
-    private bool TryResolvePreviewRadius(out double radius)
+    private bool TryResolvePreview(out double radius, out PointF bendPoint)
     {
         radius = 0;
+        bendPoint = default;
+
         if (!_hasEnd || Context is null)
         {
             return false;
         }
 
-        var text = Context.GetLineInputText();
-        if (TryParseRadius(text, out var typedRadius) && typedRadius >= GetMinimumRadius())
+        var signedSagitta = ResolveSignedSagitta();
+        if (!signedSagitta.HasValue)
         {
-            radius = typedRadius;
+            return false;
+        }
+
+        var chord = MathUtils.Distance(_startPoint, _endPoint);
+        if (!ArcGeometry.TryComputeRadiusFromSignedSagitta(chord, signedSagitta.Value, out radius))
+        {
+            return false;
+        }
+
+        return ArcGeometry.TryCreateBendPoint(_startPoint, _endPoint, signedSagitta.Value, out bendPoint);
+    }
+
+    private double? ResolveSignedSagitta()
+    {
+        if (_signedSagittaOverride.HasValue)
+        {
+            return _signedSagittaOverride.Value;
+        }
+
+        if (ArcGeometry.TryGetSignedSagitta(_startPoint, _endPoint, _cursorPoint, out var signedSagitta))
+        {
+            _lastSignedSagitta = signedSagitta;
+            return signedSagitta;
+        }
+
+        if (Math.Abs(_lastSignedSagitta) > TopologyTolerance.ForMutation)
+        {
+            return _lastSignedSagitta;
+        }
+
+        return null;
+    }
+
+    private bool TrySetPreviewSagitta(double arcHeightMillimeters)
+    {
+        if (arcHeightMillimeters <= TopologyTolerance.ForMutation)
+        {
+            return false;
+        }
+
+        var sign = Math.Abs(_lastSignedSagitta) > TopologyTolerance.ForMutation
+            ? Math.Sign(_lastSignedSagitta)
+            : 1;
+        _signedSagittaOverride = sign * arcHeightMillimeters;
+        return true;
+    }
+
+    internal bool TryApplyLengthFromInput(string input, bool commit)
+    {
+        if (!_hasEnd || Context is null)
+        {
+            return false;
+        }
+
+        if (!LinearInputParser.TryParsePositiveDistance(
+                input,
+                Context.Session.DisplayUnitSettings.LinearUnit,
+                out var arcHeightMillimeters))
+        {
+            return false;
+        }
+
+        if (!TrySetPreviewSagitta(arcHeightMillimeters))
+        {
+            return false;
+        }
+
+        UpdatePreviewSagittaDisplay();
+        Context.RequestRedraw();
+
+        if (!commit)
+        {
             return true;
         }
 
-        return ArcGeometry.TryComputeRadiusFromSagitta(_startPoint, _endPoint, _cursorPoint, out radius);
+        if (!TryResolvePreview(out var radius, out var bendPoint))
+        {
+            return false;
+        }
+
+        return CommitArc(radius, bendPoint);
     }
 
-    private bool CommitArc(double radius)
+    private void TryUpdatePreviewFromInputText()
+    {
+        if (Context is null || !_hasEnd)
+        {
+            return;
+        }
+
+        var text = Context.GetLineInputText();
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            _signedSagittaOverride = null;
+            return;
+        }
+
+        if (LinearInputParser.TryParsePositiveDistance(
+                text,
+                Context.Session.DisplayUnitSettings.LinearUnit,
+                out var arcHeightMillimeters))
+        {
+            TrySetPreviewSagitta(arcHeightMillimeters);
+        }
+    }
+
+    private bool CommitArc(double radius, PointF bendPoint)
     {
         if (Context is null || !_hasEnd)
         {
@@ -263,13 +377,13 @@ public sealed class ArcTool : ToolBase
 
         if (radius < GetMinimumRadius())
         {
-            Context.SetStatus(Strings.Error_ArcRadiusTooSmall);
+            Context.SetStatus(Strings.Error_ArcHeightTooSmall);
             return false;
         }
 
-        if (!ArcGeometry.TryBuildArc(_startPoint, _endPoint, radius, _cursorPoint, out var center, out var startAngle, out var sweep))
+        if (!ArcGeometry.TryBuildArc(_startPoint, _endPoint, radius, bendPoint, out var center, out var startAngle, out var sweep))
         {
-            Context.SetStatus(Strings.Error_ArcRadiusTooSmall);
+            Context.SetStatus(Strings.Error_ArcHeightTooSmall);
             return false;
         }
 
@@ -291,6 +405,7 @@ public sealed class ArcTool : ToolBase
         }
 
         PolygonBuilder.SyncFaces(document, topologyTolerance);
+        Context.Session.SnapService.InvalidateCache();
 
         ResetAfterCommit();
         Context.SetStatus(Strings.Input_Arc_SelectStart);
@@ -308,14 +423,15 @@ public sealed class ArcTool : ToolBase
         return MathUtils.Distance(_startPoint, _endPoint) / 2;
     }
 
-    private void UpdatePreviewRadiusDisplay()
+    private void UpdatePreviewSagittaDisplay()
     {
         if (Context is null || !_hasEnd)
         {
             return;
         }
 
-        Context.SetLength(TryResolvePreviewRadius(out var radius) ? radius : null);
+        var signedSagitta = ResolveSignedSagitta();
+        Context.SetLength(signedSagitta.HasValue ? Math.Abs(signedSagitta.Value) : null);
         Context.SetArea(null);
     }
 
@@ -323,6 +439,8 @@ public sealed class ArcTool : ToolBase
     {
         _hasStart = false;
         _hasEnd = false;
+        _lastSignedSagitta = 0;
+        _signedSagittaOverride = null;
         _visibleSnaps.Clear();
         Context?.SetLineInputModeEnabled(false, LineInputLabelMode.Length);
         Context?.SetLength(null);
@@ -341,6 +459,8 @@ public sealed class ArcTool : ToolBase
     {
         _hasStart = false;
         _hasEnd = false;
+        _lastSignedSagitta = 0;
+        _signedSagittaOverride = null;
         _visibleSnaps.Clear();
         Context?.SetLineInputModeEnabled(false, LineInputLabelMode.Length);
         Context?.SetLength(null);
@@ -355,13 +475,13 @@ public sealed class ArcTool : ToolBase
             return world;
         }
 
-        var tolerance = Context.SnapTolerance;
-        var snap = Context.Session.SnapService.FindBestSnap(
+        return Context.Session.SnapService.ResolveDrawingSnap(
             Context.Session.Document,
             world,
-            tolerance,
-            includeOnEdge: !_hasStart);
-        return snap.Resolve(world);
+            null,
+            Context.SnapTolerance,
+            orthoEnabled: false,
+            includeOnEdge: true);
     }
 
     private Edge CreateTemplate()
@@ -395,17 +515,4 @@ public sealed class ArcTool : ToolBase
 
     private static Point ToPoint(PointF point)
         => new(point.X, point.Y);
-
-    private static bool TryParseRadius(string text, out double radius)
-    {
-        radius = 0;
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            return false;
-        }
-
-        var normalized = text.Trim().Replace(',', '.');
-        return double.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out radius)
-               && radius > 0;
-    }
 }

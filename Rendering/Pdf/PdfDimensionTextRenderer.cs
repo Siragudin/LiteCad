@@ -4,7 +4,6 @@ using LiteCad.Dimensions;
 using LiteCad.Services;
 using LiteCad.UI;
 using PdfSharp.Drawing;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 

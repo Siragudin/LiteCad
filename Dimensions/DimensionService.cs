@@ -11,7 +11,8 @@ public static class DimensionService
         Guid firstVertexId,
         Guid secondVertexId,
         double offset,
-        double tolerance)
+        double tolerance,
+        double textSize = Dimension.DefaultTextSize)
     {
         var first = document.Vertices.First(vertex => vertex.Id == firstVertexId);
         var second = document.Vertices.First(vertex => vertex.Id == secondVertexId);
@@ -21,7 +22,8 @@ public static class DimensionService
             secondVertexId,
             first.Position,
             second.Position,
-            offset);
+            offset,
+            textSize: textSize);
 
         if (!DimensionGeometry.TryCreateLayout(first.Position, second.Position, offset, tolerance, out _))
         {
@@ -67,6 +69,18 @@ public static class DimensionService
         }
 
         dimension.ExtensionStyle = extensionStyle;
+        return true;
+    }
+
+    public static bool TrySetTextSize(CadDocument document, Guid dimensionId, double textSize)
+    {
+        var dimension = document.Dimensions.FirstOrDefault(item => item.Id == dimensionId);
+        if (dimension is null)
+        {
+            return false;
+        }
+
+        dimension.TextSize = Dimension.NormalizeTextSize(textSize);
         return true;
     }
 

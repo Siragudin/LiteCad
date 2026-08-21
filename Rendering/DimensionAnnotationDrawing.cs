@@ -1,25 +1,13 @@
 using LiteCad.Core.Geometry;
-
 using LiteCad.Dimensions;
-
 using System.Globalization;
-
 using System.Windows;
-
 using System.Windows.Media;
-
-
 
 namespace LiteCad.Rendering;
 
-
-
 public static class DimensionAnnotationDrawing
-
 {
-
-    private const double TextScreenHeight = 18.0;
-
     private const double TextGapScreen = 12.0;
 
     private const double TickHalfLengthScreen = 5.0;
@@ -32,45 +20,25 @@ public static class DimensionAnnotationDrawing
 
     private const double ShortExtensionFraction = 0.25;
 
-
-
     public static void Draw(
-
         DrawingContext context,
-
         DimensionLayout layout,
-
         double offset,
-
         double zoom,
-
         Color color,
-
         bool isSelected,
-
         Camera camera,
-
         Size viewport,
-
         string? distanceText = null,
-
-        DimensionExtensionStyle extensionStyle = DimensionExtensionStyle.Full)
-
+        DimensionExtensionStyle extensionStyle = DimensionExtensionStyle.Full,
+        double textWorldHeight = Dimension.DefaultTextSize)
     {
-
         var brush = new SolidColorBrush(color);
-
         var extensionPen = RenderStyles.CreateScreenPen(brush, ExtensionThicknessScreen, zoom);
-
         var dimensionPen = RenderStyles.CreateScreenPen(
-
             brush,
-
             isSelected ? SelectedDimensionLineThicknessScreen : DimensionLineThicknessScreen,
-
             zoom);
-
-
 
         DrawExtensionLine(
             context,
@@ -86,28 +54,28 @@ public static class DimensionAnnotationDrawing
             extensionStyle);
 
         context.DrawLine(
-
             dimensionPen,
-
             ToPoint(layout.DimensionLineStart),
-
             ToPoint(layout.DimensionLineEnd));
 
-
-
         DrawTick(context, layout.FirstExtensionEnd, layout.TextAngleRadians, zoom, dimensionPen);
-
         DrawTick(context, layout.SecondExtensionEnd, layout.TextAngleRadians, zoom, dimensionPen);
 
-
-
         var text = distanceText ?? layout.MeasuredDistance.ToString("F2", CultureInfo.InvariantCulture);
-
-        DrawDistanceText(context, color, text, camera, viewport, layout);
-
+        DrawDistanceText(context, color, text, layout, textWorldHeight, camera, viewport, zoom);
     }
 
+    public static double GetWorldTextHeight(Dimension dimension)
+        => Dimension.NormalizeTextSize(dimension.TextSize);
 
+    public static double GetTextScreenExtent(double textWorldHeight, double zoom)
+        => Dimension.NormalizeTextSize(textWorldHeight) * zoom;
+
+    public static Size MeasureDistanceText(string text, double textWorldHeight, double zoom = 1.0)
+    {
+        var formattedText = CreateFormattedText(text, GetTextScreenExtent(textWorldHeight, zoom), Colors.Black);
+        return new Size(formattedText.Width, formattedText.Height);
+    }
 
     private static void DrawExtensionLine(
         DrawingContext context,
@@ -138,47 +106,34 @@ public static class DimensionAnnotationDrawing
     }
 
     private static void DrawTick(
-
         DrawingContext context,
-
         PointF center,
-
         double dimensionAngleRadians,
-
         double zoom,
-
         Pen pen)
-
     {
-
         var tickAngle = dimensionAngleRadians + Math.PI * 0.25;
-
         var halfLength = TickHalfLengthScreen / zoom;
-
         var dx = Math.Cos(tickAngle) * halfLength;
-
         var dy = Math.Sin(tickAngle) * halfLength;
-
         context.DrawLine(
-
             pen,
-
             new Point(center.X - dx, center.Y - dy),
-
             new Point(center.X + dx, center.Y + dy));
-
     }
-
-
 
     private static void DrawDistanceText(
         DrawingContext context,
         Color color,
         string text,
+        DimensionLayout layout,
+        double textWorldHeight,
         Camera camera,
         Size viewport,
-        DimensionLayout layout)
+        double zoom)
     {
+        textWorldHeight = Dimension.NormalizeTextSize(textWorldHeight);
+
         var startScreen = camera.WorldToScreen(layout.DimensionLineStart, viewport);
         var endScreen = camera.WorldToScreen(layout.DimensionLineEnd, viewport);
 
@@ -205,40 +160,10 @@ public static class DimensionAnnotationDrawing
                 center.Y + ny * TextGapScreen);
         }
 
-        double angle;
-        if (Math.Abs(dy) < Math.Abs(dx) * 0.01)
-        {
-            // HORIZONTAL: always left-to-right, no rotation.
-            angle = 0.0;
-        }
-        else if (Math.Abs(dx) < Math.Abs(dy) * 0.01)
-        {
-            // VERTICAL: read bottom-to-top regardless of line direction.
-            angle = -Math.PI / 2;
-        }
-        else
-        {
-            // DIAGONAL: existing logic (unchanged).
-            angle = Math.Atan2(dy, dx);
-            if (angle > Math.PI / 2 || angle <= -Math.PI / 2)
-            {
-                angle += Math.PI;
-            }
-        }
+        var angle = GetReadableTextAngleRadians(dx, dy);
+        var screenFontSize = GetTextScreenExtent(textWorldHeight, zoom);
+        var formattedText = CreateFormattedText(text, screenFontSize, color);
 
-        var formattedText = new FormattedText(
-            text,
-            CultureInfo.InvariantCulture,
-            FlowDirection.LeftToRight,
-            new Typeface("Segoe UI"),
-            TextScreenHeight,
-            new SolidColorBrush(color),
-            1.0)
-        {
-            TextAlignment = TextAlignment.Center
-        };
-
-        // Cancel the outer world-to-screen transform so text is drawn in viewport pixels.
         context.PushTransform(new MatrixTransform(camera.GetScreenToWorldMatrix(viewport)));
         context.PushTransform(new TranslateTransform(center.X, center.Y));
         context.PushTransform(new RotateTransform(angle * 180.0 / Math.PI));
@@ -252,12 +177,54 @@ public static class DimensionAnnotationDrawing
         context.Pop();
     }
 
+    private static FormattedText CreateFormattedText(string text, double screenFontSize, Color color)
+    {
+        return new FormattedText(
+            text,
+            CultureInfo.InvariantCulture,
+            FlowDirection.LeftToRight,
+            new Typeface("Segoe UI"),
+            screenFontSize,
+            new SolidColorBrush(color),
+            GetPixelsPerDip())
+        {
+            TextAlignment = TextAlignment.Center
+        };
+    }
 
+    private static double GetPixelsPerDip()
+    {
+        try
+        {
+            return VisualTreeHelper.GetDpi(new DrawingVisual()).PixelsPerDip;
+        }
+        catch
+        {
+            return 1.0;
+        }
+    }
+
+    private static double GetReadableTextAngleRadians(double dx, double dy)
+    {
+        if (Math.Abs(dy) < Math.Abs(dx) * 0.01)
+        {
+            return 0.0;
+        }
+
+        if (Math.Abs(dx) < Math.Abs(dy) * 0.01)
+        {
+            return -Math.PI / 2;
+        }
+
+        var angle = Math.Atan2(dy, dx);
+        if (angle > Math.PI / 2 || angle <= -Math.PI / 2)
+        {
+            angle += Math.PI;
+        }
+
+        return angle;
+    }
 
     private static Point ToPoint(PointF point)
-
         => new(point.X, point.Y);
-
 }
-
-

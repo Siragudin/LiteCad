@@ -101,6 +101,8 @@ public sealed class DimensionDto
     public bool IsOrthogonal { get; set; }
 
     public bool OrthogonalIsHorizontal { get; set; }
+
+    public double? TextSize { get; set; }
 }
 
 public sealed class FaceFillStyleDto

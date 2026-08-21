@@ -47,7 +47,8 @@ public sealed class DimensionRenderer
                 camera,
                 viewport,
                 distanceText: distanceText,
-                extensionStyle: dimension.ExtensionStyle);
+                extensionStyle: dimension.ExtensionStyle,
+                textWorldHeight: DimensionAnnotationDrawing.GetWorldTextHeight(dimension));
         }
     }
 }

@@ -106,7 +106,8 @@ public static class ProjectDocumentSerializer
                 dimension.Offset,
                 ParseEnum(dimension.ExtensionStyle, DimensionExtensionStyle.Full),
                 dimension.IsOrthogonal,
-                dimension.OrthogonalIsHorizontal));
+                dimension.OrthogonalIsHorizontal,
+                dimension.TextSize is > 0 ? dimension.TextSize.Value : Dimension.DefaultTextSize));
         }
 
         foreach (var axis in dto.Axes ?? [])
@@ -199,7 +200,8 @@ public static class ProjectDocumentSerializer
             Offset = dimension.Offset,
             ExtensionStyle = dimension.ExtensionStyle.ToString(),
             IsOrthogonal = dimension.IsOrthogonal,
-            OrthogonalIsHorizontal = dimension.OrthogonalIsHorizontal
+            OrthogonalIsHorizontal = dimension.OrthogonalIsHorizontal,
+            TextSize = dimension.TextSize
         };
 
     private static FaceFillStyleDto MapFaceFillStyle(FaceFillStyle style)

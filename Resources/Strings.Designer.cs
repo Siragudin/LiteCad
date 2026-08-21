@@ -137,6 +137,7 @@ public static class Strings
     public static string Label_FillPattern_Solid => Get("Label.FillPattern.Solid");
     public static string Label_FillPattern_Diagonal => Get("Label.FillPattern.Diagonal");
     public static string Label_Radius => Get("Label.Radius");
+    public static string Label_ArcHeight => Get("Label.ArcHeight");
     public static string Label_Angle => Get("Label.Angle");
     public static string Label_EmptyValue => Get("Label.EmptyValue");
     public static string Label_Color_Black => Get("Label.Color.Black");
@@ -224,7 +225,7 @@ public static class Strings
     public static string Input_Axis_SetDirectionThenTypeLength => Get("Input.Axis.SetDirectionThenTypeLength");
     public static string Input_Arc_SelectStart => Get("Input.Arc.SelectStart");
     public static string Input_Arc_SelectEnd => Get("Input.Arc.SelectEnd");
-    public static string Input_Arc_SelectRadius => Get("Input.Arc.SelectRadius");
+    public static string Input_Arc_SelectHeight => Get("Input.Arc.SelectHeight");
     public static string Input_Rectangle_SelectFirstCorner => Get("Input.Rectangle.SelectFirstCorner");
     public static string Input_Rectangle_SelectOppositeCorner => Get("Input.Rectangle.SelectOppositeCorner");
     public static string Input_Circle_SelectCenter => Get("Input.Circle.SelectCenter");
@@ -261,7 +262,7 @@ public static class Strings
 
     public static string Error_CannotCommand => Get("Error.CannotCommand");
     public static string Error_ArcTooSmall => Get("Error.ArcTooSmall");
-    public static string Error_ArcRadiusTooSmall => Get("Error.ArcRadiusTooSmall");
+    public static string Error_ArcHeightTooSmall => Get("Error.ArcHeightTooSmall");
     public static string Error_RectangleTooSmall => Get("Error.RectangleTooSmall");
     public static string Error_CircleTooSmall => Get("Error.CircleTooSmall");
     public static string Error_SectorTooSmall => Get("Error.SectorTooSmall");

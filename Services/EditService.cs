@@ -100,7 +100,11 @@ public sealed class EditService
 
     {
 
-        var pick = SelectionPickOperations.PickAt(session.Document, world, tolerance);
+        var pick = SelectionPickOperations.PickAt(
+            session.Document,
+            world,
+            tolerance,
+            MathUtils.SelectionPickToleranceWorld(session.Camera.Zoom));
 
         if (pick is null)
 

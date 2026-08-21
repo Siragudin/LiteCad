@@ -111,6 +111,7 @@ public sealed class SelectionTool : ToolBase
         var document = Context.Session.Document;
         var selection = Context.Session.Selection;
         var tolerance = Context.SnapTolerance;
+        var segmentPickTolerance = Context.SelectionPickTolerance;
 
         if (!additive)
         {
@@ -123,19 +124,13 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (TryToggleVertexAt(document, selection, world, tolerance, additive))
+        if (TryToggleAxisAt(document, selection, world, segmentPickTolerance, additive))
         {
             UpdateSelectionUi();
             return;
         }
 
-        if (TryToggleAxisAt(document, selection, world, tolerance, additive))
-        {
-            UpdateSelectionUi();
-            return;
-        }
-
-        if (TryToggleEdgeAt(document, selection, world, tolerance, additive))
+        if (TryToggleEdgeAt(document, selection, world, segmentPickTolerance, additive))
         {
             UpdateSelectionUi();
             return;
@@ -219,46 +214,6 @@ public sealed class SelectionTool : ToolBase
         UpdateSelectionUi(windowSelection ? Strings.Status_WindowSelection : Strings.Status_CrossingSelection);
     }
 
-    private bool TryToggleVertexAt(
-        CadDocument document,
-        Core.Selection.Selection selection,
-        PointF world,
-        double tolerance,
-        bool additive)
-    {
-        Vertex? closestVertex = null;
-        var closestDistance = tolerance;
-
-        foreach (var vertex in document.Vertices)
-        {
-            var distance = MathUtils.Distance(world, vertex.Position);
-            if (distance > closestDistance)
-            {
-                continue;
-            }
-
-            closestVertex = vertex;
-            closestDistance = distance;
-        }
-
-        if (closestVertex is null)
-        {
-            return false;
-        }
-
-        if (additive && selection.SelectedVertexIds.Contains(closestVertex.Id))
-        {
-            selection.SelectedVertexIds.Remove(closestVertex.Id);
-        }
-        else
-        {
-            selection.SelectedVertexIds.Add(closestVertex.Id);
-        }
-
-        Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_VertexSelected);
-        return true;
-    }
-
     private bool TryToggleAxisAt(
         CadDocument document,
         Core.Selection.Selection selection,
@@ -271,7 +226,7 @@ public sealed class SelectionTool : ToolBase
 
         foreach (var axis in document.Axes)
         {
-            if (!Geometry2D.TryProjectPointOnSegment(world, axis.Start, axis.End, out _, out var distance, tolerance) ||
+            if (!Geometry2D.TryHitTestSegment(world, axis.Start, axis.End, tolerance, out var distance) ||
                 distance > closestDistance)
             {
                 continue;
@@ -313,7 +268,7 @@ public sealed class SelectionTool : ToolBase
         {
             var start = TopologyService.GetEdgeStartPoint(document, edge);
             var end = TopologyService.GetEdgeEndPoint(document, edge);
-            if (!Geometry2D.TryProjectPointOnSegment(world, start, end, out _, out var distance, tolerance) ||
+            if (!Geometry2D.TryHitTestSegment(world, start, end, tolerance, out var distance) ||
                 distance > closestDistance)
             {
                 continue;

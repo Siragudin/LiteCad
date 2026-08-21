@@ -23,6 +23,8 @@ public partial class PropertiesPanel : UserControl
     private bool _suppressMoveOrthoEvents;
     private bool _suppressMirrorOrthoEvents;
     private bool _suppressDimensionOffsetEvents;
+    private bool _suppressDimensionTextSizeEvents;
+    private bool _suppressDimensionToolTextSizeEvents;
     private bool _suppressDimensionExtensionStyleEvents;
     private bool _suppressDimensionToolExtensionStyleEvents;
     private bool _suppressDimensionOrthoEvents;
@@ -69,9 +71,15 @@ public partial class PropertiesPanel : UserControl
 
     private void OnDisplayUnitSettingsChanged()
     {
-        if (_session is not null)
+        if (_session is null)
         {
-            SyncDimensionSelection(_session);
+            return;
+        }
+
+        SyncDimensionSelection(_session);
+        if (_session.ToolService.ActiveTool?.Id == ToolId.Dimension)
+        {
+            SyncDimensionToolTextSizeFromSession();
         }
     }
 
@@ -118,6 +126,7 @@ public partial class PropertiesPanel : UserControl
         if (isDimensionTool)
         {
             SyncDimensionToolExtensionStyleFromSession();
+            SyncDimensionToolTextSizeFromSession();
             SyncDimensionOrthoCheckBoxFromSession();
         }
 
@@ -252,6 +261,12 @@ public partial class PropertiesPanel : UserControl
                 session.DisplayUnitSettings.LinearUnit);
             _suppressDimensionOffsetEvents = false;
 
+            _suppressDimensionTextSizeEvents = true;
+            DimensionTextSizeTextBox.Text = FormatDimensionTextSize(
+                dimension.TextSize,
+                session.DisplayUnitSettings.LinearUnit);
+            _suppressDimensionTextSizeEvents = false;
+
             _suppressDimensionExtensionStyleEvents = true;
             SelectDimensionExtensionStyle(DimensionExtensionStyleCombo, dimension.ExtensionStyle);
             _suppressDimensionExtensionStyleEvents = false;
@@ -294,6 +309,26 @@ public partial class PropertiesPanel : UserControl
         SelectDimensionExtensionStyle(DimensionToolExtensionStyleCombo, extensionStyle);
         _suppressDimensionToolExtensionStyleEvents = false;
     }
+
+    public void SetDimensionToolTextSize(double textSize)
+    {
+        if (_session is not null)
+        {
+            _session.DimensionToolOptions.TextSize = Dimension.NormalizeTextSize(textSize);
+        }
+
+        SyncDimensionToolTextSizeFromSession();
+    }
+
+    public string DimensionTextSizeDisplayText => DimensionTextSizeTextBox.Text;
+
+    public void SetSelectedDimensionTextSize(string text)
+    {
+        DimensionTextSizeTextBox.Text = text;
+    }
+
+    public void CommitSelectedDimensionTextSizeForTests()
+        => CommitDimensionTextSize();
 
     public void SetDimensionOrthoChecked(bool enabled)
     {
@@ -506,6 +541,127 @@ public partial class PropertiesPanel : UserControl
 
         _requestRedraw?.Invoke();
     }
+
+    private void DimensionTextSizeTextBox_OnCommit(object sender, RoutedEventArgs e)
+        => CommitDimensionTextSize();
+
+    private void DimensionTextSizeTextBox_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            CommitDimensionTextSize();
+            e.Handled = true;
+        }
+    }
+
+    private void CommitDimensionTextSize()
+    {
+        if (_session is null || _suppressDimensionTextSizeEvents)
+        {
+            return;
+        }
+
+        if (_session.Selection.SelectedDimensionIds.Count != 1)
+        {
+            return;
+        }
+
+        if (!TryParseDimensionTextSize(
+                DimensionTextSizeTextBox.Text,
+                _session.DisplayUnitSettings.LinearUnit,
+                out var textSize))
+        {
+            return;
+        }
+
+        var dimensionId = _session.Selection.SelectedDimensionIds.First();
+        var dimension = _session.Document.Dimensions.FirstOrDefault(item => item.Id == dimensionId);
+        if (dimension is null)
+        {
+            return;
+        }
+
+        if (Math.Abs(dimension.TextSize - textSize) <= TopologyTolerance.ForMutation)
+        {
+            return;
+        }
+
+        _session.History.Record(_session.Document);
+        if (!DimensionService.TrySetTextSize(_session.Document, dimensionId, textSize))
+        {
+            return;
+        }
+
+        _requestRedraw?.Invoke();
+    }
+
+    private void DimensionToolTextSizeTextBox_OnCommit(object sender, RoutedEventArgs e)
+        => CommitDimensionToolTextSize();
+
+    private void DimensionToolTextSizeTextBox_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            CommitDimensionToolTextSize();
+            e.Handled = true;
+        }
+    }
+
+    private void CommitDimensionToolTextSize()
+    {
+        if (_session is null || _suppressDimensionToolTextSizeEvents)
+        {
+            return;
+        }
+
+        if (!TryParseDimensionTextSize(
+                DimensionToolTextSizeTextBox.Text,
+                _session.DisplayUnitSettings.LinearUnit,
+                out var textSize))
+        {
+            return;
+        }
+
+        if (Math.Abs(_session.DimensionToolOptions.TextSize - textSize) <= TopologyTolerance.ForMutation)
+        {
+            return;
+        }
+
+        _session.DimensionToolOptions.TextSize = Dimension.NormalizeTextSize(textSize);
+        _requestRedraw?.Invoke();
+    }
+
+    private void SyncDimensionToolTextSizeFromSession()
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        _suppressDimensionToolTextSizeEvents = true;
+        DimensionToolTextSizeTextBox.Text = FormatDimensionTextSize(
+            _session.DimensionToolOptions.TextSize,
+            _session.DisplayUnitSettings.LinearUnit);
+        _suppressDimensionToolTextSizeEvents = false;
+    }
+
+    private static bool TryParseDimensionTextSize(
+        string? text,
+        LinearDisplayUnit unit,
+        out double textSize)
+    {
+        textSize = 0;
+        if (string.IsNullOrWhiteSpace(text)
+            || !LinearInputParser.TryParse(text, unit, allowNegative: false, allowEmpty: false, out textSize))
+        {
+            return false;
+        }
+
+        return double.IsFinite(textSize);
+    }
+
+    private static string FormatDimensionTextSize(double textSize, LinearDisplayUnit unit)
+        => UnitDisplayFormatter.FormatLinear(Dimension.NormalizeTextSize(textSize), unit);
 
     private void DimensionToolExtensionStyleCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         => ApplyDimensionToolExtensionStyle();

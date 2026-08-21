@@ -121,4 +121,7 @@ public sealed class ToolContext
 
     public double SnapTolerance
         => MathUtils.SnapToleranceWorld(Session.Camera.Zoom);
+
+    public double SelectionPickTolerance
+        => MathUtils.SelectionPickToleranceWorld(Session.Camera.Zoom);
 }

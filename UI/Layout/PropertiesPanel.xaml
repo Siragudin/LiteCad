@@ -127,6 +127,15 @@
                                    Margin="0,0,0,8" />
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
+                            <TextBlock Text="{loc:Loc Key=Label.DimensionTextSize}"
+                                       Style="{StaticResource CadSectionLabelStyle}" />
+                            <TextBox x:Name="DimensionToolTextSizeTextBox"
+                                     Style="{StaticResource CadTextBoxStyle}"
+                                     LostFocus="DimensionToolTextSizeTextBox_OnCommit"
+                                     KeyDown="DimensionToolTextSizeTextBox_OnKeyDown" />
+                        </StackPanel>
+
+                        <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.DimensionExtensions}"
                                        Style="{StaticResource CadSectionLabelStyle}" />
                             <ComboBox x:Name="DimensionToolExtensionStyleCombo"
@@ -188,6 +197,15 @@
                                      Style="{StaticResource CadTextBoxStyle}"
                                      LostFocus="DimensionOffsetTextBox_OnCommit"
                                      KeyDown="DimensionOffsetTextBox_OnKeyDown" />
+                        </StackPanel>
+
+                        <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
+                            <TextBlock Text="{loc:Loc Key=Label.DimensionTextSize}"
+                                       Style="{StaticResource CadSectionLabelStyle}" />
+                            <TextBox x:Name="DimensionTextSizeTextBox"
+                                     Style="{StaticResource CadTextBoxStyle}"
+                                     LostFocus="DimensionTextSizeTextBox_OnCommit"
+                                     KeyDown="DimensionTextSizeTextBox_OnKeyDown" />
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
