@@ -180,6 +180,14 @@ public static class Strings
     public static string Dialog_OverwritePdf_Message => Get("Dialog.OverwritePdf.Message");
     public static string Dialog_PdfExportFailed_Title => Get("Dialog.PdfExportFailed.Title");
     public static string Dialog_PdfExportFailed_Message => Get("Dialog.PdfExportFailed.Message");
+    public static string Dialog_PdfPreview_Title => Get("Dialog.PdfPreview.Title");
+    public static string Label_PdfPreviewHint => Get("Label.PdfPreviewHint");
+    public static string Label_PdfFormat => Get("Label.PdfFormat");
+    public static string Label_PdfOrientation => Get("Label.PdfOrientation");
+    public static string PdfOrientation_Portrait => Get("PdfOrientation.Portrait");
+    public static string PdfOrientation_Landscape => Get("PdfOrientation.Landscape");
+    public static string Button_Cancel => Get("Button.Cancel");
+    public static string Button_SavePdf => Get("Button.SavePdf");
     public static string Status_PdfExported => Get("Status.PdfExported");
     public static string Status_Undo => Get("Status.Undo");
     public static string Status_Redo => Get("Status.Redo");

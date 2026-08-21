@@ -11,7 +11,7 @@ public sealed class PdfExportLayout
 
     public const double A4HeightMm = 297.0;
 
-    public const double MarginMm = 12.0;
+    public const double MarginMm = PdfSheet.DefaultMarginMm;
 
     public const double PointsPerInch = 72.0;
 
@@ -77,23 +77,31 @@ public sealed class PdfExportLayout
 
     public double Scale => RequiredZoom;
 
+    public PdfPageOrientation Orientation => IsLandscape ? PdfPageOrientation.Landscape : PdfPageOrientation.Portrait;
+
     public static PdfExportLayout Create(CadDocument document, LinearDisplayUnit linearUnit = LinearDisplayUnit.Millimeters)
+        => Create(document, PdfPageOrientation.Portrait, linearUnit);
+
+    public static PdfExportLayout Create(
+        CadDocument document,
+        PdfPageOrientation orientation,
+        LinearDisplayUnit linearUnit = LinearDisplayUnit.Millimeters,
+        double marginMm = PdfSheet.DefaultMarginMm)
     {
-        var provisionalBounds = DocumentBoundsCalculator.ComputeWorldBounds(document, linearUnit: linearUnit);
-        var isLandscape = provisionalBounds.Width > provisionalBounds.Height;
+        var isLandscape = orientation == PdfPageOrientation.Landscape;
 
         var pageWidthMm = isLandscape ? A4HeightMm : A4WidthMm;
         var pageHeightMm = isLandscape ? A4WidthMm : A4HeightMm;
 
         var pageWidthPoints = MmToPoints(pageWidthMm);
         var pageHeightPoints = MmToPoints(pageHeightMm);
-        var marginPoints = MmToPoints(MarginMm);
+        var marginPoints = MmToPoints(marginMm);
 
         var contentWidthDip = PointsToDip(pageWidthPoints - marginPoints * 2);
         var contentHeightDip = PointsToDip(pageHeightPoints - marginPoints * 2);
         var contentSize = new Size(contentWidthDip, contentHeightDip);
 
-        var worldBounds = provisionalBounds;
+        var worldBounds = DocumentBoundsCalculator.ComputeWorldBounds(document, linearUnit: linearUnit);
         var requiredZoom = ComputeRequiredZoom(worldBounds, contentSize);
         for (var iteration = 0; iteration < BoundsRefinementIterations; iteration++)
         {
@@ -127,6 +135,15 @@ public sealed class PdfExportLayout
         return layout;
     }
 
+    public static PdfExportLayout CreateWithAutoOrientation(CadDocument document, LinearDisplayUnit linearUnit = LinearDisplayUnit.Millimeters)
+    {
+        var provisionalBounds = DocumentBoundsCalculator.ComputeWorldBounds(document, linearUnit: linearUnit);
+        var orientation = provisionalBounds.Width > provisionalBounds.Height
+            ? PdfPageOrientation.Landscape
+            : PdfPageOrientation.Portrait;
+        return Create(document, orientation, linearUnit);
+    }
+
     public Matrix GetEffectiveWorldToContentMatrix()
     {
         var matrix = ExportCamera.GetWorldToScreenMatrix(ContentSizeDip);
@@ -139,7 +156,7 @@ public sealed class PdfExportLayout
         var centerY = ContentSizeDip.Height / 2.0;
         var compensation = Matrix.Identity;
         compensation.ScaleAt(ZoomCompensation, ZoomCompensation, centerX, centerY);
-        return compensation * matrix;
+        return matrix * compensation;
     }
 
     public Point TransformWorldToContent(Point worldPoint)
@@ -159,6 +176,9 @@ public sealed class PdfExportLayout
 
     public Rect GetTransformedBoundsInContentDip()
         => TransformBounds(WorldBounds, TransformWorldToContent);
+
+    public Rect GetDrawingBoundsInContent(PdfDrawingView view)
+        => PdfViewTransform.TransformBounds(GetTransformedBoundsInContentDip(), view);
 
     internal void EnsureFitsPrintableArea()
     {

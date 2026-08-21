@@ -126,7 +126,7 @@ public class PdfExporterTests : IDisposable
     public void PdfExportLayout_SelectsLandscapeForWideDrawing()
     {
         var document = CreateWideDocument();
-        var layout = PdfExportLayout.Create(document);
+        var layout = PdfExportLayout.Create(document, PdfPageOrientation.Landscape);
 
         Assert.True(layout.IsLandscape);
         Assert.True(layout.PageWidthPoints > layout.PageHeightPoints);
@@ -136,10 +136,35 @@ public class PdfExporterTests : IDisposable
     public void PdfExportLayout_SelectsPortraitForTallDrawing()
     {
         var document = CreateTallDocument();
-        var layout = PdfExportLayout.Create(document);
+        var layout = PdfExportLayout.Create(document, PdfPageOrientation.Portrait);
 
         Assert.False(layout.IsLandscape);
         Assert.True(layout.PageHeightPoints > layout.PageWidthPoints);
+    }
+
+    [Fact]
+    public void PdfExportLayout_A4Portrait_HasPhysicalSize()
+    {
+        var layout = PdfExportLayout.Create(CreateSquareDocument(), PdfPageOrientation.Portrait);
+
+        Assert.Equal(210.0, PdfExportLayout.MmFromPoints(layout.PageWidthPoints), 0.5);
+        Assert.Equal(297.0, PdfExportLayout.MmFromPoints(layout.PageHeightPoints), 0.5);
+    }
+
+    [Fact]
+    public void PdfExportLayout_A4Landscape_HasPhysicalSize()
+    {
+        var layout = PdfExportLayout.Create(CreateSquareDocument(), PdfPageOrientation.Landscape);
+
+        Assert.Equal(297.0, PdfExportLayout.MmFromPoints(layout.PageWidthPoints), 0.5);
+        Assert.Equal(210.0, PdfExportLayout.MmFromPoints(layout.PageHeightPoints), 0.5);
+    }
+
+    [Fact]
+    public void PdfExportLayout_AutoOrientation_SelectsLandscapeForWideDrawing()
+    {
+        var layout = PdfExportLayout.CreateWithAutoOrientation(CreateWideDocument());
+        Assert.True(layout.IsLandscape);
     }
 
     [Fact]
@@ -183,7 +208,7 @@ public class PdfExporterTests : IDisposable
             var document = CreateRichDocument();
             var layout = PdfExportLayout.Create(document);
             var visual = PdfExporter.BuildExportVisual(
-                document,
+                new PdfSheet(document),
                 LinearDisplayUnit.Millimeters,
                 new Renderer(),
                 layout);
@@ -240,7 +265,7 @@ public class PdfExporterTests : IDisposable
 
             var layout = PdfExportLayout.Create(document);
             var visual = PdfExporter.BuildExportVisual(
-                document,
+                new PdfSheet(document),
                 LinearDisplayUnit.Millimeters,
                 new Renderer(),
                 layout);

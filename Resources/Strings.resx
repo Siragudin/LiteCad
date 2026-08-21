@@ -219,6 +219,14 @@
   <data name="Dialog.OverwritePdf.Message" xml:space="preserve"><value>A PDF with this name already exists. Replace it?</value></data>
   <data name="Dialog.PdfExportFailed.Title" xml:space="preserve"><value>PDF export failed</value></data>
   <data name="Dialog.PdfExportFailed.Message" xml:space="preserve"><value>Could not export the drawing to PDF: {0}</value></data>
+  <data name="Dialog.PdfPreview.Title" xml:space="preserve"><value>PDF Preview</value></data>
+  <data name="Label.PdfPreviewHint" xml:space="preserve"><value>Wheel — scale · Drag — move</value></data>
+  <data name="Label.PdfFormat" xml:space="preserve"><value>Format:</value></data>
+  <data name="Label.PdfOrientation" xml:space="preserve"><value>Orientation:</value></data>
+  <data name="PdfOrientation.Portrait" xml:space="preserve"><value>Portrait</value></data>
+  <data name="PdfOrientation.Landscape" xml:space="preserve"><value>Landscape</value></data>
+  <data name="Button.Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Button.SavePdf" xml:space="preserve"><value>Save PDF</value></data>
   <data name="Status.PdfExported" xml:space="preserve"><value>PDF exported</value></data>
   <data name="Status.Undo" xml:space="preserve"><value>Undo</value></data>
   <data name="Status.Redo" xml:space="preserve"><value>Redo</value></data>

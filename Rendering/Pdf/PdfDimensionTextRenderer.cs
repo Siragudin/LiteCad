@@ -11,13 +11,13 @@ namespace LiteCad.Rendering.Pdf;
 
 internal static class PdfDimensionTextRenderer
 {
-    private const double TextScreenHeight = 18.0;
     private const double TextGapScreen = 12.0;
 
     public static void Draw(
         XGraphics graphics,
         CadDocument document,
         PdfExportLayout layout,
+        PdfDrawingView view,
         LinearDisplayUnit linearUnit)
     {
         var camera = layout.ExportCamera;
@@ -37,15 +37,17 @@ internal static class PdfDimensionTextRenderer
             }
 
             var distanceText = UnitDisplayFormatter.FormatLinear(dimensionLayout.MeasuredDistance, linearUnit);
-            DrawDistanceText(graphics, layout, dimensionLayout, distanceText, camera, viewport);
+            DrawDistanceText(graphics, layout, view, dimensionLayout, distanceText, dimension, camera, viewport);
         }
     }
 
     private static void DrawDistanceText(
         XGraphics graphics,
         PdfExportLayout layout,
+        PdfDrawingView view,
         DimensionLayout dimensionLayout,
         string text,
+        Dimension dimension,
         Camera camera,
         Size viewport)
     {
@@ -75,8 +77,9 @@ internal static class PdfDimensionTextRenderer
         }
 
         var angleRadians = GetTextAngleRadians(dx, dy);
-        var exportPoint = ToExportContentPoint(layout, center);
-        var fontSize = TextScreenHeight * GetTextScale(layout);
+        var exportPoint = ToExportContentPoint(layout, view, center);
+        var textWorldHeight = Dimension.NormalizeTextSize(dimension.TextSize);
+        var fontSize = textWorldHeight * layout.ExportCamera.Zoom * GetTextScale(layout) * view.Scale;
         var font = new XFont("Segoe UI", fontSize, XFontStyleEx.Regular);
         var brush = new XSolidBrush(XColor.FromArgb(0x15, 0x65, 0xC0));
         var format = new XStringFormat
@@ -116,7 +119,7 @@ internal static class PdfDimensionTextRenderer
     private static double GetTextScale(PdfExportLayout layout)
         => layout.NeedsZoomCompensation ? layout.ZoomCompensation : 1.0;
 
-    private static Point ToExportContentPoint(PdfExportLayout layout, Point contentPoint)
+    private static Point ToExportContentPoint(PdfExportLayout layout, PdfDrawingView view, Point contentPoint)
     {
         if (layout.NeedsZoomCompensation)
         {
@@ -127,8 +130,6 @@ internal static class PdfDimensionTextRenderer
                 centerY + (contentPoint.Y - centerY) * layout.ZoomCompensation);
         }
 
-        return new Point(
-            layout.MarginDip + contentPoint.X,
-            layout.MarginDip + contentPoint.Y);
+        return PdfViewTransform.ToPageDip(layout, view, contentPoint);
     }
 }

@@ -19,14 +19,13 @@ public static class PdfExporter
         Renderer renderer,
         string pdfPath)
     {
-        PdfFontResolver.EnsureRegistered();
-        var layout = PdfExportLayout.Create(document, linearUnit);
-        var visual = BuildExportVisual(document, linearUnit, renderer, layout);
-        WriteVisualToPdf(visual, layout, document, linearUnit, pdfPath);
+        var sheet = new PdfSheet(document);
+        var result = PdfRenderer.Render(sheet, linearUnit, renderer);
+        PdfRenderer.Save(result, linearUnit, pdfPath);
     }
 
     internal static DrawingVisual BuildExportVisual(
-        CadDocument document,
+        PdfSheet sheet,
         LinearDisplayUnit linearUnit,
         Renderer renderer,
         PdfExportLayout layout)
@@ -39,44 +38,15 @@ public static class PdfExporter
                 null,
                 new Rect(0, 0, layout.PageWidthDip, layout.PageHeightDip));
 
-            context.PushTransform(new TranslateTransform(layout.MarginDip, layout.MarginDip));
+            context.PushTransform(new MatrixTransform(PdfSheetTransform.GetWorldToPageDipMatrix(sheet, layout)));
             try
             {
-                if (layout.NeedsZoomCompensation)
-                {
-                    var center = new Point(layout.ContentSizeDip.Width / 2.0, layout.ContentSizeDip.Height / 2.0);
-                    context.PushTransform(new ScaleTransform(
-                        layout.ZoomCompensation,
-                        layout.ZoomCompensation,
-                        center.X,
-                        center.Y));
-                }
-
-                try
-                {
-                    context.PushTransform(new MatrixTransform(
-                        layout.ExportCamera.GetWorldToScreenMatrix(layout.ContentSizeDip)));
-                    try
-                    {
-                        renderer.RenderForExportContent(
-                            context,
-                            document,
-                            layout.ExportCamera,
-                            layout.ContentSizeDip,
-                            linearUnit);
-                    }
-                    finally
-                    {
-                        context.Pop();
-                    }
-                }
-                finally
-                {
-                    if (layout.NeedsZoomCompensation)
-                    {
-                        context.Pop();
-                    }
-                }
+                renderer.RenderForExportContent(
+                    context,
+                    sheet.Document,
+                    layout.ExportCamera,
+                    layout.ContentSizeDip,
+                    linearUnit);
             }
             finally
             {
@@ -87,10 +57,10 @@ public static class PdfExporter
         return visual;
     }
 
-    private static void WriteVisualToPdf(
+    internal static void WriteVisualToPdf(
         DrawingVisual visual,
         PdfExportLayout layout,
-        CadDocument document,
+        PdfSheet sheet,
         LinearDisplayUnit linearUnit,
         string pdfPath)
     {
@@ -111,7 +81,7 @@ public static class PdfExporter
 
             using (var graphics = XGraphics.FromPdfPage(page))
             {
-                WpfDrawingPdfConverter.Draw(visual, graphics, layout, document, linearUnit);
+                WpfDrawingPdfConverter.Draw(visual, graphics, layout, sheet, linearUnit);
             }
 
             pdfDocument.Save(tempPdf);

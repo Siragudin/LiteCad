@@ -12,8 +12,6 @@ public static class DocumentBoundsCalculator
 {
     private const double DefaultPaddingMm = 2.0;
 
-    private const double DimensionTextScreenHeight = 18.0;
-
     private const double DimensionTextGapScreen = 12.0;
 
     private const double DimensionTickHalfLengthScreen = 5.0;
@@ -73,9 +71,13 @@ public static class DocumentBoundsCalculator
                 continue;
             }
 
-            var annotationPadding = ScreenPixelsToWorldMargin(
-                DimensionTextScreenHeight + DimensionTextGapScreen + DimensionTickHalfLengthScreen,
-                safeZoom);
+            var distanceText = UnitDisplayFormatter.FormatLinear(layout.MeasuredDistance, linearUnit);
+            var textWorldHeight = Dimension.NormalizeTextSize(dimension.TextSize);
+            var annotationPadding = Math.Max(
+                textWorldHeight,
+                ScreenPixelsToWorldMargin(
+                    DimensionTextGapScreen + DimensionTickHalfLengthScreen,
+                    safeZoom));
             ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, layout.FirstAnchor, annotationPadding);
             ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, layout.SecondAnchor, annotationPadding);
             ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, layout.FirstExtensionEnd, annotationPadding);
@@ -83,11 +85,10 @@ public static class DocumentBoundsCalculator
             ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, layout.DimensionLineStart, annotationPadding);
             ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, layout.DimensionLineEnd, annotationPadding);
 
-            var distanceText = UnitDisplayFormatter.FormatLinear(layout.MeasuredDistance, linearUnit);
             var textHalfWidth = Math.Min(
                 100.0,
-                distanceText.Length * DimensionTextScreenHeight * DimensionTextWidthFactor / (2.0 * safeZoom));
-            var textHalfHeight = Math.Min(100.0, DimensionTextScreenHeight / (2.0 * safeZoom));
+                distanceText.Length * textWorldHeight * DimensionTextWidthFactor * 0.5);
+            var textHalfHeight = Math.Min(100.0, textWorldHeight * 0.5);
             var textCenter = new PointF(
                 (layout.DimensionLineStart.X + layout.DimensionLineEnd.X) * 0.5f,
                 (layout.DimensionLineStart.Y + layout.DimensionLineEnd.Y) * 0.5f);

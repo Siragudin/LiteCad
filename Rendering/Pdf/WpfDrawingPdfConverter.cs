@@ -14,7 +14,7 @@ internal static class WpfDrawingPdfConverter
         DrawingVisual visual,
         XGraphics graphics,
         PdfExportLayout layout,
-        CadDocument document,
+        PdfSheet sheet,
         LinearDisplayUnit linearUnit)
     {
         var drawing = VisualTreeHelper.GetDrawing(visual) as DrawingGroup;
@@ -26,14 +26,14 @@ internal static class WpfDrawingPdfConverter
         graphics.Save();
         graphics.ScaleTransform(DipToPoint, DipToPoint);
         DrawGroup(drawing, graphics, Matrix.Identity, skipDimensionGlyphs: true);
-        PdfDimensionTextRenderer.Draw(graphics, document, layout, linearUnit);
+        PdfDimensionTextRenderer.Draw(graphics, sheet.Document, layout, sheet.PrimaryView, linearUnit);
         graphics.Restore();
     }
 
     private static void DrawGroup(DrawingGroup group, XGraphics graphics, Matrix parentTransform, bool skipDimensionGlyphs)
     {
         var groupTransform = group.Transform?.Value ?? Matrix.Identity;
-        var combinedTransform = Multiply(parentTransform, groupTransform);
+        var combinedTransform = Multiply(groupTransform, parentTransform);
 
         if (group.ClipGeometry is Geometry clipGeometry)
         {

@@ -97,7 +97,7 @@ public class PdfDiagonalFillClippingTests : IDisposable
             var document = ApplyDiagonalFill(CreateTriangleDocument());
             var layout = PdfExportLayout.Create(document);
             var visual = PdfExporter.BuildExportVisual(
-                document,
+                new PdfSheet(document),
                 LinearDisplayUnit.Millimeters,
                 new Renderer(),
                 layout);
@@ -152,7 +152,7 @@ public class PdfDiagonalFillClippingTests : IDisposable
             var filled = ApplyDiagonalFill(document);
             var layout = PdfExportLayout.Create(filled);
             var visual = PdfExporter.BuildExportVisual(
-                filled,
+                new PdfSheet(filled),
                 LinearDisplayUnit.Millimeters,
                 new Renderer(),
                 layout);

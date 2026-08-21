@@ -101,7 +101,7 @@ public class PdfDimensionExportTests : IDisposable
         {
             var document = CreateLargeDrawingWithDimensions();
             var layout = PdfExportLayout.Create(document);
-            var visual = PdfExporter.BuildExportVisual(document, LinearDisplayUnit.Millimeters, new Renderer(), layout);
+            var visual = PdfExporter.BuildExportVisual(new PdfSheet(document), LinearDisplayUnit.Millimeters, new Renderer(), layout);
             var drawing = VisualTreeHelper.GetDrawing(visual) as DrawingGroup;
 
             Assert.NotNull(drawing);

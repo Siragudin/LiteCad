@@ -6,6 +6,7 @@ using LiteCad.Services;
 using LiteCad.Tools;
 using LiteCad.UI;
 using LiteCad.UI.Layout;
+using LiteCad.UI.Pdf;
 using Microsoft.Win32;
 using System.Globalization;
 using System.IO;
@@ -231,7 +232,7 @@ public partial class MainWindow : Window
 
         if (saveAs && PdfFileNameHelper.IsPdfPath(dialog.FileName))
         {
-            ExportPdf(session, dialog.FileName);
+            ShowPdfPreviewAndSave(session, dialog.FileName);
             return;
         }
 
@@ -253,6 +254,19 @@ public partial class MainWindow : Window
             session.Renderer);
         session.ProjectFile.MarkSaved(targetPath);
         MainStatusBar.SetStatus(Strings.Status_ProjectSaved);
+    }
+
+    private void ShowPdfPreviewAndSave(CadSession session, string fileName)
+    {
+        if (PdfPreviewWindow.TryShowAndSave(
+                session.Document,
+                session.DisplayUnitSettings.LinearUnit,
+                session.Renderer,
+                fileName,
+                this))
+        {
+            MainStatusBar.SetStatus(Strings.Status_PdfExported);
+        }
     }
 
     private void ExportPdf(CadSession session, string fileName)
