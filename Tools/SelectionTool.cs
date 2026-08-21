@@ -4,6 +4,7 @@ using LiteCad.Dimensions;
 using LiteCad.Rendering;
 using LiteCad.Resources;
 using LiteCad.Services;
+using LiteCad.UI;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -128,6 +129,12 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
+        if (TryToggleAxisAt(document, selection, world, tolerance, additive))
+        {
+            UpdateSelectionUi();
+            return;
+        }
+
         if (TryToggleEdgeAt(document, selection, world, tolerance, additive))
         {
             UpdateSelectionUi();
@@ -181,6 +188,16 @@ public sealed class SelectionTool : ToolBase
                     : bounds.IntersectsSegment(start, end))
             {
                 selection.SelectedEdgeIds.Add(edge.Id);
+            }
+        }
+
+        foreach (var axis in document.Axes)
+        {
+            if (windowSelection
+                    ? bounds.ContainsSegmentFully(axis.Start, axis.End)
+                    : bounds.IntersectsSegment(axis.Start, axis.End))
+            {
+                selection.SelectedAxisIds.Add(axis.Id);
             }
         }
 
@@ -239,6 +256,46 @@ public sealed class SelectionTool : ToolBase
         }
 
         Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_VertexSelected);
+        return true;
+    }
+
+    private bool TryToggleAxisAt(
+        CadDocument document,
+        Core.Selection.Selection selection,
+        PointF world,
+        double tolerance,
+        bool additive)
+    {
+        Axis? closestAxis = null;
+        var closestDistance = tolerance;
+
+        foreach (var axis in document.Axes)
+        {
+            if (!Geometry2D.TryProjectPointOnSegment(world, axis.Start, axis.End, out _, out var distance, tolerance) ||
+                distance > closestDistance)
+            {
+                continue;
+            }
+
+            closestAxis = axis;
+            closestDistance = distance;
+        }
+
+        if (closestAxis is null)
+        {
+            return false;
+        }
+
+        if (additive && selection.SelectedAxisIds.Contains(closestAxis.Id))
+        {
+            selection.SelectedAxisIds.Remove(closestAxis.Id);
+        }
+        else
+        {
+            selection.SelectedAxisIds.Add(closestAxis.Id);
+        }
+
+        Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_AxisSelected);
         return true;
     }
 
@@ -368,8 +425,9 @@ public sealed class SelectionTool : ToolBase
         var polygonCount = selection.SelectedPolygonIds.Count;
         var vertexCount = selection.SelectedVertexIds.Count;
         var dimensionCount = selection.SelectedDimensionIds.Count;
+        var axisCount = selection.SelectedAxisIds.Count;
 
-        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0)
+        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0)
         {
             Context.SetArea(null);
             Context.SetLength(null);
@@ -378,31 +436,50 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (dimensionCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0)
+        if (dimensionCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && axisCount == 0)
         {
             var dimension = document.Dimensions.First(item => selection.SelectedDimensionIds.Contains(item.Id));
             var measured = DimensionService.GetMeasuredDistance(document, dimension);
+            var unit = Context.Session.DisplayUnitSettings.LinearUnit;
             Context.SetLength(null);
             Context.SetArea(null);
             Context.SetSelectionInfo(Strings.Format(
                 Strings.Selection_DimensionWithDistance,
-                measured,
-                dimension.Offset));
+                UnitDisplayFormatter.FormatLinear(measured, unit),
+                UnitDisplayFormatter.FormatLinear(dimension.Offset, unit)));
             Context.SetStatus(status ?? Strings.Status_DimensionSelected);
             return;
         }
 
-        if (vertexCount == 1 && edgeCount == 0 && polygonCount == 0 && dimensionCount == 0)
+        if (vertexCount == 1 && edgeCount == 0 && polygonCount == 0 && dimensionCount == 0 && axisCount == 0)
         {
             var vertex = document.Vertices.First(item => selection.SelectedVertexIds.Contains(item.Id));
+            var unit = Context.Session.DisplayUnitSettings.LinearUnit;
             Context.SetLength(null);
             Context.SetArea(null);
-            Context.SetSelectionInfo(Strings.Format(Strings.Selection_VertexAt, vertex.Position.X, vertex.Position.Y));
+            Context.SetSelectionInfo(Strings.Format(
+                Strings.Selection_VertexAt,
+                UnitDisplayFormatter.FormatCoordinate(vertex.Position.X, unit),
+                UnitDisplayFormatter.FormatCoordinate(vertex.Position.Y, unit)));
             Context.SetStatus(status ?? Strings.Status_VertexSelected);
             return;
         }
 
-        if (edgeCount == 1 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0)
+        if (axisCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0)
+        {
+            var axis = document.Axes.First(item => selection.SelectedAxisIds.Contains(item.Id));
+            var length = MathUtils.Distance(axis.Start, axis.End);
+            var unit = Context.Session.DisplayUnitSettings.LinearUnit;
+            Context.SetLength(length);
+            Context.SetArea(null);
+            Context.SetSelectionInfo(Strings.Format(
+                Strings.Selection_AxisWithLength,
+                UnitDisplayFormatter.FormatLinear(length, unit)));
+            Context.SetStatus(status ?? Strings.Status_AxisSelected);
+            return;
+        }
+
+        if (edgeCount == 1 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0)
         {
             var edge = document.Edges.First(item => selection.SelectedEdgeIds.Contains(item.Id));
             var length = MathUtils.Distance(
@@ -415,13 +492,16 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (polygonCount == 1 && edgeCount == 0 && vertexCount == 0 && dimensionCount == 0)
+        if (polygonCount == 1 && edgeCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0)
         {
             var polygon = document.Polygons.First(item => selection.SelectedPolygonIds.Contains(item.Id));
             var area = PolygonGeometry.GetArea(document, polygon, MathUtils.DefaultTolerance);
             Context.SetArea(area);
             Context.SetLength(null);
-            Context.SetSelectionInfo(Strings.Format(Strings.Selection_PolygonWithArea, PolygonTypeDisplay.Get(polygon.Type), area));
+            Context.SetSelectionInfo(Strings.Format(
+                Strings.Selection_PolygonWithArea,
+                PolygonTypeDisplay.Get(polygon.Type),
+                UnitDisplayFormatter.FormatArea(area)));
             Context.SetStatus(status ?? Strings.Status_PolygonSelected);
             return;
         }

@@ -196,30 +196,7 @@ public class MoveExactInputDistanceSemanticsTests
 
     private static MoveExactInputDistanceSemanticsTestHost CreateHost() => new();
 
-    private static void RunSta(Action action)
-    {
-        Exception? captured = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                captured = ex;
-            }
-        });
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-
-        if (captured is not null)
-        {
-            ExceptionDispatchInfo.Capture(captured).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private sealed class MoveExactInputDistanceSemanticsTestHost : IDisposable
     {
@@ -230,15 +207,7 @@ public class MoveExactInputDistanceSemanticsTests
             Session = new CadSession();
             MoveTool = new MoveTool();
             StatusBar = new StatusBar();
-            _window = new Window
-            {
-                Width = 800,
-                Height = 600,
-                ShowInTaskbar = false,
-                WindowStyle = WindowStyle.None,
-                Visibility = Visibility.Hidden
-            };
-            _window.Show();
+            _window = WpfTestUtilities.CreateHiddenWindow(StatusBar);
 
             var context = new ToolContext(
                 Session,
@@ -271,22 +240,7 @@ public class MoveExactInputDistanceSemanticsTests
             Session.ToolService.Initialize(context);
             Session.ToolService.ActivateTool(MoveTool);
 
-            StatusBar.TryCommitRectangleSizeInput = sizes =>
-                MoveTool.TryApplyRectangleSize(sizes.Width, sizes.Height);
-            StatusBar.TryCommitLengthInput = input =>
-            {
-                if (MoveTool.TryApplyLengthInput(input))
-                {
-                    return true;
-                }
-
-                return double.TryParse(
-                           input.Replace(',', '.'),
-                           NumberStyles.Float,
-                           CultureInfo.InvariantCulture,
-                           out var length)
-                       && MoveTool.TryApplyLength(length);
-            };
+            TestLinearInputCommit.WireStatusBar(Session, StatusBar, MoveTool);
 
             CreateUnitSquare(Session.Document);
         }
@@ -324,16 +278,7 @@ public class MoveExactInputDistanceSemanticsTests
 
         public bool PressDistanceEnter()
         {
-            var args = new KeyEventArgs(
-                Keyboard.PrimaryDevice,
-                PresentationSource.FromVisual(_window),
-                0,
-                Key.Enter)
-            {
-                RoutedEvent = Keyboard.KeyDownEvent
-            };
-
-            StatusBar.ProcessLengthKey(args);
+            StatusBar.ProcessLengthKey(WpfTestUtilities.CreateKeyDown(StatusBar, Key.Enter));
             return !MoveTool.HasActiveMove;
         }
 

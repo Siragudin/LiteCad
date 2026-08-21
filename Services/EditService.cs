@@ -422,6 +422,8 @@ public sealed class EditService
 
         document.Edges.RemoveAll(edge => selection.SelectedEdgeIds.Contains(edge.Id));
 
+        document.Axes.RemoveAll(axis => selection.SelectedAxisIds.Contains(axis.Id));
+
         document.Polygons.RemoveAll(polygon => selection.SelectedPolygonIds.Contains(polygon.Id));
 
 
@@ -463,6 +465,7 @@ public sealed class EditService
 
 
             PolygonBuilder.SuppressFaceGeometry(document, polygon, tolerance);
+            FaceFillService.RemoveFill(document, polygon);
 
         }
 
@@ -502,6 +505,17 @@ public sealed class EditService
 
             }
 
+        }
+
+
+
+        foreach (var axis in session.Document.Axes)
+        {
+            if (session.Selection.SelectedAxisIds.Contains(axis.Id))
+            {
+                points.Add(axis.Start);
+                points.Add(axis.End);
+            }
         }
 
 

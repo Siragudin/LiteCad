@@ -90,6 +90,19 @@ public sealed class SelectionRenderer
 
         }
 
+        foreach (var axis in document.Axes)
+        {
+            if (!selection.SelectedAxisIds.Contains(axis.Id))
+            {
+                continue;
+            }
+
+            context.DrawLine(
+                stroke,
+                new Point(axis.Start.X, axis.Start.Y),
+                new Point(axis.End.X, axis.End.Y));
+        }
+
     }
 
 }

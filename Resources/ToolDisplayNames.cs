@@ -25,6 +25,7 @@ public static class ToolDisplayNames
             ToolId.Dimension => Strings.Tool_Dimension,
             ToolId.Eraser => Strings.Tool_Eraser,
             ToolId.Copy => Strings.Tool_Copy,
+            ToolId.Fill => Strings.Tool_Fill,
             ToolId.PolygonEdit => Strings.Tool_PolygonEdit,
             _ => toolId.ToString()
         };

@@ -42,6 +42,9 @@ public static class RenderStyles
     public static Pen EdgePen(double zoom)
         => CreateScreenPen(new SolidColorBrush(Color.FromRgb(0x22, 0x22, 0x22)), 1.5, zoom);
 
+    public static Pen AxisLinePen(double zoom)
+        => CreateScreenPen(new SolidColorBrush(Color.FromRgb(0x15, 0x65, 0xC0)), 1.5, zoom, [12, 4, 2, 4]);
+
     public static Pen AxisEdgePen(double zoom)
         => CreateScreenPen(new SolidColorBrush(Color.FromRgb(0xE5, 0x39, 0x35)), 1.5, zoom, [6, 4]);
 }

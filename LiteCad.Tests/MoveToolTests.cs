@@ -570,30 +570,7 @@ public class MoveToolTests
     private static void SetPreciseMoveZoom(MoveHarness harness)
         => harness.Session.Camera.ZoomAt(new Point(400, 300), 100, harness.ViewportSize);
 
-    private static void RunSta(Action action)
-    {
-        Exception? captured = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                captured = ex;
-            }
-        });
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-
-        if (captured is not null)
-        {
-            ExceptionDispatchInfo.Capture(captured).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private static MouseButtonEventArgs CreateMouseButtonEvent(MouseButton button)
     {

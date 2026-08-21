@@ -307,30 +307,7 @@ public class MoveExactInputTests
                     return $"{start.X},{start.Y}->{end.X},{end.Y}";
                 }));
 
-    private static void RunSta(Action action)
-    {
-        Exception? captured = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                captured = ex;
-            }
-        });
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-
-        if (captured is not null)
-        {
-            ExceptionDispatchInfo.Capture(captured).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private sealed class MoveExactInputTestHost : IDisposable
     {
@@ -377,18 +354,7 @@ public class MoveExactInputTests
             Session.ToolService.Initialize(context);
             Session.ToolService.ActivateTool(MoveTool);
 
-            StatusBar.TryCommitRectangleSizeInput = sizes =>
-                MoveTool.TryApplyRectangleSize(sizes.Width, sizes.Height);
-            StatusBar.TryCommitLengthInput = input =>
-            {
-                if (MoveTool.TryApplyLengthInput(input))
-                {
-                    return true;
-                }
-
-                return double.TryParse(input.Replace(',', '.'), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var length)
-                    && MoveTool.TryApplyLength(length);
-            };
+            TestLinearInputCommit.WireStatusBar(Session, StatusBar, MoveTool);
 
             CreateUnitSquare(Session.Document);
         }

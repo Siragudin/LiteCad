@@ -5,7 +5,90 @@ namespace LiteCad.Services;
 
 public sealed class SnapService
 {
+    private sealed class DocumentSnapCache
+    {
+        public required int Fingerprint { get; init; }
+
+        public required List<(SnapPoint Snap, SnapIdentity Identity)> StaticCandidates { get; init; }
+
+        public required List<PointF> AlignmentPoints { get; init; }
+
+        public required List<PointF> VerticalAlignmentPoints { get; init; }
+    }
+
     private readonly record struct SnapCandidate(SnapPoint Snap, SnapIdentity Identity, double Distance);
+
+    private DocumentSnapCache? _cache;
+
+    public void InvalidateCache()
+        => _cache = null;
+
+    public SnapQueryResult Query(
+        CadDocument document,
+        PointF cursor,
+        double tolerance,
+        Guid? excludeEdgeId = null,
+        bool includeOnEdge = false)
+    {
+        var candidates = BuildGeometricCandidates(document, cursor, tolerance, excludeEdgeId, includeOnEdge);
+        var nearby = candidates
+            .Where(candidate => candidate.Distance <= tolerance)
+            .OrderBy(candidate => GetKindPriority(candidate.Identity.Kind))
+            .ThenBy(candidate => candidate.Distance)
+            .ToList();
+
+        SnapPoint? best = nearby.Count > 0 ? nearby[0].Snap : null;
+        var visible = nearby.Select(candidate => candidate.Snap).ToList();
+        return new SnapQueryResult(new SnapResult(best, best.HasValue), visible);
+    }
+
+    public PointF ResolveDrawingSnap(
+        CadDocument document,
+        PointF cursor,
+        PointF? drawingStart,
+        double tolerance,
+        bool orthoEnabled,
+        bool includeOnEdge)
+        => ResolveDrawingSnap(
+            document,
+            Query(document, cursor, tolerance, includeOnEdge: includeOnEdge),
+            cursor,
+            drawingStart,
+            tolerance,
+            orthoEnabled);
+
+    public PointF ResolveDrawingSnap(
+        CadDocument document,
+        SnapQueryResult query,
+        PointF cursor,
+        PointF? drawingStart,
+        double tolerance,
+        bool orthoEnabled)
+    {
+        var resolved = query.Best.Resolve(cursor);
+
+        if (drawingStart is not PointF start)
+        {
+            return resolved;
+        }
+
+        if (orthoEnabled)
+        {
+            resolved = Geometry2D.ApplyOrtho(start, resolved);
+        }
+
+        if (TrySnapDrawingAlignment(document, start, resolved, tolerance, out var aligned))
+        {
+            return aligned;
+        }
+
+        if (orthoEnabled)
+        {
+            resolved = Geometry2D.ApplyOrtho(start, query.Best.Resolve(cursor));
+        }
+
+        return resolved;
+    }
 
     public SnapResult FindBestSnap(
         CadDocument document,
@@ -13,25 +96,10 @@ public sealed class SnapService
         double tolerance,
         Guid? excludeEdgeId = null,
         bool includeOnEdge = true)
-    {
-        var candidates = BuildGeometricCandidates(document, cursor, tolerance, excludeEdgeId, includeOnEdge);
-        var ordered = candidates
-            .Where(candidate => candidate.Distance <= tolerance)
-            .OrderBy(candidate => GetKindPriority(candidate.Identity.Kind))
-            .ThenBy(candidate => candidate.Distance)
-            .ToList();
-
-        SnapPoint? best = ordered.Count > 0 ? ordered[0].Snap : null;
-        return new SnapResult(best, best.HasValue);
-    }
+        => Query(document, cursor, tolerance, excludeEdgeId, includeOnEdge).Best;
 
     public IReadOnlyList<SnapPoint> GetVisibleSnaps(CadDocument document, PointF cursor, double tolerance)
-    {
-        return BuildGeometricCandidates(document, cursor, tolerance, excludeEdgeId: null, includeOnEdge: false)
-            .Where(candidate => candidate.Distance <= tolerance)
-            .Select(candidate => candidate.Snap)
-            .ToList();
-    }
+        => Query(document, cursor, tolerance, includeOnEdge: false).Visible;
 
     public bool TrySnapDrawingAlignment(
         CadDocument document,
@@ -41,6 +109,7 @@ public sealed class SnapService
         out PointF snappedEnd)
     {
         snappedEnd = target;
+        tolerance = TopologyTolerance.Resolve(tolerance);
 
         var alignment = Geometry2D.GetOrthoAlignment(start, target, tolerance);
         if (alignment == OrthoAlignment.None)
@@ -48,17 +117,22 @@ public sealed class SnapService
             return false;
         }
 
+        var cache = GetOrBuildCache(document, tolerance);
+        var referencePoints = alignment == OrthoAlignment.Horizontal
+            ? cache.AlignmentPoints
+            : cache.VerticalAlignmentPoints;
+
         var bestDelta = double.MaxValue;
 
-        if (alignment == OrthoAlignment.Horizontal)
+        foreach (var point in referencePoints)
         {
-            foreach (var point in CollectAlignmentReferencePoints(document, tolerance))
+            if (MathUtils.ArePointsEqual(point, start, tolerance))
             {
-                if (MathUtils.ArePointsEqual(point, start, tolerance))
-                {
-                    continue;
-                }
+                continue;
+            }
 
+            if (alignment == OrthoAlignment.Horizontal)
+            {
                 var xDelta = Math.Abs(target.X - point.X);
                 if (xDelta > tolerance || xDelta >= bestDelta)
                 {
@@ -68,16 +142,8 @@ public sealed class SnapService
                 snappedEnd = new PointF(point.X, start.Y);
                 bestDelta = xDelta;
             }
-        }
-        else
-        {
-            foreach (var point in CollectVerticalAlignmentReferencePoints(document, tolerance))
+            else
             {
-                if (MathUtils.ArePointsEqual(point, start, tolerance))
-                {
-                    continue;
-                }
-
                 var yDelta = Math.Abs(target.Y - point.Y);
                 if (yDelta > tolerance || yDelta >= bestDelta)
                 {
@@ -106,7 +172,33 @@ public sealed class SnapService
         return new SnapPoint(snappedEnd, SnapKind.Alignment);
     }
 
-    private static IReadOnlyList<SnapCandidate> BuildGeometricCandidates(
+    public static bool TryResolveMeasurementAnchor(
+        CadDocument document,
+        SnapPoint snap,
+        double tolerance,
+        out Guid vertexId,
+        out PointF anchor)
+    {
+        vertexId = Guid.Empty;
+        anchor = snap.Position;
+
+        switch (snap.Kind)
+        {
+            case SnapKind.Endpoint when snap.VertexId is Guid existingVertexId:
+                vertexId = existingVertexId;
+                return true;
+            case SnapKind.Endpoint:
+            case SnapKind.Intersection:
+            case SnapKind.AxisIntersection:
+                vertexId = TopologyService.FindOrCreateVertex(document, snap.Position, tolerance);
+                anchor = TopologyService.GetVertexPosition(document, vertexId);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private IReadOnlyList<SnapCandidate> BuildGeometricCandidates(
         CadDocument document,
         PointF cursor,
         double tolerance,
@@ -114,19 +206,50 @@ public sealed class SnapService
         bool includeOnEdge)
     {
         tolerance = TopologyTolerance.Resolve(tolerance);
+        var cache = GetOrBuildCache(document, tolerance);
 
-        var raw = CollectCandidates(document, cursor, tolerance, excludeEdgeId, includeOnEdge);
-        var canonical = CanonicalizeCandidates(document, raw, tolerance);
-        var deduplicated = DeduplicateCandidates(canonical);
-        return ResolveDistances(deduplicated, cursor);
+        var candidates = new List<(SnapPoint Snap, SnapIdentity Identity)>(cache.StaticCandidates);
+        if (includeOnEdge)
+        {
+            AddOnEdgeCandidates(document, cursor, tolerance, excludeEdgeId, candidates);
+        }
+
+        return ResolveDistances(candidates, cursor);
     }
 
-    private static List<(SnapPoint Snap, SnapIdentity Identity)> CollectCandidates(
+    private DocumentSnapCache GetOrBuildCache(CadDocument document, double tolerance)
+    {
+        var fingerprint = ComputeDocumentFingerprint(document);
+        if (_cache?.Fingerprint == fingerprint)
+        {
+            return _cache;
+        }
+
+        _cache = BuildDocumentSnapCache(document, tolerance, fingerprint);
+        return _cache;
+    }
+
+    private static DocumentSnapCache BuildDocumentSnapCache(
         CadDocument document,
-        PointF cursor,
         double tolerance,
-        Guid? excludeEdgeId,
-        bool includeOnEdge)
+        int fingerprint)
+    {
+        var raw = CollectStaticCandidates(document, tolerance);
+        var canonical = CanonicalizeCandidates(document, raw, tolerance);
+        var staticCandidates = DeduplicateCandidates(canonical);
+
+        return new DocumentSnapCache
+        {
+            Fingerprint = fingerprint,
+            StaticCandidates = staticCandidates,
+            AlignmentPoints = BuildAlignmentReferencePoints(document, tolerance),
+            VerticalAlignmentPoints = BuildVerticalAlignmentReferencePoints(document, tolerance)
+        };
+    }
+
+    private static List<(SnapPoint Snap, SnapIdentity Identity)> CollectStaticCandidates(
+        CadDocument document,
+        double tolerance)
     {
         var candidates = new List<(SnapPoint Snap, SnapIdentity Identity)>();
 
@@ -139,11 +262,6 @@ public sealed class SnapService
 
         foreach (var edge in document.Edges)
         {
-            if (excludeEdgeId.HasValue && edge.Id == excludeEdgeId.Value)
-            {
-                continue;
-            }
-
             var start = TopologyService.GetEdgeStartPoint(document, edge);
             var end = TopologyService.GetEdgeEndPoint(document, edge);
             var midpoint = MathUtils.Midpoint(start, end);
@@ -151,17 +269,21 @@ public sealed class SnapService
             candidates.Add((
                 new SnapPoint(midpoint, SnapKind.Midpoint, edge.Id),
                 SnapIdentity.ForMidpoint(edge.Id)));
+        }
 
-            if (includeOnEdge &&
-                Geometry2D.TryProjectPointOnSegment(cursor, start, end, out var projection, out var distance, tolerance) &&
-                distance <= tolerance &&
-                Geometry2D.IsPointOnSegmentInterior(projection, start, end, tolerance))
-            {
-                var parameterKey = QuantizeEdgeParameter(start, end, projection, tolerance);
-                candidates.Add((
-                    new SnapPoint(projection, SnapKind.OnEdge, edge.Id),
-                    SnapIdentity.ForOnEdge(edge.Id, parameterKey)));
-            }
+        foreach (var axis in document.Axes)
+        {
+            candidates.Add((
+                new SnapPoint(axis.Start, SnapKind.Endpoint),
+                SnapIdentity.ForAxisEndpoint(axis.Id, isStart: true)));
+            candidates.Add((
+                new SnapPoint(axis.End, SnapKind.Endpoint),
+                SnapIdentity.ForAxisEndpoint(axis.Id, isStart: false)));
+
+            var axisMidpoint = MathUtils.Midpoint(axis.Start, axis.End);
+            candidates.Add((
+                new SnapPoint(axisMidpoint, SnapKind.Midpoint),
+                SnapIdentity.ForAxisMidpoint(axis.Id)));
         }
 
         var intersectionGroups = new Dictionary<string, (PointF Position, HashSet<Guid> EdgeIds)>(StringComparer.Ordinal);
@@ -205,13 +327,233 @@ public sealed class SnapService
 
         foreach (var group in intersectionGroups.Values)
         {
-            var identity = SnapIdentity.ForIntersection(group.EdgeIds);
             candidates.Add((
                 new SnapPoint(group.Position, SnapKind.Intersection),
-                identity));
+                SnapIdentity.ForIntersection(group.EdgeIds)));
         }
 
+        AddAxisIntersectionCandidates(document, candidates, tolerance);
         return candidates;
+    }
+
+    private static void AddOnEdgeCandidates(
+        CadDocument document,
+        PointF cursor,
+        double tolerance,
+        Guid? excludeEdgeId,
+        List<(SnapPoint Snap, SnapIdentity Identity)> candidates)
+    {
+        foreach (var edge in document.Edges)
+        {
+            if (excludeEdgeId.HasValue && edge.Id == excludeEdgeId.Value)
+            {
+                continue;
+            }
+
+            var start = TopologyService.GetEdgeStartPoint(document, edge);
+            var end = TopologyService.GetEdgeEndPoint(document, edge);
+            if (!Geometry2D.TryProjectPointOnSegment(cursor, start, end, out var projection, out var distance, tolerance) ||
+                distance > tolerance ||
+                !Geometry2D.IsPointOnSegmentInterior(projection, start, end, tolerance))
+            {
+                continue;
+            }
+
+            var parameterKey = QuantizeEdgeParameter(start, end, projection, tolerance);
+            candidates.Add((
+                new SnapPoint(projection, SnapKind.OnEdge, edge.Id),
+                SnapIdentity.ForOnEdge(edge.Id, parameterKey)));
+        }
+
+        foreach (var axis in document.Axes)
+        {
+            if (!Geometry2D.TryProjectPointOnSegment(cursor, axis.Start, axis.End, out var projection, out var distance, tolerance) ||
+                distance > tolerance ||
+                !Geometry2D.IsPointOnSegmentInterior(projection, axis.Start, axis.End, tolerance))
+            {
+                continue;
+            }
+
+            var parameterKey = QuantizeEdgeParameter(axis.Start, axis.End, projection, tolerance);
+            candidates.Add((
+                new SnapPoint(projection, SnapKind.OnEdge),
+                SnapIdentity.ForOnAxis(axis.Id, parameterKey)));
+        }
+    }
+
+    private static void AddAxisIntersectionCandidates(
+        CadDocument document,
+        List<(SnapPoint Snap, SnapIdentity Identity)> candidates,
+        double tolerance)
+    {
+        var axisEdgeGroups = new Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)>(StringComparer.Ordinal);
+        var axisAxisGroups = new Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)>(StringComparer.Ordinal);
+
+        foreach (var axis in document.Axes)
+        {
+            foreach (var edge in document.Edges)
+            {
+                var edgeStart = TopologyService.GetEdgeStartPoint(document, edge);
+                var edgeEnd = TopologyService.GetEdgeEndPoint(document, edge);
+                if (!Geometry2D.TryGetSegmentIntersection(axis.Start, axis.End, edgeStart, edgeEnd, out var intersection, tolerance))
+                {
+                    continue;
+                }
+
+                if (TopologyService.FindVertex(document, intersection, tolerance) is not null)
+                {
+                    continue;
+                }
+
+                RegisterIntersectionGroup(axisEdgeGroups, intersection, axis.Id, edge.Id, tolerance);
+            }
+
+            foreach (var otherAxis in document.Axes)
+            {
+                if (axis.Id.CompareTo(otherAxis.Id) >= 0)
+                {
+                    continue;
+                }
+
+                if (!Geometry2D.TryGetSegmentIntersection(axis.Start, axis.End, otherAxis.Start, otherAxis.End, out var intersection, tolerance))
+                {
+                    continue;
+                }
+
+                RegisterIntersectionGroup(axisAxisGroups, intersection, axis.Id, otherAxis.Id, tolerance);
+            }
+        }
+
+        foreach (var group in axisEdgeGroups.Values)
+        {
+            candidates.Add((
+                new SnapPoint(group.Position, SnapKind.Intersection),
+                SnapIdentity.ForIntersection(group.ObjectIds)));
+        }
+
+        foreach (var group in axisAxisGroups.Values)
+        {
+            candidates.Add((
+                new SnapPoint(group.Position, SnapKind.AxisIntersection),
+                SnapIdentity.ForAxisIntersection(group.ObjectIds)));
+        }
+    }
+
+    private static void RegisterIntersectionGroup(
+        Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)> groups,
+        PointF intersection,
+        Guid firstId,
+        Guid secondId,
+        double tolerance)
+    {
+        var groupKey = FindGroupedIntersectionKey(groups, intersection, tolerance);
+        if (!groups.TryGetValue(groupKey, out var group))
+        {
+            group = (intersection, []);
+            groups[groupKey] = group;
+        }
+
+        group.ObjectIds.Add(firstId);
+        group.ObjectIds.Add(secondId);
+        groups[groupKey] = group;
+    }
+
+    private static string FindGroupedIntersectionKey(
+        Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)> groups,
+        PointF intersection,
+        double tolerance)
+    {
+        foreach (var (key, group) in groups)
+        {
+            if (MathUtils.ArePointsEqual(group.Position, intersection, tolerance))
+            {
+                return key;
+            }
+        }
+
+        return $"{intersection.X:R}:{intersection.Y:R}";
+    }
+
+    private static List<PointF> BuildAlignmentReferencePoints(CadDocument document, double tolerance)
+    {
+        var points = new List<PointF>();
+
+        foreach (var vertex in document.Vertices)
+        {
+            AddUniquePoint(points, vertex.Position, tolerance);
+        }
+
+        foreach (var edge in document.Edges)
+        {
+            var start = TopologyService.GetEdgeStartPoint(document, edge);
+            var end = TopologyService.GetEdgeEndPoint(document, edge);
+            var midpoint = MathUtils.Midpoint(start, end);
+
+            if (TopologyService.FindVertex(document, midpoint, tolerance) is null)
+            {
+                AddUniquePoint(points, midpoint, tolerance);
+            }
+        }
+
+        foreach (var axis in document.Axes)
+        {
+            AddUniquePoint(points, axis.Start, tolerance);
+            AddUniquePoint(points, axis.End, tolerance);
+            AddUniquePoint(points, MathUtils.Midpoint(axis.Start, axis.End), tolerance);
+        }
+
+        foreach (var edgeA in document.Edges)
+        {
+            foreach (var edgeB in document.Edges)
+            {
+                if (edgeA.Id.CompareTo(edgeB.Id) >= 0)
+                {
+                    continue;
+                }
+
+                if (!IntersectionService.TryGetSegmentIntersection(
+                        document,
+                        edgeA,
+                        edgeB,
+                        out var intersection,
+                        tolerance))
+                {
+                    continue;
+                }
+
+                if (TopologyService.FindVertex(document, intersection, tolerance) is not null)
+                {
+                    continue;
+                }
+
+                AddUniquePoint(points, intersection, tolerance);
+            }
+        }
+
+        return points;
+    }
+
+    private static List<PointF> BuildVerticalAlignmentReferencePoints(CadDocument document, double tolerance)
+    {
+        var points = new List<PointF>();
+
+        foreach (var edge in document.Edges)
+        {
+            var start = TopologyService.GetEdgeStartPoint(document, edge);
+            var end = TopologyService.GetEdgeEndPoint(document, edge);
+            if (Geometry2D.GetOrthoAlignment(start, end, tolerance) != OrthoAlignment.Vertical)
+            {
+                continue;
+            }
+
+            foreach (var point in new[] { start, end, MathUtils.Midpoint(start, end) })
+            {
+                var vertex = TopologyService.FindVertex(document, point, tolerance);
+                AddUniquePoint(points, vertex?.Position ?? point, tolerance);
+            }
+        }
+
+        return points;
     }
 
     private static List<(SnapPoint Snap, SnapIdentity Identity)> CanonicalizeCandidates(
@@ -273,87 +615,46 @@ public sealed class SnapService
             .ToList();
     }
 
-    private static IEnumerable<PointF> CollectAlignmentReferencePoints(CadDocument document, double tolerance)
+    private static int ComputeDocumentFingerprint(CadDocument document)
     {
-        tolerance = TopologyTolerance.Resolve(tolerance);
-        var points = new List<PointF>();
-
-        foreach (var vertex in document.Vertices)
+        unchecked
         {
-            AddUniquePoint(points, vertex.Position, tolerance);
-        }
+            var hash = document.Vertices.Count;
+            hash = (hash * 31) + document.Edges.Count;
+            hash = (hash * 31) + document.Axes.Count;
+            hash = (hash * 31) + document.Dimensions.Count;
 
-        foreach (var edge in document.Edges)
-        {
-            var start = TopologyService.GetEdgeStartPoint(document, edge);
-            var end = TopologyService.GetEdgeEndPoint(document, edge);
-            var midpoint = MathUtils.Midpoint(start, end);
-
-            if (TopologyService.FindVertex(document, midpoint, tolerance) is null)
+            foreach (var vertex in document.Vertices)
             {
-                AddUniquePoint(points, midpoint, tolerance);
+                hash = HashPoint(hash, vertex.Position);
             }
-        }
 
-        foreach (var edgeA in document.Edges)
-        {
-            foreach (var edgeB in document.Edges)
+            foreach (var edge in document.Edges)
             {
-                if (edgeA.Id.CompareTo(edgeB.Id) >= 0)
-                {
-                    continue;
-                }
-
-                if (!IntersectionService.TryGetSegmentIntersection(
-                        document,
-                        edgeA,
-                        edgeB,
-                        out var intersection,
-                        tolerance))
-                {
-                    continue;
-                }
-
-                if (TopologyService.FindVertex(document, intersection, tolerance) is not null)
-                {
-                    continue;
-                }
-
-                AddUniquePoint(points, intersection, tolerance);
+                hash = (hash * 31) + edge.Id.GetHashCode();
+                hash = (hash * 31) + edge.StartVertexId.GetHashCode();
+                hash = (hash * 31) + edge.EndVertexId.GetHashCode();
             }
-        }
 
-        return points;
+            foreach (var axis in document.Axes)
+            {
+                hash = (hash * 31) + axis.Id.GetHashCode();
+                hash = HashPoint(hash, axis.Start);
+                hash = HashPoint(hash, axis.End);
+            }
+
+            return hash;
+        }
     }
 
-    private static IEnumerable<PointF> CollectVerticalAlignmentReferencePoints(CadDocument document, double tolerance)
+    private static int HashPoint(int hash, PointF point)
     {
-        tolerance = TopologyTolerance.Resolve(tolerance);
-        var points = new List<PointF>();
-
-        foreach (var edge in document.Edges)
+        unchecked
         {
-            var start = TopologyService.GetEdgeStartPoint(document, edge);
-            var end = TopologyService.GetEdgeEndPoint(document, edge);
-            if (Geometry2D.GetOrthoAlignment(start, end, tolerance) != OrthoAlignment.Vertical)
-            {
-                continue;
-            }
-
-            foreach (var point in new[] { start, end, MathUtils.Midpoint(start, end) })
-            {
-                if (TopologyService.FindVertex(document, point, tolerance) is null)
-                {
-                    AddUniquePoint(points, point, tolerance);
-                }
-                else
-                {
-                    AddUniquePoint(points, TopologyService.FindVertex(document, point, tolerance)!.Position, tolerance);
-                }
-            }
+            hash = (hash * 31) + point.X.GetHashCode();
+            hash = (hash * 31) + point.Y.GetHashCode();
+            return hash;
         }
-
-        return points;
     }
 
     private static void AddUniquePoint(List<PointF> points, PointF point, double tolerance)
@@ -405,6 +706,7 @@ public sealed class SnapService
         {
             SnapKind.Endpoint => 0,
             SnapKind.Intersection => 1,
+            SnapKind.AxisIntersection => 1,
             SnapKind.Midpoint => 2,
             SnapKind.OnEdge => 3,
             SnapKind.Alignment => 4,

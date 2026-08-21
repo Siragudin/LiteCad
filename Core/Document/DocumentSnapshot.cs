@@ -10,13 +10,17 @@ public sealed class DocumentSnapshot
         List<Edge> edges,
         List<Polygon> userPolygons,
         List<Dimension> dimensions,
-        HashSet<string> suppressedFaceGeometryKeys)
+        List<Axis> axes,
+        HashSet<string> suppressedFaceGeometryKeys,
+        Dictionary<string, FaceFillStyle> faceFillStyles)
     {
         Vertices = vertices;
         Edges = edges;
         UserPolygons = userPolygons;
         Dimensions = dimensions;
+        Axes = axes;
         SuppressedFaceGeometryKeys = suppressedFaceGeometryKeys;
+        FaceFillStyles = faceFillStyles;
     }
 
     public List<Vertex> Vertices { get; }
@@ -30,7 +34,11 @@ public sealed class DocumentSnapshot
 
     public List<Dimension> Dimensions { get; }
 
+    public List<Axis> Axes { get; }
+
     public HashSet<string> SuppressedFaceGeometryKeys { get; }
+
+    public Dictionary<string, FaceFillStyle> FaceFillStyles { get; }
 
     public static DocumentSnapshot Capture(CadDocument document)
     {
@@ -41,11 +49,23 @@ public sealed class DocumentSnapshot
             .Select(ClonePolygon)
             .ToList();
         var dimensions = document.Dimensions.Select(dimension => dimension.Clone()).ToList();
+        var axes = document.Axes.Select(axis => axis.Clone()).ToList();
         var suppressedFaceGeometryKeys = new HashSet<string>(
             document.SuppressedFaceGeometryKeys,
             StringComparer.Ordinal);
+        var faceFillStyles = document.FaceFillStyles.ToDictionary(
+            pair => pair.Key,
+            pair => pair.Value.Clone(),
+            StringComparer.Ordinal);
 
-        return new DocumentSnapshot(vertices, edges, userPolygons, dimensions, suppressedFaceGeometryKeys);
+        return new DocumentSnapshot(
+            vertices,
+            edges,
+            userPolygons,
+            dimensions,
+            axes,
+            suppressedFaceGeometryKeys,
+            faceFillStyles);
     }
 
     public void Restore(CadDocument document, double tolerance)
@@ -55,7 +75,9 @@ public sealed class DocumentSnapshot
         document.Edges.Clear();
         document.Polygons.Clear();
         document.Dimensions.Clear();
+        document.Axes.Clear();
         document.SuppressedFaceGeometryKeys.Clear();
+        document.FaceFillStyles.Clear();
 
         foreach (var vertex in Vertices)
         {
@@ -77,9 +99,19 @@ public sealed class DocumentSnapshot
             document.Dimensions.Add(dimension.Clone());
         }
 
+        foreach (var axis in Axes)
+        {
+            document.Axes.Add(axis.Clone());
+        }
+
         foreach (var key in SuppressedFaceGeometryKeys)
         {
             document.SuppressedFaceGeometryKeys.Add(key);
+        }
+
+        foreach (var (key, style) in FaceFillStyles)
+        {
+            document.FaceFillStyles[key] = style.Clone();
         }
 
         PolygonBuilder.SyncFaces(document, TopologyTolerance.ForMutation);

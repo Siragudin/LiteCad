@@ -5,31 +5,131 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:loc="clr-namespace:LiteCad.Resources"
              mc:Ignorable="d"
-             d:DesignHeight="36" d:DesignWidth="800">
-    <Border Background="#E8E8E8" BorderBrush="#CCCCCC" BorderThickness="0,0,0,1">
-        <ToolBarTray Background="Transparent">
-            <ToolBar Background="Transparent" Band="0" BandIndex="0">
-                <Button Content="{loc:Loc Key=Tool.Select.Short}" Width="64" Padding="6,4" Tag="Selection" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Hand}" Width="64" Padding="6,4" Tag="Hand" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Line}" Width="64" Padding="6,4" Tag="Line" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Arc.Short}" Width="64" Padding="6,4" Tag="Arc" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Rectangle.Short}" Width="64" Padding="6,4" Tag="Rectangle" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Circle.Short}" Width="64" Padding="6,4" Tag="Circle" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Sector.Short}" Width="64" Padding="6,4" Tag="Sector" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Axis}" Width="64" Padding="6,4" Tag="Axis" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Wall}" Width="64" Padding="6,4" Tag="Wall" Click="ToolButton_OnClick" />
-                <Separator />
-                <Button Content="{loc:Loc Key=Tool.Move}" Width="64" Padding="6,4" Tag="Move" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Rotate}" Width="64" Padding="6,4" Tag="Rotate" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Mirror}" Width="64" Padding="6,4" Tag="Mirror" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Offset}" Width="64" Padding="6,4" Tag="Offset" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Stretch}" Width="64" Padding="6,4" Tag="Stretch" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Extend}" Width="64" Padding="6,4" Tag="Extend" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Dimension.Short}" Width="64" Padding="6,4" Tag="Dimension" Click="ToolButton_OnClick" />
-                <Button Content="{loc:Loc Key=Tool.Eraser.Short}" Width="64" Padding="6,4" Tag="Eraser" Click="ToolButton_OnClick" />
-                <Separator />
-                <Button Content="{loc:Loc Key=Tool.Edit.Short}" Width="64" Padding="6,4" Tag="PolygonEdit" Click="ToolButton_OnClick" />
-            </ToolBar>
-        </ToolBarTray>
+             d:DesignHeight="36"
+             d:DesignWidth="800">
+    <Border Style="{StaticResource CadToolbarPanelStyle}">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Disabled"
+                      Focusable="False">
+            <StackPanel x:Name="ToolButtonPanel"
+                        Orientation="Horizontal"
+                        Margin="4,2"
+                        VerticalAlignment="Center">
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Selection"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Selection}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconFillPathStyle}" Data="{StaticResource Icon.Select}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Hand"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Hand}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconFillPathStyle}" Data="{StaticResource Icon.Hand}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Line"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Line}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Line}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Axis"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Axis}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Axis}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Arc"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Arc}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Arc}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Rectangle"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Rectangle}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Rectangle}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Circle"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Circle}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Circle}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Sector"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Sector}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconFillPathStyle}" Data="{StaticResource Icon.Sector}" />
+                </Button>
+
+                <Separator Style="{StaticResource CadToolbarSeparatorStyle}" />
+
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Move"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Move}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Move}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Rotate"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Rotate}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Rotate}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Mirror"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Mirror}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Mirror}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Offset"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Offset}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Offset}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Stretch"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Stretch}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Stretch}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Extend"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Extend}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Extend}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Dimension"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Dimension}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Dimension}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Eraser"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Eraser}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconFillPathStyle}" Data="{StaticResource Icon.Eraser}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Fill"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Fill}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconFillPathStyle}" Data="{StaticResource Icon.Fill}" />
+                </Button>
+
+                <Separator Style="{StaticResource CadToolbarSeparatorStyle}" />
+
+                <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="PolygonEdit"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.PolygonEdit}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.PolygonEdit}" />
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
     </Border>
 </UserControl>

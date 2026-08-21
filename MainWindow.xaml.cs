@@ -1,10 +1,14 @@
 ﻿using LiteCad.Core.Geometry;
 using LiteCad.Infrastructure;
+using LiteCad.Rendering.Pdf;
 using LiteCad.Resources;
 using LiteCad.Services;
 using LiteCad.Tools;
 using LiteCad.UI;
 using LiteCad.UI.Layout;
+using Microsoft.Win32;
+using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,6 +18,7 @@ namespace LiteCad;
 public partial class MainWindow : Window
 {
     private readonly Dictionary<string, ITool> _tools;
+    private readonly ProjectStorage _projectStorage = new();
 
     public MainWindowViewModel ViewModel { get; }
 
@@ -43,6 +48,7 @@ public partial class MainWindow : Window
             ["Dimension"] = new DimensionTool(),
             ["Eraser"] = new EraserTool(),
             ["Copy"] = new CopyTool(),
+            ["Fill"] = new FillTool(),
             ["PolygonEdit"] = new PolygonEditTool()
         };
 
@@ -69,6 +75,8 @@ public partial class MainWindow : Window
             {
                 MainProperties.SetSelection(selection);
                 MainProperties.SyncDimensionSelection(ViewModel.Session);
+                MainProperties.SyncAxisSelection(ViewModel.Session);
+                MainProperties.SyncFaceSelection(ViewModel.Session);
             },
             enabled => MainStatusBar.SetLengthInputEnabled(enabled),
             length => MainStatusBar.ResetLengthEditing(length),
@@ -83,7 +91,11 @@ public partial class MainWindow : Window
             (first, second) => MainStatusBar.SetDualFieldInputText(first, second),
             () => MainStatusBar.LineInputText,
             text => MainStatusBar.SetLineInputText(text),
-            () => ViewModel.Session.History.Record(ViewModel.Session.Document),
+            () =>
+            {
+                ViewModel.Session.History.Record(ViewModel.Session.Document);
+                ViewModel.Session.ProjectFile.MarkDirty();
+            },
             () => ActivateTool(_tools["Selection"]));
 
         MainCanvas.InitializeTools(toolContext);
@@ -92,12 +104,14 @@ public partial class MainWindow : Window
         MainStatusBar.RectangleSizeCommitted += OnRectangleSizeCommitted;
         MainStatusBar.TryCommitLengthInput = TryCommitLengthForActiveTool;
         MainStatusBar.TryCommitRectangleSizeInput = TryCommitRectangleSizeForActiveTool;
+        MainStatusBar.BindSession(ViewModel.Session, OnDisplayUnitChanged);
 
         MainToolBar.ToolRequested += OnToolRequested;
         MainMenuBar.ToolRequested += OnToolRequested;
         MainMenuBar.EditCommandRequested += OnEditCommandRequested;
         MainMenuBar.FileCommandRequested += OnFileCommandRequested;
         LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+        _projectStorage.EnsureProjectsDirectoryExists();
         ActivateTool(_tools["Selection"]);
     }
 
@@ -116,18 +130,223 @@ public partial class MainWindow : Window
 
     private void OnFileCommandRequested(object? sender, string command)
     {
-        if (command != "New")
+        switch (command)
+        {
+            case "New":
+                CreateNewProject();
+                break;
+            case "Open":
+                OpenProject();
+                break;
+            case "Save":
+                SaveProject(saveAs: false);
+                break;
+            case "SaveAs":
+                SaveProject(saveAs: true);
+                break;
+            case "DeleteProject":
+                DeleteCurrentProject();
+                break;
+        }
+    }
+
+    private void CreateNewProject()
+    {
+        var session = ViewModel.Session;
+        if (session.ProjectFile.IsDirty
+            && MessageBox.Show(
+                Strings.Dialog_UnsavedChanges_Message,
+                Strings.Dialog_UnsavedChanges_Title,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question) != MessageBoxResult.Yes)
         {
             return;
         }
 
+        ResetToNewDocument(session, Strings.Status_NewDocument);
+    }
+
+    private void OpenProject()
+    {
         var session = ViewModel.Session;
+        if (session.ProjectFile.IsDirty
+            && MessageBox.Show(
+                Strings.Dialog_UnsavedChanges_Message,
+                Strings.Dialog_UnsavedChanges_Title,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        _projectStorage.EnsureProjectsDirectoryExists();
+        var dialog = new OpenFileDialog
+        {
+            Title = Strings.Dialog_OpenProject_Title,
+            Filter = Strings.Dialog_ProjectFilter,
+            InitialDirectory = _projectStorage.ProjectsDirectory,
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        LoadProjectFromPath(session, dialog.FileName);
+    }
+
+    private void SaveProject(bool saveAs)
+    {
+        var session = ViewModel.Session;
+        if (!saveAs && session.ProjectFile.HasSavedPath)
+        {
+            _projectStorage.SaveProject(
+                session.Document,
+                session.DisplayUnitSettings.LinearUnit,
+                session.ProjectFile.CurrentFilePath!,
+                session.Renderer);
+            session.ProjectFile.MarkSaved(session.ProjectFile.CurrentFilePath!);
+            MainStatusBar.SetStatus(Strings.Status_ProjectSaved);
+            return;
+        }
+
+        _projectStorage.EnsureProjectsDirectoryExists();
+        var dialog = new SaveFileDialog
+        {
+            Title = saveAs ? Strings.Dialog_SaveProjectAs_Title : Strings.Dialog_SaveProject_Title,
+            Filter = saveAs ? Strings.Dialog_SaveAsFilter : Strings.Dialog_ProjectFilter,
+            InitialDirectory = _projectStorage.ProjectsDirectory,
+            AddExtension = true,
+            DefaultExt = ProjectFileNameHelper.SitExtension.TrimStart('.'),
+            FileName = session.ProjectFile.HasSavedPath
+                ? ProjectFileNameHelper.GetProjectDisplayName(session.ProjectFile.CurrentFilePath)
+                : "Project"
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        if (saveAs && PdfFileNameHelper.IsPdfPath(dialog.FileName))
+        {
+            ExportPdf(session, dialog.FileName);
+            return;
+        }
+
+        var targetPath = ProjectFileNameHelper.NormalizeSitFilePath(dialog.FileName);
+        if (File.Exists(targetPath)
+            && MessageBox.Show(
+                Strings.Dialog_OverwriteProject_Message,
+                Strings.Dialog_OverwriteProject_Title,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        _projectStorage.SaveProject(
+            session.Document,
+            session.DisplayUnitSettings.LinearUnit,
+            targetPath,
+            session.Renderer);
+        session.ProjectFile.MarkSaved(targetPath);
+        MainStatusBar.SetStatus(Strings.Status_ProjectSaved);
+    }
+
+    private void ExportPdf(CadSession session, string fileName)
+    {
+        var targetPath = PdfFileNameHelper.NormalizePdfFilePath(fileName);
+        if (File.Exists(targetPath)
+            && MessageBox.Show(
+                Strings.Dialog_OverwritePdf_Message,
+                Strings.Dialog_OverwritePdf_Title,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        try
+        {
+            PdfExporter.Export(
+                session.Document,
+                session.DisplayUnitSettings.LinearUnit,
+                session.Renderer,
+                targetPath);
+            MainStatusBar.SetStatus(Strings.Status_PdfExported);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                string.Format(CultureInfo.CurrentCulture, Strings.Dialog_PdfExportFailed_Message, ex.Message),
+                Strings.Dialog_PdfExportFailed_Title,
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private void DeleteCurrentProject()
+    {
+        var session = ViewModel.Session;
+        if (!session.ProjectFile.HasSavedPath)
+        {
+            return;
+        }
+
+        if (MessageBox.Show(
+                Strings.Dialog_DeleteProject_Message,
+                Strings.Dialog_DeleteProject_Title,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        var deletedPath = session.ProjectFile.CurrentFilePath!;
+        _projectStorage.DeleteProject(deletedPath);
+        ResetToNewDocument(session, Strings.Status_ProjectDeleted);
+    }
+
+    private void LoadProjectFromPath(CadSession session, string filePath)
+    {
+        try
+        {
+            var dto = _projectStorage.LoadProject(filePath, out _);
+            session.LoadProject(dto, filePath);
+            MainProperties.SetSelection(Strings.Selection_NothingSelected);
+            MainProperties.SyncDimensionSelection(session);
+            MainProperties.SyncAxisSelection(session);
+            MainProperties.SyncFaceSelection(session);
+            MainStatusBar.SetLength(null);
+            MainStatusBar.SetArea(null);
+            MainStatusBar.SetStatus(Strings.Status_ProjectOpened);
+            ActivateTool(_tools["Selection"]);
+            MainCanvas.RequestRedraw();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                ex.Message,
+                Strings.Dialog_OpenProject_Title,
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+    }
+
+    private void ResetToNewDocument(CadSession session, string statusMessage)
+    {
         session.NewDocument();
         session.Selection.Clear();
         MainProperties.SetSelection(Strings.Selection_NothingSelected);
+        MainProperties.SyncDimensionSelection(session);
+            MainProperties.SyncAxisSelection(session);
+        MainProperties.SyncFaceSelection(session);
         MainStatusBar.SetLength(null);
         MainStatusBar.SetArea(null);
-        MainStatusBar.SetStatus(Strings.Status_NewDocument);
+        MainStatusBar.SetStatus(statusMessage);
+        ActivateTool(_tools["Selection"]);
         MainCanvas.RequestRedraw();
     }
 
@@ -236,6 +455,7 @@ public partial class MainWindow : Window
                 session.Selection.Clear();
                 MainProperties.SetSelection(Strings.Selection_NothingSelected);
                 MainProperties.SyncDimensionSelection(session);
+            MainProperties.SyncAxisSelection(session);
                 MainStatusBar.SetLength(null);
                 MainStatusBar.SetArea(null);
                 MainStatusBar.SetStatus(command == "Undo" ? Strings.Status_Undo : Strings.Status_Redo);
@@ -260,6 +480,7 @@ public partial class MainWindow : Window
                 session.Selection.Clear();
                 MainProperties.SetSelection(Strings.Selection_NothingSelected);
                 MainProperties.SyncDimensionSelection(session);
+            MainProperties.SyncAxisSelection(session);
                 MainStatusBar.SetLength(null);
                 MainStatusBar.SetArea(null);
                 MainStatusBar.SetStatus(Strings.Status_Deleted);
@@ -271,20 +492,13 @@ public partial class MainWindow : Window
     {
         ViewModel.Session.ToolService.ActivateTool(tool);
         MainProperties.SetActiveTool(tool.Id);
+        MainToolBar.SetActiveTool(tool.Id.ToString());
         MainStatusBar.SetStatus(Strings.Format(Strings.Status_ToolActive, tool.Name));
     }
 
     private void OnRectangleSizeCommitted(object? sender, (string Width, string Height) sizes)
     {
-        ViewModel.Session.ToolService.ActiveTool?.TryApplyRectangleSize(sizes.Width, sizes.Height);
-    }
-
-    private bool TryCommitRectangleSizeForActiveTool((string Width, string Height) sizes)
-        => ViewModel.Session.ToolService.ActiveTool?.TryApplyRectangleSize(sizes.Width, sizes.Height) == true;
-
-    private void OnLengthCommitted(object? sender, string input)
-    {
-        TryCommitLengthForActiveTool(input);
+        TryCommitRectangleSizeForActiveTool(sizes);
     }
 
     private bool TryCommitLengthForActiveTool(string input)
@@ -295,25 +509,40 @@ public partial class MainWindow : Window
             return false;
         }
 
-        if (tool.TryApplyLengthInput(input))
-        {
-            return true;
-        }
-
-        return TryParseSingleLength(input, out var length) && tool.TryApplyLength(length);
+        return LinearInputCommit.TryCommitLength(
+            tool,
+            input,
+            ViewModel.Session.DisplayUnitSettings.LinearUnit,
+            MainStatusBar.LineInputLabelMode);
     }
 
-    private static bool TryParseSingleLength(string text, out double length)
+    private bool TryCommitRectangleSizeForActiveTool((string Width, string Height) sizes)
     {
-        length = 0;
-        if (string.IsNullOrWhiteSpace(text))
+        var tool = ViewModel.Session.ToolService.ActiveTool;
+        if (tool is null)
         {
             return false;
         }
 
-        var normalized = text.Trim().Replace(',', '.');
-        return double.TryParse(normalized, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out length)
-            && length > 0;
+        return LinearInputCommit.TryCommitRectangleSize(
+            tool,
+            sizes.Width,
+            sizes.Height,
+            ViewModel.Session.DisplayUnitSettings.LinearUnit,
+            MainStatusBar.DualFieldLabels);
+    }
+
+    private void OnLengthCommitted(object? sender, string input)
+    {
+        TryCommitLengthForActiveTool(input);
+    }
+
+    private void OnDisplayUnitChanged()
+    {
+        MainCanvas.RequestRedraw();
+        MainProperties.SetSelection(SelectionUiFormatter.FormatSelectionInfo(ViewModel.Session));
+        MainProperties.SyncDimensionSelection(ViewModel.Session);
+                MainProperties.SyncAxisSelection(ViewModel.Session);
     }
 
     private void OnLanguageChanged(object? sender, EventArgs e)
@@ -322,16 +551,19 @@ public partial class MainWindow : Window
     private void RefreshLocalizedUi()
     {
         MainStatusBar.RefreshLocalizedLabels();
+        MainToolBar.RefreshLocalizedLabels();
 
         var activeTool = ViewModel.Session.ToolService.ActiveTool;
         if (activeTool is not null)
         {
             MainProperties.SetActiveTool(activeTool.Id);
+            MainToolBar.SetActiveTool(activeTool.Id.ToString());
             MainStatusBar.SetStatus(Strings.Format(Strings.Status_ToolActive, activeTool.Name));
         }
 
         MainProperties.SetSelection(SelectionUiFormatter.FormatSelectionInfo(ViewModel.Session));
         MainProperties.SyncDimensionSelection(ViewModel.Session);
+                MainProperties.SyncAxisSelection(ViewModel.Session);
     }
 
     private void OnMouseWorldPositionChanged(object? sender, PointEventArgs e)

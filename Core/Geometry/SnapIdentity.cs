@@ -20,6 +20,25 @@ public readonly struct SnapIdentity : IEquatable<SnapIdentity>
     public static SnapIdentity ForMidpoint(Guid edgeId)
         => new(SnapKind.Midpoint, edgeId.ToString("N"));
 
+    public static SnapIdentity ForAxisMidpoint(Guid axisId)
+        => new(SnapKind.Midpoint, $"axis:{axisId:N}");
+
+    public static SnapIdentity ForAxisEndpoint(Guid axisId, bool isStart)
+        => new(SnapKind.Endpoint, $"axis-end:{axisId:N}:{(isStart ? 's' : 'e')}");
+
+    public static SnapIdentity ForOnAxis(Guid axisId, long parameterKey)
+        => new(SnapKind.OnEdge, $"axis-on:{axisId:N}:{parameterKey}");
+
+    public static SnapIdentity ForAxisIntersection(IEnumerable<Guid> axisIds)
+    {
+        var normalized = axisIds
+            .Select(id => id.ToString("N"))
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToArray();
+
+        return new SnapIdentity(SnapKind.AxisIntersection, string.Join("|", normalized));
+    }
+
     public static SnapIdentity ForIntersection(IEnumerable<Guid> edgeIds)
     {
         var normalized = edgeIds
@@ -43,6 +62,7 @@ public readonly struct SnapIdentity : IEquatable<SnapIdentity>
             SnapKind.Midpoint when snap.EdgeId.HasValue => ForMidpoint(snap.EdgeId.Value),
             SnapKind.OnEdge when snap.EdgeId.HasValue => ForOnEdge(snap.EdgeId.Value, 0),
             SnapKind.Alignment => ForAlignment("alignment"),
+            SnapKind.AxisIntersection => ForAxisIntersection([]),
             _ => new SnapIdentity(snap.Kind, snap.Position.ToString() ?? string.Empty)
         };
 

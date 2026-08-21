@@ -1,0 +1,231 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ui="clr-namespace:LiteCad.UI">
+
+    <!-- Colors -->
+    <Color x:Key="Cad.Background">#F0F0F0</Color>
+    <Color x:Key="Cad.Panel">#E8E8E8</Color>
+    <Color x:Key="Cad.PropertiesBackground">#FAFAFA</Color>
+    <Color x:Key="Cad.Border">#CCCCCC</Color>
+    <Color x:Key="Cad.BorderLight">#E0E0E0</Color>
+    <Color x:Key="Cad.BorderDark">#B0B0B0</Color>
+    <Color x:Key="Cad.TextPrimary">#222222</Color>
+    <Color x:Key="Cad.TextSecondary">#666666</Color>
+    <Color x:Key="Cad.TextMuted">#999999</Color>
+    <Color x:Key="Cad.Accent">#2196F3</Color>
+    <Color x:Key="Cad.AccentLight">#D6EBFF</Color>
+    <Color x:Key="Cad.Hover">#E4E4E4</Color>
+    <Color x:Key="Cad.InputBackground">#FFFFFF</Color>
+    <Color x:Key="Cad.InputDisabled">#ECECEC</Color>
+    <Color x:Key="Cad.InputActive">#FFFFFF</Color>
+
+    <SolidColorBrush x:Key="CadBackgroundBrush" Color="{StaticResource Cad.Background}" />
+    <SolidColorBrush x:Key="CadPanelBrush" Color="{StaticResource Cad.Panel}" />
+    <SolidColorBrush x:Key="CadPropertiesBackgroundBrush" Color="{StaticResource Cad.PropertiesBackground}" />
+    <SolidColorBrush x:Key="CadBorderBrush" Color="{StaticResource Cad.Border}" />
+    <SolidColorBrush x:Key="CadBorderLightBrush" Color="{StaticResource Cad.BorderLight}" />
+    <SolidColorBrush x:Key="CadBorderDarkBrush" Color="{StaticResource Cad.BorderDark}" />
+    <SolidColorBrush x:Key="CadTextPrimaryBrush" Color="{StaticResource Cad.TextPrimary}" />
+    <SolidColorBrush x:Key="CadTextSecondaryBrush" Color="{StaticResource Cad.TextSecondary}" />
+    <SolidColorBrush x:Key="CadTextMutedBrush" Color="{StaticResource Cad.TextMuted}" />
+    <SolidColorBrush x:Key="CadAccentBrush" Color="{StaticResource Cad.Accent}" />
+    <SolidColorBrush x:Key="CadAccentLightBrush" Color="{StaticResource Cad.AccentLight}" />
+    <SolidColorBrush x:Key="CadHoverBrush" Color="{StaticResource Cad.Hover}" />
+    <SolidColorBrush x:Key="CadInputBackgroundBrush" Color="{StaticResource Cad.InputBackground}" />
+    <SolidColorBrush x:Key="CadInputDisabledBrush" Color="{StaticResource Cad.InputDisabled}" />
+    <SolidColorBrush x:Key="CadIconBrush" Color="{StaticResource Cad.TextPrimary}" />
+    <SolidColorBrush x:Key="CadIconDisabledBrush" Color="#AAAAAA" />
+
+    <!-- Typography -->
+    <Style x:Key="CadSectionLabelStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Foreground" Value="{StaticResource CadTextSecondaryBrush}" />
+        <Setter Property="Margin" Value="0,0,0,4" />
+    </Style>
+
+    <Style x:Key="CadPropertyValueStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource CadTextPrimaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="CadPanelHeaderStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource CadTextPrimaryBrush}" />
+    </Style>
+
+    <!-- Tooltips -->
+    <Style x:Key="CadToolTipStyle" TargetType="ToolTip">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="BorderBrush" Value="{StaticResource CadBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="8,4" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource CadTextPrimaryBrush}" />
+    </Style>
+
+    <!-- Tool button -->
+    <Style x:Key="CadToolButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Margin" Value="1,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="ToolTipService.ShowDuration" Value="60000" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource CadHoverBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource CadBorderBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource CadBorderBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45" />
+                        </Trigger>
+                        <DataTrigger Binding="{Binding (ui:ToolBarProperties.IsActive), RelativeSource={RelativeSource Self}}" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource CadAccentLightBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource CadAccentBrush}" />
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CadToolIconPathStyle" TargetType="Path">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="Stretch" Value="Uniform" />
+        <Setter Property="Stroke" Value="{StaticResource CadIconBrush}" />
+        <Setter Property="StrokeThickness" Value="1.2" />
+        <Setter Property="StrokeLineJoin" Value="Round" />
+        <Setter Property="StrokeStartLineCap" Value="Round" />
+        <Setter Property="StrokeEndLineCap" Value="Round" />
+        <Setter Property="Fill" Value="Transparent" />
+    </Style>
+
+    <Style x:Key="CadToolIconFillPathStyle" TargetType="Path" BasedOn="{StaticResource CadToolIconPathStyle}">
+        <Setter Property="Fill" Value="{StaticResource CadIconBrush}" />
+        <Setter Property="StrokeThickness" Value="1" />
+    </Style>
+
+    <!-- ComboBox -->
+    <Style x:Key="CadComboBoxStyle" TargetType="ComboBox">
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Background" Value="{StaticResource CadInputBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CadBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <!-- TextBox -->
+    <Style x:Key="CadTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Background" Value="{StaticResource CadInputBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CadBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- Inline CAD input field (StatusBar) -->
+    <Style x:Key="CadInlineInputBorderStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource CadInputDisabledBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CadBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="2" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+    </Style>
+
+    <Style x:Key="CadInlineInputTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="5,0" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CaretBrush" Value="{StaticResource CadTextPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="CadInlineInputDisplayStyle" TargetType="TextBlock">
+        <Setter Property="Margin" Value="6,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource CadTextSecondaryBrush}" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
+    <!-- CheckBox -->
+    <Style x:Key="CadCheckBoxStyle" TargetType="CheckBox">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{StaticResource CadTextPrimaryBrush}" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+    </Style>
+
+    <!-- Separator -->
+    <Style x:Key="CadToolbarSeparatorStyle" TargetType="Separator">
+        <Setter Property="Width" Value="1" />
+        <Setter Property="Margin" Value="6,4" />
+        <Setter Property="Background" Value="{StaticResource CadBorderBrush}" />
+    </Style>
+
+    <Style x:Key="CadStatusSeparatorStyle" TargetType="Separator">
+        <Setter Property="Width" Value="1" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Margin" Value="12,0" />
+        <Setter Property="Background" Value="{StaticResource CadBorderBrush}" />
+    </Style>
+
+    <!-- Panel chrome -->
+    <Style x:Key="CadToolbarPanelStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource CadPanelBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CadBorderBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+
+    <Style x:Key="CadStatusBarPanelStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource CadBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CadBorderBrush}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Padding" Value="8,3" />
+    </Style>
+
+    <Style x:Key="CadPropertiesPanelStyle" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource CadPropertiesBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CadBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1,0,0,0" />
+    </Style>
+
+    <Style x:Key="CadMenuBarPanelStyle" TargetType="Grid">
+        <Setter Property="Background" Value="{StaticResource CadBackgroundBrush}" />
+    </Style>
+
+    <!-- Property section -->
+    <Style x:Key="CadPropertySectionStyle" TargetType="StackPanel">
+        <Setter Property="Margin" Value="0,0,0,16" />
+    </Style>
+
+    <Style x:Key="CadPropertyFieldStyle" TargetType="StackPanel">
+        <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+
+</ResourceDictionary>

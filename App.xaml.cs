@@ -3,6 +3,7 @@ using System.Data;
 using System.Windows;
 using LiteCad.Infrastructure;
 using LiteCad.Resources;
+using LiteCad.Services;
 
 namespace LiteCad
 {
@@ -14,6 +15,7 @@ namespace LiteCad
         protected override void OnStartup(StartupEventArgs e)
         {
             LocalizationManager.Instance.Initialize(LanguageSettingsStore.LoadLanguage());
+            new ProjectStorage().EnsureProjectsDirectoryExists();
             base.OnStartup(e);
         }
     }

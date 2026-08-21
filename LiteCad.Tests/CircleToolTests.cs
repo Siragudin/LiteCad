@@ -256,30 +256,7 @@ public class CircleToolTests
 
     private static CircleInteractiveHarness CreateInteractiveHarness() => new();
 
-    private static void RunSta(Action action)
-    {
-        Exception? captured = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                captured = ex;
-            }
-        });
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-
-        if (captured is not null)
-        {
-            ExceptionDispatchInfo.Capture(captured).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private static MouseButtonEventArgs CreateMouseDown(MouseButton button = MouseButton.Left)
         => new(Mouse.PrimaryDevice, 0, button)
@@ -358,16 +335,7 @@ public class CircleToolTests
             Session = new CadSession();
             Tool = new CircleTool();
             StatusBar = new StatusBar();
-            _window = new Window
-            {
-                Content = StatusBar,
-                Width = 800,
-                Height = 120,
-                ShowInTaskbar = false,
-                WindowStyle = WindowStyle.None,
-                Visibility = Visibility.Hidden
-            };
-            _window.Show();
+            _window = WpfTestUtilities.CreateHiddenWindow(StatusBar);
 
             var context = new ToolContext(
                 Session,
@@ -388,20 +356,7 @@ public class CircleToolTests
             Session.ToolService.Initialize(context);
             Session.ToolService.ActivateTool(Tool);
 
-            StatusBar.TryCommitLengthInput = input =>
-            {
-                if (Tool.TryApplyLengthInput(input))
-                {
-                    return true;
-                }
-
-                return double.TryParse(
-                           input.Replace(',', '.'),
-                           NumberStyles.Float,
-                           CultureInfo.InvariantCulture,
-                           out var radius)
-                       && Tool.TryApplyLength(radius);
-            };
+            TestLinearInputCommit.WireStatusBar(Session, StatusBar, Tool);
         }
 
         public CadSession Session { get; }
@@ -416,7 +371,7 @@ public class CircleToolTests
 
         public void TypeRadius(string text) => StatusBar.SetLineInputText(text);
 
-        public void PressEnter() => StatusBar.ProcessLengthKey(CreateEnterKey());
+        public void PressEnter() => StatusBar.ProcessLengthKey(WpfTestUtilities.CreateKeyDown(StatusBar, Key.Enter));
 
         public void Dispose() => _window.Close();
     }

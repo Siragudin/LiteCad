@@ -1,8 +1,11 @@
 using LiteCad.Core.Geometry;
+using LiteCad.Infrastructure;
 using LiteCad.Resources;
 using LiteCad.Services;
+using LiteCad.UI;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -15,6 +18,14 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     private static readonly SolidColorBrush InactiveFieldBorderBrush = new(Color.FromRgb(0xCC, 0xCC, 0xCC));
     private static readonly SolidColorBrush TypingBackgroundBrush = new(Color.FromArgb(220, 255, 255, 255));
 
+    private DisplayUnitSettings? _displayUnitSettings;
+    private Action? _onDisplayUnitChanged;
+    private bool _suppressUnitComboEvents;
+    private double? _lastLength;
+    private double? _lastArea;
+    private PointF? _lastCoordinates;
+    private double? _lastWidthPreview;
+    private double? _lastHeightPreview;
     private bool _isTyping;
     private bool _isInputActive;
     private bool _isRectangleInputActive;
@@ -63,6 +74,24 @@ public partial class StatusBar : System.Windows.Controls.UserControl
     public bool IsWidthFieldFocused => WidthInput.IsKeyboardFocusWithin;
 
     public bool IsHeightFieldFocused => HeightInput.IsKeyboardFocusWithin;
+
+    public bool IsAngularInputMode => _lineInputLabelMode == LineInputLabelMode.Angle;
+
+    public LinearDisplayUnit LinearDisplayUnit
+        => _displayUnitSettings?.LinearUnit ?? LinearDisplayUnit.Millimeters;
+
+    public void BindSession(CadSession session, Action? onDisplayUnitChanged = null)
+    {
+        if (_displayUnitSettings is not null)
+        {
+            _displayUnitSettings.Changed -= OnDisplayUnitSettingsChanged;
+        }
+
+        _displayUnitSettings = session.DisplayUnitSettings;
+        _onDisplayUnitChanged = onDisplayUnitChanged;
+        _displayUnitSettings.Changed += OnDisplayUnitSettingsChanged;
+        SyncLinearUnitComboFromSettings();
+    }
 
     public void SetDualFieldLabelMode(DualFieldLabelMode mode)
     {
@@ -126,7 +155,12 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
     public void SetCoordinates(PointF point)
     {
-        CoordinatesText.Text = Strings.Format(Strings.Format_Coordinates, point.X, point.Y);
+        _lastCoordinates = point;
+        var unit = LinearDisplayUnit;
+        CoordinatesText.Text = Strings.Format(
+            Strings.Format_Coordinates,
+            UnitDisplayFormatter.FormatCoordinate(point.X, unit),
+            UnitDisplayFormatter.FormatCoordinate(point.Y, unit));
     }
 
     public void SetLengthText(string? text)
@@ -136,19 +170,22 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
     public void SetLength(double? length)
     {
-        LengthDisplay.Text = FormatLength(length);
+        _lastLength = length;
+        LengthDisplay.Text = FormatLengthInstance(length);
     }
 
     public void ResetLengthEditing(double? length)
     {
         ClearLineTyping();
-        LengthDisplay.Text = FormatLength(length);
+        _lastLength = length;
+        LengthDisplay.Text = FormatLengthInstance(length);
     }
 
     public void SetArea(double? area)
     {
+        _lastArea = area;
         AreaText.Text = area.HasValue
-            ? Strings.Format(Strings.Format_Area, area.Value)
+            ? Strings.Format(Strings.Format_Area, UnitDisplayFormatter.FormatArea(area.Value))
             : Strings.Format_AreaEmpty;
     }
 
@@ -183,22 +220,27 @@ public partial class StatusBar : System.Windows.Controls.UserControl
             return;
         }
 
+        _lastWidthPreview = width;
+        _lastHeightPreview = height;
+
         if (!_isTypingWidth)
         {
-            WidthDisplay.Text = FormatLength(width);
+            WidthDisplay.Text = FormatLengthInstance(width);
         }
 
         if (!_isTypingHeight)
         {
-            HeightDisplay.Text = FormatLength(height);
+            HeightDisplay.Text = FormatLengthInstance(height);
         }
     }
 
     public void ResetRectangleSizeInput(double? width, double? height)
     {
+        _lastWidthPreview = width;
+        _lastHeightPreview = height;
         ClearRectangleTyping();
-        WidthDisplay.Text = FormatLength(width);
-        HeightDisplay.Text = FormatLength(height);
+        WidthDisplay.Text = FormatLengthInstance(width);
+        HeightDisplay.Text = FormatLengthInstance(height);
         WidthInput.Text = string.Empty;
         HeightInput.Text = string.Empty;
     }
@@ -658,8 +700,80 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         }
     }
 
-    private static string FormatLength(double? length)
-        => length.HasValue ? length.Value.ToString("F2", CultureInfo.InvariantCulture) : Strings.Label_EmptyValue;
+    private string FormatLengthInstance(double? length)
+        => length.HasValue
+            ? UnitDisplayFormatter.FormatLinear(length.Value, LinearDisplayUnit)
+            : Strings.Label_EmptyValue;
+
+    private void OnDisplayUnitSettingsChanged()
+    {
+        SyncLinearUnitComboFromSettings();
+        RefreshDisplayedValues();
+        _onDisplayUnitChanged?.Invoke();
+    }
+
+    private void RefreshDisplayedValues()
+    {
+        if (_lastCoordinates is PointF coordinates)
+        {
+            SetCoordinates(coordinates);
+        }
+
+        if (_lastLength.HasValue)
+        {
+            SetLength(_lastLength);
+        }
+
+        if (_lastArea.HasValue)
+        {
+            SetArea(_lastArea);
+        }
+
+        if (_isRectangleInputActive)
+        {
+            SetRectangleSizePreview(_lastWidthPreview, _lastHeightPreview);
+        }
+    }
+
+    private void SyncLinearUnitComboFromSettings()
+    {
+        if (_displayUnitSettings is null)
+        {
+            return;
+        }
+
+        _suppressUnitComboEvents = true;
+        foreach (ComboBoxItem item in LinearUnitCombo.Items)
+        {
+            var isMatch = item.Tag?.ToString() switch
+            {
+                "Meters" => _displayUnitSettings.LinearUnit == LinearDisplayUnit.Meters,
+                _ => _displayUnitSettings.LinearUnit == LinearDisplayUnit.Millimeters
+            };
+
+            if (isMatch)
+            {
+                LinearUnitCombo.SelectedItem = item;
+                break;
+            }
+        }
+
+        _suppressUnitComboEvents = false;
+    }
+
+    private void LinearUnitCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_suppressUnitComboEvents || _displayUnitSettings is null || LinearUnitCombo.SelectedItem is not ComboBoxItem item)
+        {
+            return;
+        }
+
+        _displayUnitSettings.LinearUnit = item.Tag?.ToString() switch
+        {
+            "Meters" => LinearDisplayUnit.Meters,
+            _ => LinearDisplayUnit.Millimeters
+        };
+    }
 
     private static bool TryGetKeyChar(Key key, out char character)
     {

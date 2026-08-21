@@ -255,30 +255,7 @@ public class SectorToolTests
 
     private static SectorInteractiveHarness CreateInteractiveHarness() => new();
 
-    private static void RunSta(Action action)
-    {
-        Exception? captured = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                captured = ex;
-            }
-        });
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-
-        if (captured is not null)
-        {
-            ExceptionDispatchInfo.Capture(captured).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private static MouseButtonEventArgs CreateMouseDown(MouseButton button = MouseButton.Left)
         => new(Mouse.PrimaryDevice, 0, button)
@@ -378,20 +355,7 @@ public class SectorToolTests
             Session.ToolService.Initialize(context);
             Session.ToolService.ActivateTool(Tool);
 
-            StatusBar.TryCommitLengthInput = input =>
-            {
-                if (Tool.TryApplyLengthInput(input))
-                {
-                    return true;
-                }
-
-                return double.TryParse(
-                           input.Replace(',', '.'),
-                           NumberStyles.Float,
-                           CultureInfo.InvariantCulture,
-                           out var value)
-                       && Tool.TryApplyLength(value);
-            };
+            TestLinearInputCommit.WireStatusBar(Session, StatusBar, Tool);
         }
 
         public CadSession Session { get; }

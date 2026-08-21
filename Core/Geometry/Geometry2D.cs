@@ -231,6 +231,54 @@ public static class Geometry2D
         return true;
     }
 
+    public static bool TryGetCollinearSegmentsUnion(
+        PointF aStart,
+        PointF aEnd,
+        PointF bStart,
+        PointF bEnd,
+        double tolerance,
+        out PointF unionStart,
+        out PointF unionEnd)
+    {
+        unionStart = PointF.Zero;
+        unionEnd = PointF.Zero;
+
+        if (!AreSegmentsCollinear(aStart, aEnd, bStart, bEnd, tolerance))
+        {
+            return false;
+        }
+
+        var lengthA = MathUtils.Distance(aStart, aEnd);
+        if (lengthA <= tolerance)
+        {
+            return false;
+        }
+
+        var aMin = 0.0;
+        var aMax = 1.0;
+        var b1 = GetSegmentParameter(bStart, aStart, aEnd, tolerance);
+        var b2 = GetSegmentParameter(bEnd, aStart, aEnd, tolerance);
+        var bMin = Math.Min(b1, b2);
+        var bMax = Math.Max(b1, b2);
+
+        var gap = bMin > aMax
+            ? bMin - aMax
+            : aMin > bMax
+                ? aMin - bMax
+                : 0.0;
+
+        if (gap > tolerance / lengthA)
+        {
+            return false;
+        }
+
+        var unionMin = Math.Min(aMin, bMin);
+        var unionMax = Math.Max(aMax, bMax);
+        unionStart = GetSegmentPoint(aStart, aEnd, unionMin);
+        unionEnd = GetSegmentPoint(aStart, aEnd, unionMax);
+        return true;
+    }
+
     public static int ComparePoints(PointF a, PointF b, double tolerance)
     {
         if (Math.Abs(a.X - b.X) > tolerance)

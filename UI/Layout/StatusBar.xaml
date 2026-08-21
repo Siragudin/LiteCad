@@ -5,14 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:loc="clr-namespace:LiteCad.Resources"
              mc:Ignorable="d"
-             d:DesignHeight="24" d:DesignWidth="800">
-    <Border Background="#F0F0F0"
-            BorderBrush="#CCCCCC"
-            BorderThickness="0,1,0,0"
-            Padding="8,4">
-        <Grid>
+             d:DesignHeight="28"
+             d:DesignWidth="800">
+    <Border Style="{StaticResource CadStatusBarPanelStyle}">
+        <Grid VerticalAlignment="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" MinWidth="120" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -22,144 +23,121 @@
                        Grid.Column="0"
                        VerticalAlignment="Center"
                        Text="{loc:Loc Key=Status.Ready}"
-                       FontSize="12" />
+                       FontSize="12"
+                       Foreground="{StaticResource CadTextPrimaryBrush}"
+                       TextTrimming="CharacterEllipsis" />
+
+            <Separator Grid.Column="1" Style="{StaticResource CadStatusSeparatorStyle}" />
 
             <TextBlock x:Name="CoordinatesText"
-                       Grid.Column="1"
+                       Grid.Column="2"
                        VerticalAlignment="Center"
-                       Margin="16,0,0,0"
                        Text="{loc:Loc Key=Format.CoordinatesDefault}"
-                       FontSize="12" />
+                       FontSize="12"
+                       Foreground="{StaticResource CadTextSecondaryBrush}" />
 
-            <StackPanel x:Name="LineInputPanel"
-                        Grid.Column="2"
+            <Separator Grid.Column="3" Style="{StaticResource CadStatusSeparatorStyle}" />
+
+            <StackPanel Grid.Column="4"
                         Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        Margin="16,0,0,0">
-                <TextBlock x:Name="LineInputLabel"
-                           Text="{loc:Loc Key=Label.Length}"
-                           VerticalAlignment="Center"
-                           FontSize="12"
-                           Margin="0,0,4,0" />
-                <Grid Width="80"
-                      Height="22">
-                    <Border Background="#E8E8E8"
-                            BorderBrush="#CCCCCC"
-                            BorderThickness="1"
-                            CornerRadius="2" />
-                    <TextBlock x:Name="LengthDisplay"
-                               Margin="6,0"
+                        VerticalAlignment="Center">
+                <ComboBox x:Name="LinearUnitCombo"
+                          Width="52"
+                          Style="{StaticResource CadComboBoxStyle}"
+                          VerticalAlignment="Center"
+                          Margin="0,0,8,0"
+                          SelectionChanged="LinearUnitCombo_OnSelectionChanged">
+                    <ComboBoxItem Content="mm" Tag="Millimeters" IsSelected="True" />
+                    <ComboBoxItem Content="m" Tag="Meters" />
+                </ComboBox>
+
+                <StackPanel x:Name="LineInputPanel"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <TextBlock x:Name="LineInputLabel"
+                               Text="{loc:Loc Key=Label.Length}"
                                VerticalAlignment="Center"
                                FontSize="12"
-                               Foreground="#666666"
-                               Text="{loc:Loc Key=Label.EmptyValue}"
-                               IsHitTestVisible="False" />
-                    <TextBox x:Name="LengthInput"
-                             Margin="0"
-                             Padding="5,0"
-                             FontSize="12"
-                             VerticalContentAlignment="Center"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             CaretBrush="Black"
-                             IsEnabled="False"
-                             IsTabStop="False"
-                             Focusable="True"
-                             Text=""
-                             KeyDown="LengthInput_OnKeyDown"
-                             PreviewTextInput="LengthInput_OnPreviewTextInput"
-                             TextChanged="LengthInput_OnTextChanged" />
-                </Grid>
+                               Foreground="{StaticResource CadTextSecondaryBrush}"
+                               Margin="0,0,4,0" />
+                    <Grid Width="80" Height="24">
+                        <Border Style="{StaticResource CadInlineInputBorderStyle}" />
+                        <TextBlock x:Name="LengthDisplay"
+                                   Style="{StaticResource CadInlineInputDisplayStyle}"
+                                   Text="{loc:Loc Key=Label.EmptyValue}" />
+                        <TextBox x:Name="LengthInput"
+                                 Style="{StaticResource CadInlineInputTextBoxStyle}"
+                                 IsEnabled="False"
+                                 IsTabStop="False"
+                                 Focusable="True"
+                                 Text=""
+                                 KeyDown="LengthInput_OnKeyDown"
+                                 PreviewTextInput="LengthInput_OnPreviewTextInput"
+                                 TextChanged="LengthInput_OnTextChanged" />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel x:Name="RectangleInputPanel"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Visibility="Collapsed">
+                    <TextBlock x:Name="FirstFieldLabel"
+                               Text="{loc:Loc Key=Label.Width}"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="{StaticResource CadTextSecondaryBrush}"
+                               Margin="0,0,4,0" />
+                    <Grid x:Name="WidthInputHost" Width="64" Height="24">
+                        <Border x:Name="WidthInputBorder"
+                                Style="{StaticResource CadInlineInputBorderStyle}" />
+                        <TextBlock x:Name="WidthDisplay"
+                                   Style="{StaticResource CadInlineInputDisplayStyle}"
+                                   Text="{loc:Loc Key=Label.EmptyValue}" />
+                        <TextBox x:Name="WidthInput"
+                                 Style="{StaticResource CadInlineInputTextBoxStyle}"
+                                 IsEnabled="False"
+                                 IsTabStop="False"
+                                 Focusable="True"
+                                 Text=""
+                                 KeyDown="RectangleFieldInput_OnKeyDown"
+                                 PreviewTextInput="WidthInput_OnPreviewTextInput"
+                                 TextChanged="WidthInput_OnTextChanged"
+                                 GotFocus="WidthInput_OnGotFocus" />
+                    </Grid>
+                    <TextBlock x:Name="SecondFieldLabel"
+                               Text="{loc:Loc Key=Label.Height}"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="{StaticResource CadTextSecondaryBrush}"
+                               Margin="8,0,4,0" />
+                    <Grid x:Name="HeightInputHost" Width="64" Height="24">
+                        <Border x:Name="HeightInputBorder"
+                                Style="{StaticResource CadInlineInputBorderStyle}" />
+                        <TextBlock x:Name="HeightDisplay"
+                                   Style="{StaticResource CadInlineInputDisplayStyle}"
+                                   Text="{loc:Loc Key=Label.EmptyValue}" />
+                        <TextBox x:Name="HeightInput"
+                                 Style="{StaticResource CadInlineInputTextBoxStyle}"
+                                 IsEnabled="False"
+                                 IsTabStop="False"
+                                 Focusable="True"
+                                 Text=""
+                                 KeyDown="RectangleFieldInput_OnKeyDown"
+                                 PreviewTextInput="HeightInput_OnPreviewTextInput"
+                                 TextChanged="HeightInput_OnTextChanged"
+                                 GotFocus="HeightInput_OnGotFocus" />
+                    </Grid>
+                </StackPanel>
             </StackPanel>
 
-            <StackPanel x:Name="RectangleInputPanel"
-                        Grid.Column="2"
-                        Orientation="Horizontal"
-                        VerticalAlignment="Center"
-                        Margin="16,0,0,0"
-                        Visibility="Collapsed">
-                <TextBlock x:Name="FirstFieldLabel"
-                           Text="{loc:Loc Key=Label.Width}"
-                           VerticalAlignment="Center"
-                           FontSize="12"
-                           Margin="0,0,4,0" />
-                <Grid x:Name="WidthInputHost"
-                      Width="64"
-                      Height="22">
-                    <Border x:Name="WidthInputBorder"
-                            Background="#E8E8E8"
-                            BorderBrush="#CCCCCC"
-                            BorderThickness="1"
-                            CornerRadius="2" />
-                    <TextBlock x:Name="WidthDisplay"
-                               Margin="6,0"
-                               VerticalAlignment="Center"
-                               FontSize="12"
-                               Foreground="#666666"
-                               Text="{loc:Loc Key=Label.EmptyValue}"
-                               IsHitTestVisible="False" />
-                    <TextBox x:Name="WidthInput"
-                             Margin="0"
-                             Padding="5,0"
-                             FontSize="12"
-                             VerticalContentAlignment="Center"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             CaretBrush="Black"
-                             IsEnabled="False"
-                             IsTabStop="False"
-                             Focusable="True"
-                             Text=""
-                             KeyDown="RectangleFieldInput_OnKeyDown"
-                             PreviewTextInput="WidthInput_OnPreviewTextInput"
-                             TextChanged="WidthInput_OnTextChanged"
-                             GotFocus="WidthInput_OnGotFocus" />
-                </Grid>
-                <TextBlock x:Name="SecondFieldLabel"
-                           Text="{loc:Loc Key=Label.Height}"
-                           VerticalAlignment="Center"
-                           FontSize="12"
-                           Margin="8,0,4,0" />
-                <Grid x:Name="HeightInputHost"
-                      Width="64"
-                      Height="22">
-                    <Border x:Name="HeightInputBorder"
-                            Background="#E8E8E8"
-                            BorderBrush="#CCCCCC"
-                            BorderThickness="1"
-                            CornerRadius="2" />
-                    <TextBlock x:Name="HeightDisplay"
-                               Margin="6,0"
-                               VerticalAlignment="Center"
-                               FontSize="12"
-                               Foreground="#666666"
-                               Text="{loc:Loc Key=Label.EmptyValue}"
-                               IsHitTestVisible="False" />
-                    <TextBox x:Name="HeightInput"
-                             Margin="0"
-                             Padding="5,0"
-                             FontSize="12"
-                             VerticalContentAlignment="Center"
-                             Background="Transparent"
-                             BorderThickness="0"
-                             CaretBrush="Black"
-                             IsEnabled="False"
-                             IsTabStop="False"
-                             Focusable="True"
-                             Text=""
-                             KeyDown="RectangleFieldInput_OnKeyDown"
-                             PreviewTextInput="HeightInput_OnPreviewTextInput"
-                             TextChanged="HeightInput_OnTextChanged"
-                             GotFocus="HeightInput_OnGotFocus" />
-                </Grid>
-            </StackPanel>
+            <Separator Grid.Column="5" Style="{StaticResource CadStatusSeparatorStyle}" />
 
             <TextBlock x:Name="AreaText"
-                       Grid.Column="3"
+                       Grid.Column="6"
                        VerticalAlignment="Center"
-                       Margin="16,0,0,0"
                        Text="{loc:Loc Key=Format.AreaEmpty}"
-                       FontSize="12" />
+                       FontSize="12"
+                       Foreground="{StaticResource CadTextSecondaryBrush}" />
         </Grid>
     </Border>
 </UserControl>

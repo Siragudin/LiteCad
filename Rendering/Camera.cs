@@ -69,4 +69,24 @@ public sealed class Camera
         Zoom = 1.0;
         Changed?.Invoke();
     }
+
+    public void FitWorldBounds(
+        double minX,
+        double minY,
+        double maxX,
+        double maxY,
+        Size viewport,
+        double paddingPixels = 24)
+    {
+        var worldWidth = Math.Max(maxX - minX, 1e-6);
+        var worldHeight = Math.Max(maxY - minY, 1e-6);
+        var zoomX = (viewport.Width - paddingPixels * 2) / worldWidth;
+        var zoomY = (viewport.Height - paddingPixels * 2) / worldHeight;
+        Zoom = Math.Clamp(Math.Min(zoomX, zoomY), MinZoom, MaxZoom);
+
+        var centerX = (minX + maxX) / 2.0;
+        var centerY = (minY + maxY) / 2.0;
+        PanOffset = new PointF((float)(-centerX * Zoom), (float)(centerY * Zoom));
+        Changed?.Invoke();
+    }
 }

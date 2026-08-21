@@ -34,7 +34,7 @@
 
             <Border Grid.Column="0"
                     Margin="8,8,4,8"
-                    BorderBrush="#B0B0B0"
+                    BorderBrush="{StaticResource CadBorderDarkBrush}"
                     BorderThickness="1"
                     Background="White"
                     ClipToBounds="True"

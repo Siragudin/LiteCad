@@ -135,30 +135,7 @@ public class MovePropertiesOrthoTests
             document.Vertices.Select(vertex => $"{vertex.Id}:{vertex.Position.X},{vertex.Position.Y}"),
             document.Edges.Select(edge => edge.Id));
 
-    private static void RunSta(Action action)
-    {
-        Exception? captured = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                captured = ex;
-            }
-        });
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-
-        if (captured is not null)
-        {
-            ExceptionDispatchInfo.Capture(captured).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private sealed class MovePropertiesOrthoTestHost : IDisposable
     {

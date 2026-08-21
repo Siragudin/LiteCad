@@ -578,30 +578,7 @@ public class StretchToolTests
             document.Vertices.Select(vertex => $"{vertex.Id}:{vertex.Position.X},{vertex.Position.Y}"),
             document.Edges.Select(edge => edge.Id));
 
-    private static void RunSta(Action action)
-    {
-        Exception? captured = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                captured = ex;
-            }
-        });
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-
-        if (captured is not null)
-        {
-            ExceptionDispatchInfo.Capture(captured).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private static MouseButtonEventArgs CreateMouseButton(MouseButton button)
     {
@@ -660,20 +637,9 @@ public class StretchToolTests
 
             if (interactive && StatusBar is not null)
             {
-                StatusBar.TryCommitLengthInput = input =>
-                {
-                    if (StretchTool.TryApplyLengthInput(input))
-                    {
-                        return true;
-                    }
-
-                    return double.TryParse(
-                               input.Replace(',', '.'),
-                               NumberStyles.Float,
-                               CultureInfo.InvariantCulture,
-                               out var length)
-                           && StretchTool.TryApplyLength(length);
-                };
+                _window!.Content = StatusBar;
+                _window.UpdateLayout();
+                TestLinearInputCommit.WireStatusBar(Session, StatusBar, StretchTool);
             }
         }
 
@@ -701,15 +667,7 @@ public class StretchToolTests
 
         public bool PressDistanceEnter()
         {
-            var args = new KeyEventArgs(
-                Keyboard.PrimaryDevice,
-                PresentationSource.FromVisual(_window!),
-                0,
-                Key.Enter)
-            {
-                RoutedEvent = Keyboard.KeyDownEvent
-            };
-
+            var args = WpfTestUtilities.CreateKeyDown(StatusBar, Key.Enter);
             StatusBar.ProcessLengthKey(args);
             return !StretchTool.HasActiveOperation;
         }

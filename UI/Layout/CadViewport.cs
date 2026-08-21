@@ -37,17 +37,24 @@ public sealed class CadViewport : FrameworkElement
         if (e.OldValue is CadSession oldSession)
         {
             oldSession.Camera.Changed -= viewport.OnCameraChanged;
+            oldSession.DisplayUnitSettings.Changed -= viewport.OnDisplayUnitsChanged;
         }
 
         if (e.NewValue is CadSession newSession)
         {
             newSession.Camera.Changed += viewport.OnCameraChanged;
+            newSession.DisplayUnitSettings.Changed += viewport.OnDisplayUnitsChanged;
         }
 
         viewport.InvalidateVisual();
     }
 
     private void OnCameraChanged()
+    {
+        InvalidateVisual();
+    }
+
+    private void OnDisplayUnitsChanged()
     {
         InvalidateVisual();
     }
@@ -70,7 +77,8 @@ public sealed class CadViewport : FrameworkElement
                 Session.Selection,
                 Session.Camera,
                 viewport,
-                Session.ToolService.ActiveTool);
+                Session.ToolService.ActiveTool,
+                Session.DisplayUnitSettings.LinearUnit);
         }
         finally
         {

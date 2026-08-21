@@ -102,28 +102,7 @@ public class ResourceMigrationTests
         Assert.NotNull(resourceName);
     }
 
-    private static void RunSta(Action action)
-    {
-        Exception? error = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                error = ex;
-            }
-        });
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-        if (error is not null)
-        {
-            ExceptionDispatchInfo.Capture(error).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private static MoveResourceTestHost CreateMoveHost(bool orthoEnabled)
     {

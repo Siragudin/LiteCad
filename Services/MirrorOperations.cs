@@ -46,6 +46,11 @@ public static class MirrorOperations
         var tolerance = TopologyTolerance.ForMutation;
         var oldToNewEdgeIds = new Dictionary<Guid, Guid>();
         var newUserPolygonIds = new List<Guid>();
+        var affectedEdgeIds = snapshot.Edges
+            .Select(entry => entry.OriginalEdgeId)
+            .ToHashSet();
+        var identitiesBefore = FaceFillMigration.CaptureFaceIdentities(document);
+        var fillMigrationEntries = FaceFillMigration.CaptureAffectedFaceFills(document, affectedEdgeIds);
 
         foreach (var entry in snapshot.Edges)
         {
@@ -76,6 +81,11 @@ public static class MirrorOperations
         }
 
         PolygonBuilder.SyncFaces(document, tolerance);
+        FaceFillMigration.ApplyCopyOrMirror(
+            document,
+            fillMigrationEntries,
+            point => MirrorPoint(point, axisStart, axisEnd),
+            identitiesBefore);
 
         selection.SelectedEdgeIds.Clear();
         selection.SelectedPolygonIds.Clear();

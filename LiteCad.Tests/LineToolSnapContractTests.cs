@@ -11,15 +11,106 @@ public class LineToolSnapContractTests
     private const double UiTolerance = 12.0;
 
     [Fact]
-    public void SecondPoint_ParallelCursorAboveEdge_DoesNotSnapToOnEdgeProjection()
+    public void SecondPoint_FarFromEdge_DoesNotSnapToOnEdge()
     {
         var document = CreateHorizontalEdge();
-        var cursor = new PointF(60, 8);
+        var cursor = new PointF(60, 20);
 
-        var resolved = ResolveGeometricSnap(document, cursor, hasStart: true);
+        var snap = LineSnap(document, cursor);
 
-        Assert.Equal(cursor.X, resolved.X, 3);
-        Assert.Equal(cursor.Y, resolved.Y, 3);
+        Assert.False(snap.HasSnap);
+        Assert.Equal(cursor.X, snap.Resolve(cursor).X, 3);
+        Assert.Equal(cursor.Y, snap.Resolve(cursor).Y, 3);
+    }
+
+    [Fact]
+    public void SecondPoint_NearEdgeInterior_SnapsToOnEdgeProjection()
+    {
+        var document = CreateHorizontalEdge();
+        var cursor = new PointF(35, 4);
+
+        var snap = LineSnap(document, cursor);
+
+        Assert.True(snap.HasSnap);
+        Assert.Equal(SnapKind.OnEdge, snap.Snap!.Value.Kind);
+        Assert.Equal(35, snap.Snap.Value.Position.X, 3);
+        Assert.Equal(0, snap.Snap.Value.Position.Y, 3);
+    }
+
+    [Fact]
+    public void SecondPoint_NearStartEndpoint_SnapsToEndpoint()
+    {
+        var document = CreateHorizontalEdge();
+        var start = TopologyService.GetEdgeStartPoint(document, document.Edges[0]);
+        var cursor = new PointF(start.X + 2, start.Y + 2);
+
+        var snap = LineSnap(document, cursor);
+
+        Assert.True(snap.HasSnap);
+        Assert.Equal(SnapKind.Endpoint, snap.Snap!.Value.Kind);
+        Assert.Equal(start.X, snap.Snap.Value.Position.X, 3);
+        Assert.Equal(start.Y, snap.Snap.Value.Position.Y, 3);
+    }
+
+    [Fact]
+    public void SecondPoint_NearEndEndpoint_SnapsToEndpoint()
+    {
+        var document = CreateHorizontalEdge();
+        var end = TopologyService.GetEdgeEndPoint(document, document.Edges[0]);
+        var cursor = new PointF(end.X - 2, end.Y + 2);
+
+        var snap = LineSnap(document, cursor);
+
+        Assert.True(snap.HasSnap);
+        Assert.Equal(SnapKind.Endpoint, snap.Snap!.Value.Kind);
+        Assert.Equal(end.X, snap.Snap.Value.Position.X, 3);
+        Assert.Equal(end.Y, snap.Snap.Value.Position.Y, 3);
+    }
+
+    [Fact]
+    public void SecondPoint_AtMidpoint_UsesMidpointNotOnEdge()
+    {
+        var document = CreateHorizontalEdge();
+        var midpoint = new PointF(50, 0);
+
+        var snap = LineSnap(document, midpoint);
+
+        Assert.True(snap.HasSnap);
+        Assert.Equal(SnapKind.Midpoint, snap.Snap!.Value.Kind);
+        Assert.Equal(midpoint.X, snap.Snap.Value.Position.X, 3);
+        Assert.Equal(midpoint.Y, snap.Snap.Value.Position.Y, 3);
+    }
+
+    [Fact]
+    public void SecondPoint_AtArbitraryInteriorPoint_SnapsToOnEdge()
+    {
+        var document = CreateHorizontalEdge();
+
+        foreach (var x in new[] { 15f, 25f, 78f })
+        {
+            var cursor = new PointF(x, 3);
+            var snap = LineSnap(document, cursor);
+
+            Assert.True(snap.HasSnap);
+            Assert.Equal(SnapKind.OnEdge, snap.Snap!.Value.Kind);
+            Assert.Equal(x, snap.Snap.Value.Position.X, 3);
+            Assert.Equal(0, snap.Snap.Value.Position.Y, 3);
+        }
+    }
+
+    [Fact]
+    public void SecondPoint_VertexPriorityWinsOverOnEdge()
+    {
+        var document = CreateSquare();
+        var corner = document.Vertices
+            .Single(vertex => MathUtils.ArePointsEqual(vertex.Position, new PointF(0, 0), Tolerance));
+        var cursor = new PointF(corner.Position.X + 2, corner.Position.Y + 2);
+
+        var snap = LineSnap(document, cursor);
+
+        Assert.True(snap.HasSnap);
+        Assert.Equal(SnapKind.Endpoint, snap.Snap!.Value.Kind);
+        Assert.Equal(corner.Id, snap.Snap.Value.VertexId);
     }
 
     [Fact]
@@ -28,7 +119,7 @@ public class LineToolSnapContractTests
         var document = CreateHorizontalEdge();
         var cursor = new PointF(25, 0);
 
-        var snap = new SnapService().FindBestSnap(document, cursor, UiTolerance, includeOnEdge: true);
+        var snap = LineSnap(document, cursor);
 
         Assert.True(snap.HasSnap);
         Assert.Equal(SnapKind.OnEdge, snap.Snap!.Value.Kind);
@@ -44,25 +135,11 @@ public class LineToolSnapContractTests
             .Single(vertex => MathUtils.ArePointsEqual(vertex.Position, new PointF(0, 0), Tolerance));
         var cursor = new PointF(corner.Position.X + 2, corner.Position.Y + 2);
 
-        var snap = new SnapService().FindBestSnap(document, cursor, UiTolerance, includeOnEdge: false);
+        var snap = LineSnap(document, cursor);
 
         Assert.True(snap.HasSnap);
         Assert.Equal(SnapKind.Endpoint, snap.Snap!.Value.Kind);
         Assert.Equal(corner.Id, snap.Snap.Value.VertexId);
-    }
-
-    [Fact]
-    public void SecondPoint_AtMidpoint_UsesMidpointNotOnEdge()
-    {
-        var document = CreateHorizontalEdge();
-        var midpoint = new PointF(50, 0);
-
-        var snap = new SnapService().FindBestSnap(document, midpoint, UiTolerance, includeOnEdge: false);
-
-        Assert.True(snap.HasSnap);
-        Assert.Equal(SnapKind.Midpoint, snap.Snap!.Value.Kind);
-        Assert.Equal(midpoint.X, snap.Snap.Value.Position.X, 3);
-        Assert.Equal(midpoint.Y, snap.Snap.Value.Position.Y, 3);
     }
 
     [Fact]
@@ -75,7 +152,7 @@ public class LineToolSnapContractTests
         var crossing = new PointF(50, 50);
         var cursor = new PointF(crossing.X + 1, crossing.Y + 1);
 
-        var snap = new SnapService().FindBestSnap(document, cursor, UiTolerance, includeOnEdge: false);
+        var snap = LineSnap(document, cursor);
 
         Assert.True(snap.HasSnap);
         Assert.Equal(SnapKind.Intersection, snap.Snap!.Value.Kind);
@@ -104,15 +181,22 @@ public class LineToolSnapContractTests
         Assert.Equal(SnapKind.Alignment, visibleAlignment.Value.Kind);
     }
 
-    private static PointF ResolveGeometricSnap(CadDocument document, PointF cursor, bool hasStart)
+    [Fact]
+    public void OnEdgeSnap_DoesNotCreateVertex()
     {
-        var snap = new SnapService().FindBestSnap(
-            document,
-            cursor,
-            UiTolerance,
-            includeOnEdge: !hasStart);
-        return snap.Resolve(cursor);
+        var document = CreateHorizontalEdge();
+        var vertexCountBefore = document.Vertices.Count;
+        var cursor = new PointF(20, 3);
+
+        var snap = LineSnap(document, cursor);
+
+        Assert.True(snap.HasSnap);
+        Assert.Equal(SnapKind.OnEdge, snap.Snap!.Value.Kind);
+        Assert.Equal(vertexCountBefore, document.Vertices.Count);
     }
+
+    private static SnapResult LineSnap(CadDocument document, PointF cursor)
+        => new SnapService().FindBestSnap(document, cursor, UiTolerance, includeOnEdge: true);
 
     private static CadDocument CreateHorizontalEdge()
     {

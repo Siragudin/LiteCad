@@ -1,5 +1,6 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
+using LiteCad.Services;
 using System.Windows;
 using System.Windows.Media;
 
@@ -19,6 +20,13 @@ public sealed class PolygonRenderer
             var geometry = CreateGeometry(document, polygon);
             if (geometry is null)
             {
+                continue;
+            }
+
+            if (polygon.Type == PolygonType.Face)
+            {
+                var fillStyle = FaceFillService.GetFill(document, polygon);
+                FaceFillRenderer.Render(context, document, polygon, geometry, fillStyle, camera.Zoom);
                 continue;
             }
 
@@ -66,3 +74,4 @@ public sealed class PolygonRenderer
         }
     }
 }
+

@@ -6,6 +6,7 @@ namespace LiteCad.Services;
 public enum SelectionPickKind
 {
     Vertex,
+    Axis,
     Edge,
     Polygon
 }
@@ -19,6 +20,11 @@ public static class SelectionPickOperations
         if (TryPickVertex(document, world, tolerance, out var vertexId))
         {
             return new SelectionPick(SelectionPickKind.Vertex, vertexId);
+        }
+
+        if (TryPickAxis(document, world, tolerance, out var axisId))
+        {
+            return new SelectionPick(SelectionPickKind.Axis, axisId);
         }
 
         if (TryPickEdge(document, world, tolerance, out var edgeId))
@@ -42,6 +48,9 @@ public static class SelectionPickOperations
         {
             case SelectionPickKind.Vertex:
                 selection.SelectedVertexIds.Add(pick.Id);
+                break;
+            case SelectionPickKind.Axis:
+                selection.SelectedAxisIds.Add(pick.Id);
                 break;
             case SelectionPickKind.Edge:
                 selection.SelectedEdgeIds.Add(pick.Id);
@@ -76,6 +85,33 @@ public static class SelectionPickOperations
         }
 
         vertexId = closestVertex.Id;
+        return true;
+    }
+
+    private static bool TryPickAxis(CadDocument document, PointF world, double tolerance, out Guid axisId)
+    {
+        Axis? closestAxis = null;
+        var closestDistance = tolerance;
+
+        foreach (var axis in document.Axes)
+        {
+            if (!Geometry2D.TryProjectPointOnSegment(world, axis.Start, axis.End, out _, out var distance, tolerance) ||
+                distance > closestDistance)
+            {
+                continue;
+            }
+
+            closestAxis = axis;
+            closestDistance = distance;
+        }
+
+        if (closestAxis is null)
+        {
+            axisId = Guid.Empty;
+            return false;
+        }
+
+        axisId = closestAxis.Id;
         return true;
     }
 

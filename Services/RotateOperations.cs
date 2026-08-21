@@ -31,6 +31,8 @@ public static class RotateOperations
             .Select(entry => entry.OriginalEdgeId)
             .ToHashSet();
 
+        var fillMigrationEntries = FaceFillMigration.CaptureAffectedFaceFills(document, edgeIdsToRemove);
+
         var userPolygonIds = document.Polygons
             .Where(polygon =>
                 selection.SelectedPolygonIds.Contains(polygon.Id) &&
@@ -78,6 +80,22 @@ public static class RotateOperations
         }
 
         PolygonBuilder.SyncFaces(document, tolerance);
+        FaceFillMigration.ApplyMoveOrRotate(
+            document,
+            fillMigrationEntries,
+            point => RotatePoint(point, pivot, angleRadians));
+
+        foreach (var entry in snapshot.Axes)
+        {
+            var axis = document.Axes.FirstOrDefault(item => item.Id == entry.OriginalAxisId);
+            if (axis is null)
+            {
+                continue;
+            }
+
+            axis.Start = RotatePoint(entry.Start, pivot, angleRadians);
+            axis.End = RotatePoint(entry.End, pivot, angleRadians);
+        }
 
         selection.SelectedEdgeIds.Clear();
         selection.SelectedPolygonIds.Clear();

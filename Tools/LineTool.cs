@@ -37,11 +37,7 @@ public sealed class LineTool : ToolBase
 
         if (e.ChangedButton == MouseButton.Right)
         {
-            Context.SetLengthInputEnabled(false);
-            ResetPreview();
-            Context.SetLength(null);
-            Context.SetStatus(Strings.Status_LineCancelled);
-            Context.RequestRedraw();
+            HandleRightClick();
             e.Handled = true;
             return;
         }
@@ -77,28 +73,26 @@ public sealed class LineTool : ToolBase
             return;
         }
 
-        var tolerance = Context.SnapTolerance;
+        var result = DrawingLinePreviewSupport.UpdateFromMouseMove(
+            Context.Session.SnapService,
+            Context.Session.Document,
+            world,
+            Context.SnapTolerance,
+            _hasStart,
+            _startPoint,
+            Context.Session.LineToolOptions.OrthoEnabled,
+            includeOnEdge: true);
+
         _visibleSnaps.Clear();
-        foreach (var snap in Context.Session.SnapService.GetVisibleSnaps(Context.Session.Document, world, tolerance))
+        foreach (var snap in result.VisibleSnaps)
         {
             _visibleSnaps.Add(snap);
         }
 
         if (_hasStart)
         {
-            _previewEnd = ResolveSnap(world);
+            _previewEnd = result.PreviewEnd;
             UpdateDirection();
-
-            var alignmentSnap = Context.Session.SnapService.FindVisibleDrawingAlignmentSnap(
-                Context.Session.Document,
-                _startPoint,
-                _previewEnd,
-                tolerance);
-            if (alignmentSnap is not null)
-            {
-                _visibleSnaps.Add(alignmentSnap.Value);
-            }
-
             Context.SetLength(MathUtils.Distance(_startPoint, _previewEnd));
         }
         else
@@ -111,9 +105,25 @@ public sealed class LineTool : ToolBase
 
     public override void OnKeyDown(KeyEventArgs e)
     {
-        if (_hasStart && Context?.ProcessLengthKey(e) == true)
+        if (Context is null)
         {
             return;
+        }
+
+        if (e.Key == Key.Escape && _hasStart)
+        {
+            Context.SetLengthInputEnabled(false);
+            ResetPreview();
+            Context.SetLength(null);
+            Context.SetStatus(Strings.Status_LineCancelled);
+            Context.RequestRedraw();
+            e.Handled = true;
+            return;
+        }
+
+        if (_hasStart && Context.ProcessLengthKey(e))
+        {
+            e.Handled = true;
         }
     }
 
@@ -165,10 +175,7 @@ public sealed class LineTool : ToolBase
         }
 
         var previewPen = CreatePreviewPen(zoom);
-        context.DrawLine(
-            previewPen,
-            new Point(_startPoint.X, _startPoint.Y),
-            new Point(_previewEnd.X, _previewEnd.Y));
+        PreviewLineRenderer.Draw(context, _startPoint, _previewEnd, previewPen);
     }
 
     private void CommitSegment(PointF endPoint)
@@ -192,6 +199,7 @@ public sealed class LineTool : ToolBase
 
         EdgeOperations.AddSegment(Context.Session.Document, _startPoint, endPoint, template, topologyTolerance);
         PolygonBuilder.SyncFaces(Context.Session.Document, topologyTolerance);
+        Context.Session.SnapService.InvalidateCache();
 
         _startPoint = endPoint;
         _previewEnd = endPoint;
@@ -210,40 +218,33 @@ public sealed class LineTool : ToolBase
             return world;
         }
 
-        var tolerance = Context.SnapTolerance;
-
-        if (_hasStart)
-        {
-            var directed = world;
-            if (Context.Session.LineToolOptions.OrthoEnabled)
-            {
-                directed = Geometry2D.ApplyOrtho(_startPoint, directed);
-            }
-
-            if (Context.Session.SnapService.TrySnapDrawingAlignment(
-                    Context.Session.Document,
-                    _startPoint,
-                    directed,
-                    tolerance,
-                    out var aligned))
-            {
-                return aligned;
-            }
-        }
-
-        var snap = Context.Session.SnapService.FindBestSnap(
+        return Context.Session.SnapService.ResolveDrawingSnap(
             Context.Session.Document,
             world,
-            tolerance,
-            includeOnEdge: !_hasStart);
-        var resolved = snap.Resolve(world);
+            _hasStart ? _startPoint : null,
+            Context.SnapTolerance,
+            Context.Session.LineToolOptions.OrthoEnabled && _hasStart,
+            includeOnEdge: true);
+    }
 
-        if (Context.Session.LineToolOptions.OrthoEnabled && _hasStart)
+    private void HandleRightClick()
+    {
+        if (Context is null)
         {
-            resolved = Geometry2D.ApplyOrtho(_startPoint, resolved);
+            return;
         }
 
-        return resolved;
+        var hadPreview = _hasStart;
+        if (_hasStart)
+        {
+            Context.SetLengthInputEnabled(false);
+            ResetPreview();
+            Context.SetLength(null);
+        }
+
+        Context.Session.Selection.Clear();
+        Context.SetStatus(hadPreview ? Strings.Status_LineCancelled : Strings.Status_SelectionCleared);
+        Context.RequestRedraw();
     }
 
     private OrthoAlignment GetAlignment(PointF start, PointF end)

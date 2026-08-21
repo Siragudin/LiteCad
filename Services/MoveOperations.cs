@@ -24,11 +24,22 @@ public sealed class MovePolygonSnapshot
     public required List<List<DirectedEdgeReference>> InnerLoops { get; init; }
 }
 
+public sealed class MoveAxisSnapshot
+{
+    public required Guid OriginalAxisId { get; init; }
+
+    public required PointF Start { get; init; }
+
+    public required PointF End { get; init; }
+}
+
 public sealed class MoveObjectSnapshot
 {
     public List<MoveEdgeSnapshot> Edges { get; } = [];
 
     public List<MovePolygonSnapshot> UserPolygons { get; } = [];
+
+    public List<MoveAxisSnapshot> Axes { get; } = [];
 }
 
 public static class MoveOperations
@@ -67,6 +78,17 @@ public static class MoveOperations
             });
         }
 
+        foreach (var axisId in selection.SelectedAxisIds.OrderBy(id => id))
+        {
+            var axis = document.Axes.First(item => item.Id == axisId);
+            snapshot.Axes.Add(new MoveAxisSnapshot
+            {
+                OriginalAxisId = axis.Id,
+                Start = axis.Start,
+                End = axis.End
+            });
+        }
+
         return snapshot;
     }
 
@@ -93,6 +115,8 @@ public static class MoveOperations
         var edgeIdsToRemove = snapshot.Edges
             .Select(entry => entry.OriginalEdgeId)
             .ToHashSet();
+
+        var fillMigrationEntries = FaceFillMigration.CaptureAffectedFaceFills(document, edgeIdsToRemove);
 
         var userPolygonIds = document.Polygons
             .Where(polygon =>
@@ -141,6 +165,19 @@ public static class MoveOperations
         }
 
         PolygonBuilder.SyncFaces(document, tolerance);
+        FaceFillMigration.ApplyMoveOrRotate(document, fillMigrationEntries, point => Translate(point, delta));
+
+        foreach (var entry in snapshot.Axes)
+        {
+            var axis = document.Axes.FirstOrDefault(item => item.Id == entry.OriginalAxisId);
+            if (axis is null)
+            {
+                continue;
+            }
+
+            axis.Start = Translate(entry.Start, delta);
+            axis.End = Translate(entry.End, delta);
+        }
 
         selection.SelectedEdgeIds.Clear();
         selection.SelectedPolygonIds.Clear();
@@ -156,12 +193,14 @@ public static class MoveOperations
     public static bool CanMove(Selection selection)
         => selection.SelectedVertexIds.Count > 0
             || selection.SelectedEdgeIds.Count > 0
-            || selection.SelectedPolygonIds.Count > 0;
+            || selection.SelectedPolygonIds.Count > 0
+            || selection.SelectedAxisIds.Count > 0;
 
     public static bool UsesVertexMove(Selection selection)
         => selection.SelectedVertexIds.Count > 0
             && selection.SelectedEdgeIds.Count == 0
-            && selection.SelectedPolygonIds.Count == 0;
+            && selection.SelectedPolygonIds.Count == 0
+            && selection.SelectedAxisIds.Count == 0;
 
     private static HashSet<Guid> CollectSelectedEdgeIds(CadDocument document, Selection selection)
     {

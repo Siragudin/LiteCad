@@ -133,28 +133,7 @@ public class LanguageSelectorTests : IDisposable
     private static SelectorHost CreateSelectorHost()
         => new();
 
-    private static void RunSta(Action action)
-    {
-        Exception? error = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                error = ex;
-            }
-        });
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-        if (error is not null)
-        {
-            ExceptionDispatchInfo.Capture(error).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private sealed class SelectorHost : IDisposable
     {

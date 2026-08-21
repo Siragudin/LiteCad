@@ -20,5 +20,6 @@ public enum ToolId
     Dimension,
     Eraser,
     Copy,
+    Fill,
     PolygonEdit
 }

@@ -4,6 +4,7 @@ using LiteCad.Dimensions;
 using LiteCad.Rendering;
 using LiteCad.Resources;
 using LiteCad.Services;
+using LiteCad.UI;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
@@ -118,7 +119,6 @@ public sealed class DimensionTool : ToolBase
 
         UpdateOffsetFromCursor(world);
         Context.SetLength(_offset);
-        Context.SetLengthText(_offset.ToString("F2", CultureInfo.InvariantCulture));
         Context.RequestRedraw();
         e.Handled = true;
     }
@@ -151,7 +151,6 @@ public sealed class DimensionTool : ToolBase
 
         _offset = offset;
         Context.SetLength(_offset);
-        Context.SetLengthText(_offset.ToString("F2", CultureInfo.InvariantCulture));
         CommitDimension();
         return true;
     }
@@ -204,6 +203,9 @@ public sealed class DimensionTool : ToolBase
         }
 
         var previewColor = Color.FromRgb(0x43, 0xA0, 0x47);
+        var distanceText = UnitDisplayFormatter.FormatLinear(
+            layout.MeasuredDistance,
+            Context.Session.DisplayUnitSettings.LinearUnit);
         DimensionAnnotationDrawing.Draw(
             context,
             layout,
@@ -213,6 +215,7 @@ public sealed class DimensionTool : ToolBase
             isSelected: false,
             camera,
             viewport,
+            distanceText: distanceText,
             extensionStyle: Context.Session.DimensionToolOptions.ExtensionStyle);
         DrawAnchorMarker(context, camera, layout.FirstAnchor);
         DrawAnchorMarker(context, camera, layout.SecondAnchor);
@@ -320,16 +323,17 @@ public sealed class DimensionTool : ToolBase
             Context.SnapTolerance,
             includeOnEdge: false);
 
-        if (!result.HasSnap
-            || result.Snap!.Value.Kind != SnapKind.Endpoint
-            || result.Snap.Value.VertexId is not Guid resolvedVertexId)
+        if (!result.HasSnap)
         {
             return false;
         }
 
-        vertexId = resolvedVertexId;
-        anchor = result.Snap.Value.Position;
-        return true;
+        return SnapService.TryResolveMeasurementAnchor(
+            Context.Session.Document,
+            result.Snap!.Value,
+            Context.SnapTolerance,
+            out vertexId,
+            out anchor);
     }
 
     private static bool TryParseOffset(string input, out double offset)

@@ -190,30 +190,7 @@ public class RectangleSizeInputTests
 
     private static RectangleSizeInputTestHost CreateHost() => new();
 
-    private static void RunSta(Action action)
-    {
-        Exception? captured = null;
-        var thread = new Thread(() =>
-        {
-            try
-            {
-                action();
-            }
-            catch (Exception ex)
-            {
-                captured = ex;
-            }
-        });
-
-        thread.SetApartmentState(ApartmentState.STA);
-        thread.Start();
-        thread.Join();
-
-        if (captured is not null)
-        {
-            ExceptionDispatchInfo.Capture(captured).Throw();
-        }
-    }
+    private static void RunSta(Action action) => WpfTestUtilities.RunSta(action);
 
     private sealed class RectangleSizeInputTestHost : IDisposable
     {
@@ -224,16 +201,7 @@ public class RectangleSizeInputTests
             Session = new CadSession();
             RectangleTool = new RectangleTool();
             StatusBar = new StatusBar();
-            _window = new Window
-            {
-                Content = StatusBar,
-                Width = 800,
-                Height = 120,
-                ShowInTaskbar = false,
-                WindowStyle = WindowStyle.None,
-                Visibility = Visibility.Hidden
-            };
-            _window.Show();
+            _window = WpfTestUtilities.CreateHiddenWindow(StatusBar);
 
             var context = new ToolContext(
                 Session,
@@ -251,8 +219,7 @@ public class RectangleSizeInputTests
             Session.ToolService.Initialize(context);
             Session.ToolService.ActivateTool(RectangleTool);
 
-            StatusBar.RectangleSizeCommitted += (_, sizes) =>
-                RectangleTool.TryApplyRectangleSize(sizes.Width, sizes.Height);
+            TestLinearInputCommit.WireStatusBar(Session, StatusBar, RectangleTool);
         }
 
         public CadSession Session { get; }
@@ -268,46 +235,13 @@ public class RectangleSizeInputTests
             => RectangleTool.OnMouseMove(CreateMouseMove(), world);
 
         public void PressEscape()
-        {
-            var args = new KeyEventArgs(
-                Keyboard.PrimaryDevice,
-                PresentationSource.FromVisual(_window),
-                0,
-                Key.Escape)
-            {
-                RoutedEvent = Keyboard.KeyDownEvent
-            };
-
-            RectangleTool.OnKeyDown(args);
-        }
+            => RectangleTool.OnKeyDown(WpfTestUtilities.CreateKeyDown(StatusBar, Key.Escape));
 
         public void PressAlt()
-        {
-            var args = new KeyEventArgs(
-                Keyboard.PrimaryDevice,
-                PresentationSource.FromVisual(_window),
-                0,
-                Key.LeftAlt)
-            {
-                RoutedEvent = Keyboard.KeyDownEvent
-            };
-
-            StatusBar.ProcessRectangleSizeKey(args);
-        }
+            => StatusBar.ProcessRectangleSizeKey(WpfTestUtilities.CreateKeyDown(StatusBar, Key.LeftAlt));
 
         public void CommitRectangleSize()
-        {
-            var args = new KeyEventArgs(
-                Keyboard.PrimaryDevice,
-                PresentationSource.FromVisual(_window),
-                0,
-                Key.Enter)
-            {
-                RoutedEvent = Keyboard.KeyDownEvent
-            };
-
-            StatusBar.ProcessRectangleSizeKey(args);
-        }
+            => StatusBar.ProcessRectangleSizeKey(WpfTestUtilities.CreateKeyDown(StatusBar, Key.Enter));
 
         public void Dispose()
         {

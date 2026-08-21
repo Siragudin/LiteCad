@@ -1,5 +1,6 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Selection;
+using LiteCad.Services;
 using LiteCad.Tools;
 using System.Windows;
 using System.Windows.Media;
@@ -11,6 +12,7 @@ public sealed class Renderer
     private readonly GridRenderer _gridRenderer = new();
     private readonly PolygonRenderer _polygonRenderer = new();
     private readonly EdgeRenderer _edgeRenderer = new();
+    private readonly AxisRenderer _axisRenderer = new();
     private readonly DimensionRenderer _dimensionRenderer = new();
     private readonly SelectionRenderer _selectionRenderer = new();
 
@@ -20,7 +22,8 @@ public sealed class Renderer
         Selection selection,
         Camera camera,
         Size viewport,
-        ITool? activeTool)
+        ITool? activeTool,
+        LinearDisplayUnit linearUnit)
     {
         context.DrawRectangle(Brushes.White, null, new Rect(0, 0, viewport.Width, viewport.Height));
 
@@ -30,7 +33,8 @@ public sealed class Renderer
             _gridRenderer.Render(context, camera, viewport);
             _polygonRenderer.Render(context, document, camera);
             _edgeRenderer.Render(context, document, camera);
-            _dimensionRenderer.Render(context, document, selection, camera, viewport);
+            _axisRenderer.Render(context, document, camera);
+            _dimensionRenderer.Render(context, document, selection, camera, viewport, linearUnit);
             _selectionRenderer.Render(context, document, selection, camera);
             activeTool?.RenderOverlay(context, camera, viewport);
         }
@@ -38,5 +42,42 @@ public sealed class Renderer
         {
             context.Pop();
         }
+    }
+
+    public void RenderForExport(
+        DrawingContext context,
+        CadDocument document,
+        Camera exportCamera,
+        Size contentViewport,
+        LinearDisplayUnit linearUnit)
+    {
+        context.PushTransform(new MatrixTransform(exportCamera.GetWorldToScreenMatrix(contentViewport)));
+        try
+        {
+            RenderForExportContent(context, document, exportCamera, contentViewport, linearUnit);
+        }
+        finally
+        {
+            context.Pop();
+        }
+    }
+
+    public void RenderForExportContent(
+        DrawingContext context,
+        CadDocument document,
+        Camera exportCamera,
+        Size contentViewport,
+        LinearDisplayUnit linearUnit)
+    {
+        _polygonRenderer.Render(context, document, exportCamera);
+        _edgeRenderer.Render(context, document, exportCamera);
+        _axisRenderer.Render(context, document, exportCamera);
+        _dimensionRenderer.Render(
+            context,
+            document,
+            new Selection(),
+            exportCamera,
+            contentViewport,
+            linearUnit);
     }
 }
