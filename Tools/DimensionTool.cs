@@ -49,7 +49,7 @@ public sealed class DimensionTool : ToolBase
 
         if (e.ChangedButton == MouseButton.Right)
         {
-            Cancel();
+            HandleRightClick();
             e.Handled = true;
             return;
         }
@@ -132,7 +132,7 @@ public sealed class DimensionTool : ToolBase
 
         if (e.Key == Key.Escape)
         {
-            Cancel();
+            CancelAndExit();
             e.Handled = true;
         }
     }
@@ -202,7 +202,7 @@ public sealed class DimensionTool : ToolBase
             return;
         }
 
-        var previewColor = Color.FromRgb(0x43, 0xA0, 0x47);
+        var previewColor = PreviewLineRenderer.GetAnnotationPreviewColor();
         var distanceText = UnitDisplayFormatter.FormatLinear(
             layout.MeasuredDistance,
             Context.Session.DisplayUnitSettings.LinearUnit);
@@ -289,7 +289,27 @@ public sealed class DimensionTool : ToolBase
         }
     }
 
-    private void Cancel()
+    internal bool HasPendingOperation => _firstVertexId.HasValue;
+
+    internal bool HasOffsetPhase => _secondVertexId.HasValue;
+
+    private void HandleRightClick()
+    {
+        if (Context is null)
+        {
+            return;
+        }
+
+        var hadPending = _firstVertexId.HasValue;
+        ResetState();
+        Context.SetLineInputModeEnabled(false, LineInputLabelMode.Length);
+        Context.SetLength(null);
+        Context.Session.Selection.Clear();
+        Context.SetStatus(hadPending ? Strings.Status_DimensionCancelled : Strings.Status_SelectionCleared);
+        Context.RequestRedraw();
+    }
+
+    private void CancelAndExit()
     {
         ResetState();
         Context?.SetLineInputModeEnabled(false, LineInputLabelMode.Length);

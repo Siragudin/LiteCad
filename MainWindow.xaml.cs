@@ -112,6 +112,7 @@ public partial class MainWindow : Window
         MainMenuBar.EditCommandRequested += OnEditCommandRequested;
         MainMenuBar.FileCommandRequested += OnFileCommandRequested;
         LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+        ThemeManager.Instance.ThemeChanged += OnThemeChanged;
         _projectStorage.EnsureProjectsDirectoryExists();
         ActivateTool(_tools["Selection"]);
     }
@@ -222,7 +223,7 @@ public partial class MainWindow : Window
             DefaultExt = ProjectFileNameHelper.SitExtension.TrimStart('.'),
             FileName = session.ProjectFile.HasSavedPath
                 ? ProjectFileNameHelper.GetProjectDisplayName(session.ProjectFile.CurrentFilePath)
-                : "Project"
+                : Strings.Label_DefaultProjectName
         };
 
         if (dialog.ShowDialog(this) != true)
@@ -329,6 +330,7 @@ public partial class MainWindow : Window
         {
             var dto = _projectStorage.LoadProject(filePath, out _);
             session.LoadProject(dto, filePath);
+            FitCameraAfterProjectOpen();
             MainProperties.SetSelection(Strings.Selection_NothingSelected);
             MainProperties.SyncDimensionSelection(session);
             MainProperties.SyncAxisSelection(session);
@@ -347,6 +349,23 @@ public partial class MainWindow : Window
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
+    }
+
+    private void FitCameraAfterProjectOpen()
+    {
+        var session = ViewModel.Session;
+        var viewport = MainCanvas.GetViewportSize();
+        if (viewport.Width >= 1 && viewport.Height >= 1)
+        {
+            session.FitCameraToDocument(viewport);
+            return;
+        }
+
+        Dispatcher.BeginInvoke(() =>
+        {
+            session.FitCameraToDocument(MainCanvas.GetViewportSize());
+            MainCanvas.RequestRedraw();
+        }, System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     private void ResetToNewDocument(CadSession session, string statusMessage)
@@ -561,6 +580,12 @@ public partial class MainWindow : Window
 
     private void OnLanguageChanged(object? sender, EventArgs e)
         => RefreshLocalizedUi();
+
+    private void OnThemeChanged(object? sender, EventArgs e)
+    {
+        MainCanvas.RequestRedraw();
+        MainStatusBar.RefreshThemeStyles();
+    }
 
     private void RefreshLocalizedUi()
     {

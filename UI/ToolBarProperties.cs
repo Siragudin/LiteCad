@@ -9,7 +9,9 @@ public static class ToolBarProperties
             "IsActive",
             typeof(bool),
             typeof(ToolBarProperties),
-            new FrameworkPropertyMetadata(false));
+            new FrameworkPropertyMetadata(
+                false,
+                FrameworkPropertyMetadataOptions.AffectsRender));
 
     public static void SetIsActive(DependencyObject element, bool value)
         => element.SetValue(IsActiveProperty, value);

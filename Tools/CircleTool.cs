@@ -169,7 +169,12 @@ public sealed class CircleTool : ToolBase
         }
 
         var points = CircleGeometry.ComputePoints(_center, radius);
-        var previewPen = CreatePreviewPen(zoom);
+        var options = Context.Session.LineToolOptions;
+        var previewPen = PreviewLineRenderer.CreatePen(
+            zoom,
+            options.Color,
+            options.Thickness,
+            GetDashArray(options.LineType));
         for (var i = 0; i < CircleGeometry.SegmentCount; i++)
         {
             var start = points[i];
@@ -292,18 +297,6 @@ public sealed class CircleTool : ToolBase
         template.Thickness = options.Thickness;
         template.LineType = options.LineType;
         return template;
-    }
-
-    private Pen CreatePreviewPen(double zoom)
-    {
-        if (Context is null)
-        {
-            return RenderStyles.EdgePen(zoom);
-        }
-
-        var options = Context.Session.LineToolOptions;
-        var brush = new SolidColorBrush(options.Color);
-        return RenderStyles.CreateScreenPen(brush, options.Thickness, zoom, GetDashArray(options.LineType));
     }
 
     private static DoubleCollection? GetDashArray(EdgeLineType lineType) => lineType switch

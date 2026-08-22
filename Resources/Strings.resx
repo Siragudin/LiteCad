@@ -1,51 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<root>
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -58,308 +59,946 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Tool.Selection" xml:space="preserve"><value>Selection</value></data>
-  <data name="Tool.Select.Short" xml:space="preserve"><value>Select</value></data>
-  <data name="Tool.Hand" xml:space="preserve"><value>Hand</value></data>
-  <data name="Tool.Line" xml:space="preserve"><value>Line</value></data>
-  <data name="Tool.Arc" xml:space="preserve"><value>Arc</value></data>
-  <data name="Tool.Arc.Short" xml:space="preserve"><value>Arc</value></data>
-  <data name="Tool.Rectangle" xml:space="preserve"><value>Rectangle</value></data>
-  <data name="Tool.Rectangle.Short" xml:space="preserve"><value>Rect</value></data>
-  <data name="Tool.Circle" xml:space="preserve"><value>Circle</value></data>
-  <data name="Tool.Circle.Short" xml:space="preserve"><value>Circle</value></data>
-  <data name="Tool.Sector" xml:space="preserve"><value>Sector</value></data>
-  <data name="Tool.Sector.Short" xml:space="preserve"><value>Sector</value></data>
-  <data name="Tool.Axis" xml:space="preserve"><value>Ось</value></data>
-  <data name="Tool.Wall" xml:space="preserve"><value>Wall</value></data>
-  <data name="Tool.Move" xml:space="preserve"><value>Move</value></data>
-  <data name="Tool.Rotate" xml:space="preserve"><value>Rotate</value></data>
-  <data name="Tool.Mirror" xml:space="preserve"><value>Mirror</value></data>
-  <data name="Tool.Offset" xml:space="preserve"><value>Offset</value></data>
-  <data name="Tool.Stretch" xml:space="preserve"><value>Stretch</value></data>
-  <data name="Tool.Extend" xml:space="preserve"><value>Extend</value></data>
-  <data name="Tool.Dimension" xml:space="preserve"><value>Dimension</value></data>
-  <data name="Tool.Dimension.Short" xml:space="preserve"><value>Dim</value></data>
-  <data name="Tool.Eraser" xml:space="preserve"><value>Eraser</value></data>
-  <data name="Tool.Eraser.Short" xml:space="preserve"><value>Eraser</value></data>
-  <data name="Tool.Fill" xml:space="preserve"><value>Fill</value></data>
-  <data name="Tool.Fill.Short" xml:space="preserve"><value>Fill</value></data>
-  <data name="Tool.Copy" xml:space="preserve"><value>Copy</value></data>
-  <data name="Tool.PolygonEdit" xml:space="preserve"><value>Polygon Edit</value></data>
-  <data name="Tool.Edit.Short" xml:space="preserve"><value>Edit</value></data>
-  <data name="Menu.File" xml:space="preserve"><value>File</value></data>
-  <data name="Menu.New" xml:space="preserve"><value>New</value></data>
-  <data name="Menu.Open" xml:space="preserve"><value>Open...</value></data>
-  <data name="Menu.Save" xml:space="preserve"><value>Save</value></data>
-  <data name="Menu.Exit" xml:space="preserve"><value>Exit</value></data>
-  <data name="Menu.Edit" xml:space="preserve"><value>Edit</value></data>
-  <data name="Menu.Undo" xml:space="preserve"><value>Undo</value></data>
-  <data name="Menu.Redo" xml:space="preserve"><value>Redo</value></data>
-  <data name="Menu.Cut" xml:space="preserve"><value>Cut</value></data>
-  <data name="Menu.Copy" xml:space="preserve"><value>Copy</value></data>
-  <data name="Menu.Paste" xml:space="preserve"><value>Paste</value></data>
-  <data name="Menu.Delete" xml:space="preserve"><value>Delete</value></data>
-  <data name="Menu.View" xml:space="preserve"><value>View</value></data>
-  <data name="Menu.ZoomIn" xml:space="preserve"><value>Zoom In</value></data>
-  <data name="Menu.ZoomOut" xml:space="preserve"><value>Zoom Out</value></data>
-  <data name="Menu.ZoomExtents" xml:space="preserve"><value>Zoom Extents</value></data>
-  <data name="Menu.Grid" xml:space="preserve"><value>Grid</value></data>
-  <data name="Menu.Tools" xml:space="preserve"><value>Tools</value></data>
-  <data name="Menu.Layers" xml:space="preserve"><value>Layers</value></data>
-  <data name="Menu.Help" xml:space="preserve"><value>Help</value></data>
-  <data name="Menu.About" xml:space="preserve"><value>About LiteCad</value></data>
-  <data name="Menu.Header.File" xml:space="preserve"><value>_File</value></data>
-  <data name="Menu.Header.New" xml:space="preserve"><value>_New</value></data>
-  <data name="Menu.Header.Open" xml:space="preserve"><value>_Open...</value></data>
-  <data name="Menu.Header.Save" xml:space="preserve"><value>_Save</value></data>
-  <data name="Menu.Header.SaveAs" xml:space="preserve"><value>Save _As...</value></data>
-  <data name="Menu.Header.DeleteProject" xml:space="preserve"><value>_Delete</value></data>
-  <data name="Menu.Header.Exit" xml:space="preserve"><value>E_xit</value></data>
-  <data name="Menu.Header.Edit" xml:space="preserve"><value>_Edit</value></data>
-  <data name="Menu.Header.Undo" xml:space="preserve"><value>_Undo</value></data>
-  <data name="Menu.Header.Redo" xml:space="preserve"><value>_Redo</value></data>
-  <data name="Menu.Header.Cut" xml:space="preserve"><value>Cu_t</value></data>
-  <data name="Menu.Header.Copy" xml:space="preserve"><value>_Copy</value></data>
-  <data name="Menu.Header.Paste" xml:space="preserve"><value>_Paste</value></data>
-  <data name="Menu.Header.Delete" xml:space="preserve"><value>_Delete</value></data>
-  <data name="Menu.Header.View" xml:space="preserve"><value>_View</value></data>
-  <data name="Menu.Header.ZoomIn" xml:space="preserve"><value>_Zoom In</value></data>
-  <data name="Menu.Header.ZoomOut" xml:space="preserve"><value>Zoom _Out</value></data>
-  <data name="Menu.Header.ZoomExtents" xml:space="preserve"><value>Zoom _Extents</value></data>
-  <data name="Menu.Header.Grid" xml:space="preserve"><value>_Grid</value></data>
-  <data name="Menu.Header.Tools" xml:space="preserve"><value>_Tools</value></data>
-  <data name="Menu.Header.Selection" xml:space="preserve"><value>_Selection</value></data>
-  <data name="Menu.Header.Hand" xml:space="preserve"><value>_Hand</value></data>
-  <data name="Menu.Header.Line" xml:space="preserve"><value>_Line</value></data>
-  <data name="Menu.Header.Arc" xml:space="preserve"><value>_Arc</value></data>
-  <data name="Menu.Header.Axis" xml:space="preserve"><value>_Ось</value></data>
-  <data name="Menu.Header.Wall" xml:space="preserve"><value>_Wall</value></data>
-  <data name="Menu.Header.Rectangle" xml:space="preserve"><value>_Rectangle</value></data>
-  <data name="Menu.Header.Circle" xml:space="preserve"><value>C_ircle</value></data>
-  <data name="Menu.Header.Sector" xml:space="preserve"><value>Sec_tor</value></data>
-  <data name="Menu.Header.Move" xml:space="preserve"><value>_Move</value></data>
-  <data name="Menu.Header.Rotate" xml:space="preserve"><value>_Rotate</value></data>
-  <data name="Menu.Header.Mirror" xml:space="preserve"><value>_Mirror</value></data>
-  <data name="Menu.Header.Offset" xml:space="preserve"><value>Off_set</value></data>
-  <data name="Menu.Header.CopyTool" xml:space="preserve"><value>C_opy</value></data>
-  <data name="Menu.Header.PolygonEdit" xml:space="preserve"><value>Polygon _Edit</value></data>
-  <data name="Menu.Header.Layers" xml:space="preserve"><value>_Layers</value></data>
-  <data name="Menu.Header.Help" xml:space="preserve"><value>_Help</value></data>
-  <data name="Menu.Header.About" xml:space="preserve"><value>_About LiteCad</value></data>
-  <data name="Label.AppTitle" xml:space="preserve"><value>LiteCad 0.2.1</value></data>
-  <data name="Label.Properties" xml:space="preserve"><value>Properties</value></data>
-  <data name="Label.Tool" xml:space="preserve"><value>Tool</value></data>
-  <data name="Label.Selection" xml:space="preserve"><value>Selection</value></data>
-  <data name="Label.None" xml:space="preserve"><value>None</value></data>
-  <data name="Label.LineParameters" xml:space="preserve"><value>Line parameters</value></data>
-  <data name="Label.MoveParameters" xml:space="preserve"><value>Move parameters</value></data>
-  <data name="Label.MirrorParameters" xml:space="preserve"><value>Mirror parameters</value></data>
-  <data name="Label.Color" xml:space="preserve"><value>Color</value></data>
-  <data name="Label.Thickness" xml:space="preserve"><value>Thickness</value></data>
-  <data name="Label.Type" xml:space="preserve"><value>Type</value></data>
-  <data name="Label.OrthoHorizontalVertical" xml:space="preserve"><value>Ortho (H/V)</value></data>
-  <data name="Label.Ortho" xml:space="preserve"><value>Ortho</value></data>
-  <data name="Label.NoParameters" xml:space="preserve"><value>No parameters</value></data>
-  <data name="Label.Length" xml:space="preserve"><value>L:</value></data>
-  <data name="Label.Width" xml:space="preserve"><value>W:</value></data>
-  <data name="Label.Height" xml:space="preserve"><value>H:</value></data>
-  <data name="Label.X" xml:space="preserve"><value>X:</value></data>
-  <data name="Label.Y" xml:space="preserve"><value>Y:</value></data>
-  <data name="Label.Distance" xml:space="preserve"><value>Distance:</value></data>
-  <data name="Label.Offset" xml:space="preserve"><value>Offset:</value></data>
-  <data name="Label.DimensionParameters" xml:space="preserve"><value>Dimension</value></data>
-  <data name="Label.DimensionExtensions" xml:space="preserve"><value>Extensions:</value></data>
-  <data name="Label.DimensionTextSize" xml:space="preserve"><value>Text size:</value></data>
-  <data name="Label.DimensionExtensionStyle.Full" xml:space="preserve"><value>Full</value></data>
-  <data name="Label.DimensionExtensionStyle.Short" xml:space="preserve"><value>Short</value></data>
-  <data name="Label.FaceFill" xml:space="preserve"><value>Fill</value></data>
-  <data name="Label.FillPattern" xml:space="preserve"><value>Pattern</value></data>
-  <data name="Label.FillPattern.Solid" xml:space="preserve"><value>Solid</value></data>
-  <data name="Label.FillPattern.Diagonal" xml:space="preserve"><value>Diagonal</value></data>
-  <data name="Label.Radius" xml:space="preserve"><value>Radius:</value></data>
-  <data name="Label.ArcHeight" xml:space="preserve"><value>Arc H:</value></data>
-  <data name="Label.Angle" xml:space="preserve"><value>Angle:</value></data>
-  <data name="Label.EmptyValue" xml:space="preserve"><value>—</value></data>
-  <data name="Label.Color.Black" xml:space="preserve"><value>Black</value></data>
-  <data name="Label.Color.LightGray" xml:space="preserve"><value>Light gray</value></data>
-  <data name="Label.Color.Gray" xml:space="preserve"><value>Gray</value></data>
-  <data name="Label.Color.Blue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Label.Color.Red" xml:space="preserve"><value>Red</value></data>
-  <data name="Label.Color.Green" xml:space="preserve"><value>Green</value></data>
-  <data name="Label.LineType.Solid" xml:space="preserve"><value>Solid</value></data>
-  <data name="Label.LineType.Dashed" xml:space="preserve"><value>Dashed</value></data>
-  <data name="Label.LineType.Dotted" xml:space="preserve"><value>Dotted</value></data>
-  <data name="Label.PolygonType.Face" xml:space="preserve"><value>Face</value></data>
-  <data name="Label.PolygonType.Wall" xml:space="preserve"><value>Wall</value></data>
-  <data name="Label.PolygonType.Room" xml:space="preserve"><value>Room</value></data>
-  <data name="Label.PolygonType.Axis" xml:space="preserve"><value>Axis</value></data>
-  <data name="Status.Ready" xml:space="preserve"><value>Ready</value></data>
-  <data name="Status.NewDocument" xml:space="preserve"><value>New document</value></data>
-  <data name="Status.ToolActive" xml:space="preserve"><value>{0} tool active</value></data>
-  <data name="Status.CopiedToClipboard" xml:space="preserve"><value>Copied to clipboard</value></data>
-  <data name="Status.Pasted" xml:space="preserve"><value>Pasted</value></data>
-  <data name="Status.CutToClipboard" xml:space="preserve"><value>Cut to clipboard</value></data>
-  <data name="Status.Deleted" xml:space="preserve"><value>Deleted</value></data>
-  <data name="Status.FaceFillApplied" xml:space="preserve"><value>Fill applied</value></data>
-  <data name="Status.ProjectSaved" xml:space="preserve"><value>Project saved</value></data>
-  <data name="Status.ProjectOpened" xml:space="preserve"><value>Project opened</value></data>
-  <data name="Status.ProjectDeleted" xml:space="preserve"><value>Project deleted</value></data>
-  <data name="Dialog.UnsavedChanges.Title" xml:space="preserve"><value>Unsaved changes</value></data>
-  <data name="Dialog.UnsavedChanges.Message" xml:space="preserve"><value>The current project has unsaved changes. Create a new project anyway?</value></data>
-  <data name="Dialog.DeleteProject.Title" xml:space="preserve"><value>Delete project</value></data>
-  <data name="Dialog.DeleteProject.Message" xml:space="preserve"><value>Delete the current project? The project file will be removed from disk.</value></data>
-  <data name="Dialog.OverwriteProject.Title" xml:space="preserve"><value>Replace project</value></data>
-  <data name="Dialog.OverwriteProject.Message" xml:space="preserve"><value>A project with this name already exists. Replace it?</value></data>
-  <data name="Dialog.OpenProject.Title" xml:space="preserve"><value>Open project</value></data>
-  <data name="Dialog.SaveProject.Title" xml:space="preserve"><value>Save project</value></data>
-  <data name="Dialog.SaveProjectAs.Title" xml:space="preserve"><value>Save project as</value></data>
-  <data name="Dialog.ProjectFilter" xml:space="preserve"><value>LiteCad project (*.sit)|*.sit</value></data>
-  <data name="Dialog.SaveAsFilter" xml:space="preserve"><value>LiteCad project (*.sit)|*.sit|PDF (*.pdf)|*.pdf</value></data>
-  <data name="Dialog.OverwritePdf.Title" xml:space="preserve"><value>Replace PDF</value></data>
-  <data name="Dialog.OverwritePdf.Message" xml:space="preserve"><value>A PDF with this name already exists. Replace it?</value></data>
-  <data name="Dialog.PdfExportFailed.Title" xml:space="preserve"><value>PDF export failed</value></data>
-  <data name="Dialog.PdfExportFailed.Message" xml:space="preserve"><value>Could not export the drawing to PDF: {0}</value></data>
-  <data name="Dialog.PdfPreview.Title" xml:space="preserve"><value>PDF Preview</value></data>
-  <data name="Label.PdfPreviewHint" xml:space="preserve"><value>Wheel — scale · Drag — move</value></data>
-  <data name="Label.PdfFormat" xml:space="preserve"><value>Format:</value></data>
-  <data name="Label.PdfOrientation" xml:space="preserve"><value>Orientation:</value></data>
-  <data name="PdfOrientation.Portrait" xml:space="preserve"><value>Portrait</value></data>
-  <data name="PdfOrientation.Landscape" xml:space="preserve"><value>Landscape</value></data>
-  <data name="Button.Cancel" xml:space="preserve"><value>Cancel</value></data>
-  <data name="Button.SavePdf" xml:space="preserve"><value>Save PDF</value></data>
-  <data name="Status.PdfExported" xml:space="preserve"><value>PDF exported</value></data>
-  <data name="Status.Undo" xml:space="preserve"><value>Undo</value></data>
-  <data name="Status.Redo" xml:space="preserve"><value>Redo</value></data>
-  <data name="Status.SelectionCleared" xml:space="preserve"><value>Selection cleared</value></data>
-  <data name="Status.SelectionUpdated" xml:space="preserve"><value>Selection updated</value></data>
-  <data name="Status.VertexSelected" xml:space="preserve"><value>Vertex selected</value></data>
-  <data name="Status.EdgeSelected" xml:space="preserve"><value>Edge selected</value></data>
-  <data name="Status.PolygonSelected" xml:space="preserve"><value>Polygon selected</value></data>
-  <data name="Status.MultipleObjectsSelected" xml:space="preserve"><value>Multiple objects selected</value></data>
-  <data name="Status.WindowSelection" xml:space="preserve"><value>Window selection</value></data>
-  <data name="Status.CrossingSelection" xml:space="preserve"><value>Crossing selection</value></data>
-  <data name="Status.LineCancelled" xml:space="preserve"><value>Line cancelled</value></data>
-  <data name="Status.ArcCancelled" xml:space="preserve"><value>Arc cancelled</value></data>
-  <data name="Status.RectangleCancelled" xml:space="preserve"><value>Rectangle cancelled</value></data>
-  <data name="Status.CircleCancelled" xml:space="preserve"><value>Circle cancelled</value></data>
-  <data name="Status.SectorCancelled" xml:space="preserve"><value>Sector cancelled</value></data>
-  <data name="Status.MoveCancelled" xml:space="preserve"><value>Move cancelled</value></data>
-  <data name="Status.MoveCompleted" xml:space="preserve"><value>Move completed</value></data>
-  <data name="Status.RotateCancelled" xml:space="preserve"><value>Rotate cancelled</value></data>
-  <data name="Status.RotateCompleted" xml:space="preserve"><value>Rotate completed</value></data>
-  <data name="Status.MirrorCancelled" xml:space="preserve"><value>Mirror cancelled</value></data>
-  <data name="Status.MirrorCompleted" xml:space="preserve"><value>Mirror completed</value></data>
-  <data name="Status.OffsetCancelled" xml:space="preserve"><value>Offset cancelled</value></data>
-  <data name="Status.OffsetCompleted" xml:space="preserve"><value>Offset completed</value></data>
-  <data name="Status.CopyCancelled" xml:space="preserve"><value>Copy cancelled</value></data>
-  <data name="Status.CopyCompleted" xml:space="preserve"><value>Copy completed</value></data>
-  <data name="Status.StretchCancelled" xml:space="preserve"><value>Stretch cancelled</value></data>
-  <data name="Status.StretchCompleted" xml:space="preserve"><value>Stretch completed</value></data>
-  <data name="Status.ExtendCancelled" xml:space="preserve"><value>Extend cancelled</value></data>
-  <data name="Status.ExtendCompleted" xml:space="preserve"><value>Extend completed</value></data>
-  <data name="Status.DimensionCreated" xml:space="preserve"><value>Dimension created</value></data>
-  <data name="Status.DimensionCancelled" xml:space="preserve"><value>Dimension cancelled</value></data>
-  <data name="Status.DimensionSelected" xml:space="preserve"><value>Dimension selected</value></data>
-  <data name="Input.Line.SelectEndPoint" xml:space="preserve"><value>Select end point or type length (Right click to cancel)</value></data>
-  <data name="Input.Line.SelectNextPoint" xml:space="preserve"><value>Select next point or type length (Right click to cancel)</value></data>
-  <data name="Input.Line.SetDirectionThenTypeLength" xml:space="preserve"><value>Move mouse to set direction, then type length</value></data>
-  <data name="Input.Axis.SelectEndPoint" xml:space="preserve"><value>Select end point or type length (Right click to cancel)</value></data>
-  <data name="Input.Axis.SelectNextPoint" xml:space="preserve"><value>Select next point or type length (Right click to cancel)</value></data>
-  <data name="Input.Axis.SetDirectionThenTypeLength" xml:space="preserve"><value>Move mouse to set direction, then type length</value></data>
-  <data name="Status.AxisCancelled" xml:space="preserve"><value>Axis cancelled</value></data>
-  <data name="Status.AxisSelected" xml:space="preserve"><value>Axis selected</value></data>
-  <data name="Status.AxisTooShort" xml:space="preserve"><value>Axis is too short</value></data>
-  <data name="Selection.AxisWithLength" xml:space="preserve"><value>Axis, length {0}</value></data>
-  <data name="Label.Axis" xml:space="preserve"><value>Axis</value></data>
-  <data name="Label.Start" xml:space="preserve"><value>Start</value></data>
-  <data name="Label.End" xml:space="preserve"><value>End</value></data>
-  <data name="Label.LengthValue" xml:space="preserve"><value>Length</value></data>
-  <data name="Input.Arc.SelectStart" xml:space="preserve"><value>Select first point (Right click to cancel)</value></data>
-  <data name="Input.Arc.SelectEnd" xml:space="preserve"><value>Select second point (Right click to cancel)</value></data>
-  <data name="Input.Arc.SelectHeight" xml:space="preserve"><value>Move mouse or type arc height, then click or Enter (Right click to cancel)</value></data>
-  <data name="Input.Rectangle.SelectFirstCorner" xml:space="preserve"><value>Select first corner or type size after first click (Right click to cancel)</value></data>
-  <data name="Input.Rectangle.SelectOppositeCorner" xml:space="preserve"><value>Select opposite corner or type width/height (Alt to switch, Enter to apply)</value></data>
-  <data name="Input.Circle.SelectCenter" xml:space="preserve"><value>Select center or type radius after first click (Right click to cancel)</value></data>
-  <data name="Input.Circle.SelectRadius" xml:space="preserve"><value>Select radius point or type radius (Right click to cancel)</value></data>
-  <data name="Input.Circle.SetDirectionThenTypeRadius" xml:space="preserve"><value>Move mouse to set direction, then type radius</value></data>
-  <data name="Input.Sector.SelectCenter" xml:space="preserve"><value>Select center (Right click to cancel)</value></data>
-  <data name="Input.Sector.SelectStart" xml:space="preserve"><value>Select start point or type radius (Right click to cancel)</value></data>
-  <data name="Input.Sector.SelectAngle" xml:space="preserve"><value>Select angle or type degrees (Enter to commit, Right click to cancel)</value></data>
-  <data name="Input.Sector.SetDirectionThenTypeRadius" xml:space="preserve"><value>Move mouse to set direction, then type radius</value></data>
-  <data name="Input.Move.Idle" xml:space="preserve"><value>Click a vertex grip or select objects, then click base point and destination</value></data>
-  <data name="Input.Move.SelectVertices" xml:space="preserve"><value>Select vertices or objects to move</value></data>
-  <data name="Input.Move.VertexSelected" xml:space="preserve"><value>Vertex selected — click base point, then destination</value></data>
-  <data name="Input.Move.SelectDestination" xml:space="preserve"><value>Select destination point or type offset (Esc/Right click to cancel)</value></data>
-  <data name="Input.Rotate.Idle" xml:space="preserve"><value>Select objects, then click rotation anchor point</value></data>
-  <data name="Input.Rotate.SelectObjects" xml:space="preserve"><value>Select objects to rotate</value></data>
-  <data name="Input.Rotate.SelectAngle" xml:space="preserve"><value>Move cursor to set angle or type angle, then click to commit (Esc/Right click to cancel)</value></data>
-  <data name="Input.Rotate.SetDirectionThenTypeAngle" xml:space="preserve"><value>Set rotation direction with the mouse, then type angle</value></data>
-  <data name="Input.Mirror.Idle" xml:space="preserve"><value>Select objects, then click first mirror axis point</value></data>
-  <data name="Input.Mirror.SelectObjects" xml:space="preserve"><value>Select objects to mirror</value></data>
-  <data name="Input.Mirror.SelectAxisEnd" xml:space="preserve"><value>Move cursor to set mirror axis, then click second point (Esc/Right click to cancel)</value></data>
-  <data name="Input.Offset.Idle" xml:space="preserve"><value>Move over a face, then click to offset</value></data>
-  <data name="Input.Offset.SelectFace" xml:space="preserve"><value>Click a face to offset</value></data>
-  <data name="Input.Offset.SetDistance" xml:space="preserve"><value>Move cursor or type distance, then click to commit (Esc/Right click to cancel)</value></data>
-  <data name="Input.Copy.SelectObjects" xml:space="preserve"><value>Select objects to copy</value></data>
-  <data name="Input.Copy.SelectDestination" xml:space="preserve"><value>Move copy to destination and click (Esc/Right click to cancel)</value></data>
-  <data name="Input.SetDirectionThenTypeDistance" xml:space="preserve"><value>Move mouse to set direction, then type distance</value></data>
-  <data name="Input.Stretch.Idle" xml:space="preserve"><value>Click an edge to stretch (perpendicular parallel sides required)</value></data>
-  <data name="Input.Extend.Idle" xml:space="preserve"><value>Click an edge to extend to the nearest intersection</value></data>
-  <data name="Input.Dimension.SelectFirstPoint" xml:space="preserve"><value>Select first dimension point</value></data>
-  <data name="Input.Dimension.SelectSecondPoint" xml:space="preserve"><value>Select second dimension point</value></data>
-  <data name="Input.Dimension.SetOffset" xml:space="preserve"><value>Set dimension offset and click or press Enter</value></data>
-  <data name="Input.Stretch.SelectDestination" xml:space="preserve"><value>Select stretch destination, type distance, or press Enter (Right click to cancel)</value></data>
-  <data name="Input.Stretch.SelectBasePoint" xml:space="preserve"><value>Click base point, then stretch destination</value></data>
-  <data name="Error.CannotCommand" xml:space="preserve"><value>Cannot {0}</value></data>
-  <data name="Error.ArcTooSmall" xml:space="preserve"><value>Arc is too small</value></data>
-  <data name="Error.ArcHeightTooSmall" xml:space="preserve"><value>Arc height is too small for the selected points</value></data>
-  <data name="Error.RectangleTooSmall" xml:space="preserve"><value>Rectangle size is too small</value></data>
-  <data name="Error.CircleTooSmall" xml:space="preserve"><value>Circle radius is too small</value></data>
-  <data name="Error.SectorTooSmall" xml:space="preserve"><value>Sector radius is too small</value></data>
-  <data name="Error.SectorAngleTooSmall" xml:space="preserve"><value>Sector angle is too small</value></data>
-  <data name="Error.StretchUnavailable" xml:space="preserve"><value>Stretch unavailable — perpendicular parallel sides required at both ends</value></data>
-  <data name="Error.OffsetZeroDistance" xml:space="preserve"><value>Offset distance is too small</value></data>
-  <data name="Error.OffsetDegenerate" xml:space="preserve"><value>Offset would collapse the contour</value></data>
-  <data name="Error.OffsetSelfIntersection" xml:space="preserve"><value>Offset would self-intersect</value></data>
-  <data name="Error.OffsetUnsupportedFace" xml:space="preserve"><value>Offset is only available for simple closed faces</value></data>
-  <data name="Selection.NothingSelected" xml:space="preserve"><value>Nothing selected</value></data>
-  <data name="Selection.Pasted" xml:space="preserve"><value>Pasted</value></data>
-  <data name="Selection.Edge" xml:space="preserve"><value>Edge</value></data>
-  <data name="Selection.DimensionWithDistance" xml:space="preserve"><value>Dimension: {0}, offset {1}</value></data>
-  <data name="Selection.VertexAt" xml:space="preserve"><value>Vertex ({0}, {1})</value></data>
-  <data name="Selection.PolygonWithArea" xml:space="preserve"><value>{0} ({1})</value></data>
-  <data name="Selection.MultipleCount" xml:space="preserve"><value>{0} vertex(s), {1} edge(s), {2} polygon(s)</value></data>
-  <data name="Format.Coordinates" xml:space="preserve"><value>X: {0}  Y: {1}</value></data>
-  <data name="Format.CoordinatesDefault" xml:space="preserve"><value>X: 0  Y: 0</value></data>
-  <data name="Format.Area" xml:space="preserve"><value>A: {0}</value></data>
-  <data name="Format.AreaEmpty" xml:space="preserve"><value>A: —</value></data>
-  <data name="Action.Gesture.Undo" xml:space="preserve"><value>Ctrl+Z</value></data>
-  <data name="Action.Gesture.Redo" xml:space="preserve"><value>Ctrl+Y</value></data>
-  <data name="Action.Gesture.Cut" xml:space="preserve"><value>Ctrl+X</value></data>
-  <data name="Action.Gesture.Copy" xml:space="preserve"><value>Ctrl+C</value></data>
-  <data name="Action.Gesture.Paste" xml:space="preserve"><value>Ctrl+V</value></data>
-  <data name="Action.Gesture.Delete" xml:space="preserve"><value>Del</value></data>
-  <data name="Tooltip.Tool.Selection" xml:space="preserve"><value>Selection</value></data>
-  <data name="Tooltip.Tool.Hand" xml:space="preserve"><value>Hand (pan)</value></data>
-  <data name="Tooltip.Tool.Line" xml:space="preserve"><value>Line</value></data>
-  <data name="Tooltip.Tool.Axis" xml:space="preserve"><value>Ось</value></data>
-  <data name="Tooltip.Tool.Arc" xml:space="preserve"><value>Arc</value></data>
-  <data name="Tooltip.Tool.Rectangle" xml:space="preserve"><value>Rectangle</value></data>
-  <data name="Tooltip.Tool.Circle" xml:space="preserve"><value>Circle</value></data>
-  <data name="Tooltip.Tool.Sector" xml:space="preserve"><value>Sector</value></data>
-  <data name="Tooltip.Tool.Move" xml:space="preserve"><value>Move</value></data>
-  <data name="Tooltip.Tool.Rotate" xml:space="preserve"><value>Rotate</value></data>
-  <data name="Tooltip.Tool.Mirror" xml:space="preserve"><value>Mirror</value></data>
-  <data name="Tooltip.Tool.Offset" xml:space="preserve"><value>Offset</value></data>
-  <data name="Tooltip.Tool.Stretch" xml:space="preserve"><value>Stretch</value></data>
-  <data name="Tooltip.Tool.Extend" xml:space="preserve"><value>Extend</value></data>
-  <data name="Tooltip.Tool.Dimension" xml:space="preserve"><value>Dimension</value></data>
-  <data name="Tooltip.Tool.Eraser" xml:space="preserve"><value>Eraser</value></data>
-  <data name="Tooltip.Tool.Fill" xml:space="preserve"><value>Fill face</value></data>
-  <data name="Tooltip.Tool.PolygonEdit" xml:space="preserve"><value>Polygon edit</value></data>
-  <data name="Menu.Header.Stretch" xml:space="preserve"><value>Stret_ch</value></data>
-  <data name="Menu.Header.Extend" xml:space="preserve"><value>E_xtend</value></data>
-  <data name="Menu.Header.Dimension" xml:space="preserve"><value>_Dimension</value></data>
-  <data name="Menu.Header.Eraser" xml:space="preserve"><value>_Eraser</value></data>
-  <data name="Menu.Header.Fill" xml:space="preserve"><value>_Fill</value></data>
+  <data name="Tool.Selection" xml:space="preserve">
+    <value>Selection</value>
+  </data>
+  <data name="Tool.Select.Short" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="Tool.Hand" xml:space="preserve">
+    <value>Hand</value>
+  </data>
+  <data name="Tool.Line" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="Tool.Arc" xml:space="preserve">
+    <value>Arc</value>
+  </data>
+  <data name="Tool.Arc.Short" xml:space="preserve">
+    <value>Arc</value>
+  </data>
+  <data name="Tool.Rectangle" xml:space="preserve">
+    <value>Rectangle</value>
+  </data>
+  <data name="Tool.Rectangle.Short" xml:space="preserve">
+    <value>Rect</value>
+  </data>
+  <data name="Tool.Circle" xml:space="preserve">
+    <value>Circle</value>
+  </data>
+  <data name="Tool.Circle.Short" xml:space="preserve">
+    <value>Circle</value>
+  </data>
+  <data name="Tool.Sector" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Tool.Sector.Short" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Tool.Axis" xml:space="preserve">
+    <value>Axis</value>
+  </data>
+  <data name="Tool.Wall" xml:space="preserve">
+    <value>Wall</value>
+  </data>
+  <data name="Tool.Move" xml:space="preserve">
+    <value>Move</value>
+  </data>
+  <data name="Tool.Rotate" xml:space="preserve">
+    <value>Rotate</value>
+  </data>
+  <data name="Tool.Mirror" xml:space="preserve">
+    <value>Mirror</value>
+  </data>
+  <data name="Tool.Offset" xml:space="preserve">
+    <value>Offset</value>
+  </data>
+  <data name="Tool.Stretch" xml:space="preserve">
+    <value>Stretch</value>
+  </data>
+  <data name="Tool.Extend" xml:space="preserve">
+    <value>Extend</value>
+  </data>
+  <data name="Tool.Dimension" xml:space="preserve">
+    <value>Dimension</value>
+  </data>
+  <data name="Tool.Dimension.Short" xml:space="preserve">
+    <value>Dim</value>
+  </data>
+  <data name="Tool.Eraser" xml:space="preserve">
+    <value>Eraser</value>
+  </data>
+  <data name="Tool.Eraser.Short" xml:space="preserve">
+    <value>Eraser</value>
+  </data>
+  <data name="Tool.Fill" xml:space="preserve">
+    <value>Fill</value>
+  </data>
+  <data name="Tool.Fill.Short" xml:space="preserve">
+    <value>Fill</value>
+  </data>
+  <data name="Tool.Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Tool.PolygonEdit" xml:space="preserve">
+    <value>Polygon Edit</value>
+  </data>
+  <data name="Tool.Edit.Short" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Menu.File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Menu.New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Menu.Open" xml:space="preserve">
+    <value>Open...</value>
+  </data>
+  <data name="Menu.Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Menu.Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Menu.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Menu.Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Menu.Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="Menu.Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="Menu.Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="Menu.Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="Menu.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Menu.View" xml:space="preserve">
+    <value>View</value>
+  </data>
+  <data name="Menu.ZoomIn" xml:space="preserve">
+    <value>Zoom In</value>
+  </data>
+  <data name="Menu.ZoomOut" xml:space="preserve">
+    <value>Zoom Out</value>
+  </data>
+  <data name="Menu.ZoomExtents" xml:space="preserve">
+    <value>Zoom Extents</value>
+  </data>
+  <data name="Menu.Grid" xml:space="preserve">
+    <value>Grid</value>
+  </data>
+  <data name="Menu.Tools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="Menu.Layers" xml:space="preserve">
+    <value>Layers</value>
+  </data>
+  <data name="Menu.Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="Menu.About" xml:space="preserve">
+    <value>About LiteCad</value>
+  </data>
+  <data name="Menu.Header.File" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="Menu.Header.New" xml:space="preserve">
+    <value>_New</value>
+  </data>
+  <data name="Menu.Header.Open" xml:space="preserve">
+    <value>_Open...</value>
+  </data>
+  <data name="Menu.Header.Save" xml:space="preserve">
+    <value>_Save</value>
+  </data>
+  <data name="Menu.Header.SaveAs" xml:space="preserve">
+    <value>Save _As...</value>
+  </data>
+  <data name="Menu.Header.DeleteProject" xml:space="preserve">
+    <value>_Delete</value>
+  </data>
+  <data name="Menu.Header.Exit" xml:space="preserve">
+    <value>E_xit</value>
+  </data>
+  <data name="Menu.Header.Edit" xml:space="preserve">
+    <value>_Edit</value>
+  </data>
+  <data name="Menu.Header.Undo" xml:space="preserve">
+    <value>_Undo</value>
+  </data>
+  <data name="Menu.Header.Redo" xml:space="preserve">
+    <value>_Redo</value>
+  </data>
+  <data name="Menu.Header.Cut" xml:space="preserve">
+    <value>Cu_t</value>
+  </data>
+  <data name="Menu.Header.Copy" xml:space="preserve">
+    <value>_Copy</value>
+  </data>
+  <data name="Menu.Header.Paste" xml:space="preserve">
+    <value>_Paste</value>
+  </data>
+  <data name="Menu.Header.Delete" xml:space="preserve">
+    <value>_Delete</value>
+  </data>
+  <data name="Menu.Header.Theme" xml:space="preserve">
+    <value>_Theme</value>
+  </data>
+  <data name="Menu.Header.ThemeLight" xml:space="preserve">
+    <value>_Light</value>
+  </data>
+  <data name="Menu.Header.ThemeDark" xml:space="preserve">
+    <value>_Dark</value>
+  </data>
+  <data name="Menu.Header.View" xml:space="preserve">
+    <value>_View</value>
+  </data>
+  <data name="Menu.Header.ZoomIn" xml:space="preserve">
+    <value>_Zoom In</value>
+  </data>
+  <data name="Menu.Header.ZoomOut" xml:space="preserve">
+    <value>Zoom _Out</value>
+  </data>
+  <data name="Menu.Header.ZoomExtents" xml:space="preserve">
+    <value>Zoom _Extents</value>
+  </data>
+  <data name="Menu.Header.Grid" xml:space="preserve">
+    <value>_Grid</value>
+  </data>
+  <data name="Menu.Header.Tools" xml:space="preserve">
+    <value>_Tools</value>
+  </data>
+  <data name="Menu.Header.Selection" xml:space="preserve">
+    <value>_Selection</value>
+  </data>
+  <data name="Menu.Header.Hand" xml:space="preserve">
+    <value>_Hand</value>
+  </data>
+  <data name="Menu.Header.Line" xml:space="preserve">
+    <value>_Line</value>
+  </data>
+  <data name="Menu.Header.Arc" xml:space="preserve">
+    <value>_Arc</value>
+  </data>
+  <data name="Menu.Header.Axis" xml:space="preserve">
+    <value>_Axis</value>
+  </data>
+  <data name="Menu.Header.Wall" xml:space="preserve">
+    <value>_Wall</value>
+  </data>
+  <data name="Menu.Header.Rectangle" xml:space="preserve">
+    <value>_Rectangle</value>
+  </data>
+  <data name="Menu.Header.Circle" xml:space="preserve">
+    <value>C_ircle</value>
+  </data>
+  <data name="Menu.Header.Sector" xml:space="preserve">
+    <value>Sec_tor</value>
+  </data>
+  <data name="Menu.Header.Move" xml:space="preserve">
+    <value>_Move</value>
+  </data>
+  <data name="Menu.Header.Rotate" xml:space="preserve">
+    <value>_Rotate</value>
+  </data>
+  <data name="Menu.Header.Mirror" xml:space="preserve">
+    <value>_Mirror</value>
+  </data>
+  <data name="Menu.Header.Offset" xml:space="preserve">
+    <value>Off_set</value>
+  </data>
+  <data name="Menu.Header.CopyTool" xml:space="preserve">
+    <value>C_opy</value>
+  </data>
+  <data name="Menu.Header.PolygonEdit" xml:space="preserve">
+    <value>Polygon _Edit</value>
+  </data>
+  <data name="Menu.Header.Layers" xml:space="preserve">
+    <value>_Layers</value>
+  </data>
+  <data name="Menu.Header.Help" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="Menu.Header.About" xml:space="preserve">
+    <value>_About LiteCad</value>
+  </data>
+  <data name="Label.AppTitle" xml:space="preserve">
+    <value>LiteCad 0.2.1</value>
+  </data>
+  <data name="Label.Properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="Label.Tool" xml:space="preserve">
+    <value>Tool</value>
+  </data>
+  <data name="Label.Selection" xml:space="preserve">
+    <value>Selection</value>
+  </data>
+  <data name="Label.None" xml:space="preserve">
+    <value>None</value>
+  </data>
+  <data name="Label.LineParameters" xml:space="preserve">
+    <value>Line parameters</value>
+  </data>
+  <data name="Label.MoveParameters" xml:space="preserve">
+    <value>Move parameters</value>
+  </data>
+  <data name="Label.MirrorParameters" xml:space="preserve">
+    <value>Mirror parameters</value>
+  </data>
+  <data name="Label.OffsetParameters" xml:space="preserve">
+    <value>Offset</value>
+  </data>
+  <data name="Label.OffsetAxes" xml:space="preserve">
+    <value>Offset Axes</value>
+  </data>
+  <data name="Label.Color" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="Label.Thickness" xml:space="preserve">
+    <value>Thickness</value>
+  </data>
+  <data name="Label.Type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Label.OrthoHorizontalVertical" xml:space="preserve">
+    <value>Ortho (H/V)</value>
+  </data>
+  <data name="Label.Ortho" xml:space="preserve">
+    <value>Ortho</value>
+  </data>
+  <data name="Label.NoParameters" xml:space="preserve">
+    <value>No parameters</value>
+  </data>
+  <data name="Label.Length" xml:space="preserve">
+    <value>L:</value>
+  </data>
+  <data name="Label.Width" xml:space="preserve">
+    <value>W:</value>
+  </data>
+  <data name="Label.Height" xml:space="preserve">
+    <value>H:</value>
+  </data>
+  <data name="Label.X" xml:space="preserve">
+    <value>X:</value>
+  </data>
+  <data name="Label.Y" xml:space="preserve">
+    <value>Y:</value>
+  </data>
+  <data name="Label.Distance" xml:space="preserve">
+    <value>Distance:</value>
+  </data>
+  <data name="Label.Offset" xml:space="preserve">
+    <value>Offset:</value>
+  </data>
+  <data name="Label.DimensionParameters" xml:space="preserve">
+    <value>Dimension</value>
+  </data>
+  <data name="Label.DimensionExtensions" xml:space="preserve">
+    <value>Extensions:</value>
+  </data>
+  <data name="Label.DimensionTextSize" xml:space="preserve">
+    <value>Text size:</value>
+  </data>
+  <data name="Label.DimensionExtensionStyle.Full" xml:space="preserve">
+    <value>Full</value>
+  </data>
+  <data name="Label.DimensionExtensionStyle.Short" xml:space="preserve">
+    <value>Short</value>
+  </data>
+  <data name="Label.FaceFill" xml:space="preserve">
+    <value>Fill</value>
+  </data>
+  <data name="Label.FillPattern" xml:space="preserve">
+    <value>Pattern</value>
+  </data>
+  <data name="Label.FillPattern.Solid" xml:space="preserve">
+    <value>Solid</value>
+  </data>
+  <data name="Label.FillPattern.Diagonal" xml:space="preserve">
+    <value>Diagonal</value>
+  </data>
+  <data name="Label.Radius" xml:space="preserve">
+    <value>Radius:</value>
+  </data>
+  <data name="Label.ArcHeight" xml:space="preserve">
+    <value>Arc H:</value>
+  </data>
+  <data name="Label.Angle" xml:space="preserve">
+    <value>Angle:</value>
+  </data>
+  <data name="Label.EmptyValue" xml:space="preserve">
+    <value>—</value>
+  </data>
+  <data name="Label.Color.Black" xml:space="preserve">
+    <value>Black</value>
+  </data>
+  <data name="Label.Color.LightGray" xml:space="preserve">
+    <value>Light gray</value>
+  </data>
+  <data name="Label.Color.Gray" xml:space="preserve">
+    <value>Gray</value>
+  </data>
+  <data name="Label.Color.Blue" xml:space="preserve">
+    <value>Blue</value>
+  </data>
+  <data name="Label.Color.Red" xml:space="preserve">
+    <value>Red</value>
+  </data>
+  <data name="Label.Color.Green" xml:space="preserve">
+    <value>Green</value>
+  </data>
+  <data name="Label.LineType.Solid" xml:space="preserve">
+    <value>Solid</value>
+  </data>
+  <data name="Label.LineType.Dashed" xml:space="preserve">
+    <value>Dashed</value>
+  </data>
+  <data name="Label.LineType.Dotted" xml:space="preserve">
+    <value>Dotted</value>
+  </data>
+  <data name="Label.PolygonType.Face" xml:space="preserve">
+    <value>Face</value>
+  </data>
+  <data name="Label.PolygonType.Wall" xml:space="preserve">
+    <value>Wall</value>
+  </data>
+  <data name="Label.PolygonType.Room" xml:space="preserve">
+    <value>Room</value>
+  </data>
+  <data name="Label.PolygonType.Axis" xml:space="preserve">
+    <value>Axis</value>
+  </data>
+  <data name="Status.Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Status.NewDocument" xml:space="preserve">
+    <value>New document</value>
+  </data>
+  <data name="Status.ToolActive" xml:space="preserve">
+    <value>{0} tool active</value>
+  </data>
+  <data name="Status.CopiedToClipboard" xml:space="preserve">
+    <value>Copied to clipboard</value>
+  </data>
+  <data name="Status.Pasted" xml:space="preserve">
+    <value>Pasted</value>
+  </data>
+  <data name="Status.CutToClipboard" xml:space="preserve">
+    <value>Cut to clipboard</value>
+  </data>
+  <data name="Status.Deleted" xml:space="preserve">
+    <value>Deleted</value>
+  </data>
+  <data name="Status.FaceFillApplied" xml:space="preserve">
+    <value>Fill applied</value>
+  </data>
+  <data name="Status.ProjectSaved" xml:space="preserve">
+    <value>Project saved</value>
+  </data>
+  <data name="Status.ProjectOpened" xml:space="preserve">
+    <value>Project opened</value>
+  </data>
+  <data name="Status.ProjectDeleted" xml:space="preserve">
+    <value>Project deleted</value>
+  </data>
+  <data name="Dialog.UnsavedChanges.Title" xml:space="preserve">
+    <value>Unsaved changes</value>
+  </data>
+  <data name="Dialog.UnsavedChanges.Message" xml:space="preserve">
+    <value>The current project has unsaved changes. Create a new project anyway?</value>
+  </data>
+  <data name="Dialog.DeleteProject.Title" xml:space="preserve">
+    <value>Delete project</value>
+  </data>
+  <data name="Dialog.DeleteProject.Message" xml:space="preserve">
+    <value>Delete the current project? The project file will be removed from disk.</value>
+  </data>
+  <data name="Dialog.OverwriteProject.Title" xml:space="preserve">
+    <value>Replace project</value>
+  </data>
+  <data name="Dialog.OverwriteProject.Message" xml:space="preserve">
+    <value>A project with this name already exists. Replace it?</value>
+  </data>
+  <data name="Dialog.OpenProject.Title" xml:space="preserve">
+    <value>Open project</value>
+  </data>
+  <data name="Dialog.SaveProject.Title" xml:space="preserve">
+    <value>Save project</value>
+  </data>
+  <data name="Dialog.SaveProjectAs.Title" xml:space="preserve">
+    <value>Save project as</value>
+  </data>
+  <data name="Dialog.ProjectFilter" xml:space="preserve">
+    <value>LiteCad project (*.sit)|*.sit</value>
+  </data>
+  <data name="Dialog.SaveAsFilter" xml:space="preserve">
+    <value>LiteCad project (*.sit)|*.sit|PDF (*.pdf)|*.pdf</value>
+  </data>
+  <data name="Dialog.OverwritePdf.Title" xml:space="preserve">
+    <value>Replace PDF</value>
+  </data>
+  <data name="Dialog.OverwritePdf.Message" xml:space="preserve">
+    <value>A PDF with this name already exists. Replace it?</value>
+  </data>
+  <data name="Dialog.PdfExportFailed.Title" xml:space="preserve">
+    <value>PDF export failed</value>
+  </data>
+  <data name="Dialog.PdfExportFailed.Message" xml:space="preserve">
+    <value>Could not export the drawing to PDF: {0}</value>
+  </data>
+  <data name="Dialog.PdfPreview.Title" xml:space="preserve">
+    <value>PDF Preview</value>
+  </data>
+  <data name="Label.PdfPreviewHint" xml:space="preserve">
+    <value>Wheel — scale · Drag — move</value>
+  </data>
+  <data name="Label.PdfFormat" xml:space="preserve">
+    <value>Format:</value>
+  </data>
+  <data name="Label.PdfOrientation" xml:space="preserve">
+    <value>Orientation:</value>
+  </data>
+  <data name="PdfOrientation.Portrait" xml:space="preserve">
+    <value>Portrait</value>
+  </data>
+  <data name="PdfOrientation.Landscape" xml:space="preserve">
+    <value>Landscape</value>
+  </data>
+  <data name="Button.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Button.SavePdf" xml:space="preserve">
+    <value>Save PDF</value>
+  </data>
+  <data name="Status.PdfExported" xml:space="preserve">
+    <value>PDF exported</value>
+  </data>
+  <data name="Status.Undo" xml:space="preserve">
+    <value>Undo</value>
+  </data>
+  <data name="Status.Redo" xml:space="preserve">
+    <value>Redo</value>
+  </data>
+  <data name="Status.SelectionCleared" xml:space="preserve">
+    <value>Selection cleared</value>
+  </data>
+  <data name="Status.SelectionUpdated" xml:space="preserve">
+    <value>Selection updated</value>
+  </data>
+  <data name="Status.VertexSelected" xml:space="preserve">
+    <value>Vertex selected</value>
+  </data>
+  <data name="Status.EdgeSelected" xml:space="preserve">
+    <value>Edge selected</value>
+  </data>
+  <data name="Status.PolygonSelected" xml:space="preserve">
+    <value>Polygon selected</value>
+  </data>
+  <data name="Status.MultipleObjectsSelected" xml:space="preserve">
+    <value>Multiple objects selected</value>
+  </data>
+  <data name="Status.WindowSelection" xml:space="preserve">
+    <value>Window selection</value>
+  </data>
+  <data name="Status.CrossingSelection" xml:space="preserve">
+    <value>Crossing selection</value>
+  </data>
+  <data name="Status.LineCancelled" xml:space="preserve">
+    <value>Line cancelled</value>
+  </data>
+  <data name="Status.ArcCancelled" xml:space="preserve">
+    <value>Arc cancelled</value>
+  </data>
+  <data name="Status.RectangleCancelled" xml:space="preserve">
+    <value>Rectangle cancelled</value>
+  </data>
+  <data name="Status.CircleCancelled" xml:space="preserve">
+    <value>Circle cancelled</value>
+  </data>
+  <data name="Status.SectorCancelled" xml:space="preserve">
+    <value>Sector cancelled</value>
+  </data>
+  <data name="Status.MoveCancelled" xml:space="preserve">
+    <value>Move cancelled</value>
+  </data>
+  <data name="Status.MoveCompleted" xml:space="preserve">
+    <value>Move completed</value>
+  </data>
+  <data name="Status.RotateCancelled" xml:space="preserve">
+    <value>Rotate cancelled</value>
+  </data>
+  <data name="Status.RotateCompleted" xml:space="preserve">
+    <value>Rotate completed</value>
+  </data>
+  <data name="Status.MirrorCancelled" xml:space="preserve">
+    <value>Mirror cancelled</value>
+  </data>
+  <data name="Status.MirrorCompleted" xml:space="preserve">
+    <value>Mirror completed</value>
+  </data>
+  <data name="Status.OffsetCancelled" xml:space="preserve">
+    <value>Offset cancelled</value>
+  </data>
+  <data name="Status.OffsetCompleted" xml:space="preserve">
+    <value>Offset completed</value>
+  </data>
+  <data name="Status.CopyCancelled" xml:space="preserve">
+    <value>Copy cancelled</value>
+  </data>
+  <data name="Status.CopyCompleted" xml:space="preserve">
+    <value>Copy completed</value>
+  </data>
+  <data name="Status.StretchCancelled" xml:space="preserve">
+    <value>Stretch cancelled</value>
+  </data>
+  <data name="Status.StretchCompleted" xml:space="preserve">
+    <value>Stretch completed</value>
+  </data>
+  <data name="Status.ExtendCancelled" xml:space="preserve">
+    <value>Extend cancelled</value>
+  </data>
+  <data name="Status.ExtendCompleted" xml:space="preserve">
+    <value>Extend completed</value>
+  </data>
+  <data name="Status.DimensionCreated" xml:space="preserve">
+    <value>Dimension created</value>
+  </data>
+  <data name="Status.DimensionCancelled" xml:space="preserve">
+    <value>Dimension cancelled</value>
+  </data>
+  <data name="Status.DimensionSelected" xml:space="preserve">
+    <value>Dimension selected</value>
+  </data>
+  <data name="Input.Line.SelectEndPoint" xml:space="preserve">
+    <value>Select end point or type length (Right click to cancel)</value>
+  </data>
+  <data name="Input.Line.SelectNextPoint" xml:space="preserve">
+    <value>Select next point or type length (Right click to cancel)</value>
+  </data>
+  <data name="Input.Line.SetDirectionThenTypeLength" xml:space="preserve">
+    <value>Move mouse to set direction, then type length</value>
+  </data>
+  <data name="Input.Axis.SelectEndPoint" xml:space="preserve">
+    <value>Select end point or type length (Right click to cancel)</value>
+  </data>
+  <data name="Input.Axis.SelectNextPoint" xml:space="preserve">
+    <value>Select next point or type length (Right click to cancel)</value>
+  </data>
+  <data name="Input.Axis.SetDirectionThenTypeLength" xml:space="preserve">
+    <value>Move mouse to set direction, then type length</value>
+  </data>
+  <data name="Status.AxisCancelled" xml:space="preserve">
+    <value>Axis cancelled</value>
+  </data>
+  <data name="Status.AxisSelected" xml:space="preserve">
+    <value>Axis selected</value>
+  </data>
+  <data name="Status.AxisTooShort" xml:space="preserve">
+    <value>Axis is too short</value>
+  </data>
+  <data name="Selection.AxisWithLength" xml:space="preserve">
+    <value>Axis, length {0}</value>
+  </data>
+  <data name="Label.Axis" xml:space="preserve">
+    <value>Axis</value>
+  </data>
+  <data name="Label.Start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Label.End" xml:space="preserve">
+    <value>End</value>
+  </data>
+  <data name="Label.LengthValue" xml:space="preserve">
+    <value>Length</value>
+  </data>
+  <data name="Input.Arc.SelectStart" xml:space="preserve">
+    <value>Select first point (Right click to cancel)</value>
+  </data>
+  <data name="Input.Arc.SelectEnd" xml:space="preserve">
+    <value>Select second point (Right click to cancel)</value>
+  </data>
+  <data name="Input.Arc.SelectHeight" xml:space="preserve">
+    <value>Move mouse or type arc height, then click or Enter (Right click to cancel)</value>
+  </data>
+  <data name="Input.Rectangle.SelectFirstCorner" xml:space="preserve">
+    <value>Select first corner or type size after first click (Right click to cancel)</value>
+  </data>
+  <data name="Input.Rectangle.SelectOppositeCorner" xml:space="preserve">
+    <value>Select opposite corner or type width/height (Alt to switch, Enter to apply)</value>
+  </data>
+  <data name="Input.Circle.SelectCenter" xml:space="preserve">
+    <value>Select center or type radius after first click (Right click to cancel)</value>
+  </data>
+  <data name="Input.Circle.SelectRadius" xml:space="preserve">
+    <value>Select radius point or type radius (Right click to cancel)</value>
+  </data>
+  <data name="Input.Circle.SetDirectionThenTypeRadius" xml:space="preserve">
+    <value>Move mouse to set direction, then type radius</value>
+  </data>
+  <data name="Input.Sector.SelectCenter" xml:space="preserve">
+    <value>Select center (Right click to cancel)</value>
+  </data>
+  <data name="Input.Sector.SelectStart" xml:space="preserve">
+    <value>Select start point or type radius (Right click to cancel)</value>
+  </data>
+  <data name="Input.Sector.SelectAngle" xml:space="preserve">
+    <value>Select angle or type degrees (Enter to commit, Right click to cancel)</value>
+  </data>
+  <data name="Input.Sector.SetDirectionThenTypeRadius" xml:space="preserve">
+    <value>Move mouse to set direction, then type radius</value>
+  </data>
+  <data name="Input.Move.Idle" xml:space="preserve">
+    <value>Click a vertex grip or select objects, then click base point and destination</value>
+  </data>
+  <data name="Input.Move.SelectVertices" xml:space="preserve">
+    <value>Select vertices or objects to move</value>
+  </data>
+  <data name="Input.Move.VertexSelected" xml:space="preserve">
+    <value>Vertex selected — click base point, then destination</value>
+  </data>
+  <data name="Input.Move.SelectDestination" xml:space="preserve">
+    <value>Select destination point or type offset (Esc/Right click to cancel)</value>
+  </data>
+  <data name="Input.Rotate.Idle" xml:space="preserve">
+    <value>Select objects, then click rotation anchor point</value>
+  </data>
+  <data name="Input.Rotate.SelectObjects" xml:space="preserve">
+    <value>Select objects to rotate</value>
+  </data>
+  <data name="Input.Rotate.SelectAngle" xml:space="preserve">
+    <value>Move cursor to set angle or type angle, then click to commit (Esc/Right click to cancel)</value>
+  </data>
+  <data name="Input.Rotate.SetDirectionThenTypeAngle" xml:space="preserve">
+    <value>Set rotation direction with the mouse, then type angle</value>
+  </data>
+  <data name="Input.Mirror.Idle" xml:space="preserve">
+    <value>Select objects, then click first mirror axis point</value>
+  </data>
+  <data name="Input.Mirror.SelectObjects" xml:space="preserve">
+    <value>Select objects to mirror</value>
+  </data>
+  <data name="Input.Mirror.SelectAxisEnd" xml:space="preserve">
+    <value>Move cursor to set mirror axis, then click second point (Esc/Right click to cancel)</value>
+  </data>
+  <data name="Input.Offset.Idle" xml:space="preserve">
+    <value>Move over a face, then click to offset</value>
+  </data>
+  <data name="Input.Offset.AxisIdle" xml:space="preserve">
+    <value>Click an axis to offset</value>
+  </data>
+  <data name="Input.Offset.SelectFace" xml:space="preserve">
+    <value>Click a face to offset</value>
+  </data>
+  <data name="Input.Offset.SelectAxis" xml:space="preserve">
+    <value>Click an axis to offset</value>
+  </data>
+  <data name="Input.Offset.SetDistance" xml:space="preserve">
+    <value>Move cursor or type distance, then click to commit (Esc/Right click to cancel)</value>
+  </data>
+  <data name="Input.Copy.SelectObjects" xml:space="preserve">
+    <value>Select objects to copy</value>
+  </data>
+  <data name="Input.Copy.SelectDestination" xml:space="preserve">
+    <value>Move copy to destination and click (Esc/Right click to cancel)</value>
+  </data>
+  <data name="Input.SetDirectionThenTypeDistance" xml:space="preserve">
+    <value>Move mouse to set direction, then type distance</value>
+  </data>
+  <data name="Input.Stretch.Idle" xml:space="preserve">
+    <value>Click an edge to stretch (perpendicular parallel sides required)</value>
+  </data>
+  <data name="Input.Extend.Idle" xml:space="preserve">
+    <value>Click an edge to extend to the nearest intersection</value>
+  </data>
+  <data name="Input.Dimension.SelectFirstPoint" xml:space="preserve">
+    <value>Select first dimension point</value>
+  </data>
+  <data name="Input.Dimension.SelectSecondPoint" xml:space="preserve">
+    <value>Select second dimension point</value>
+  </data>
+  <data name="Input.Dimension.SetOffset" xml:space="preserve">
+    <value>Set dimension offset and click or press Enter</value>
+  </data>
+  <data name="Input.Stretch.SelectDestination" xml:space="preserve">
+    <value>Select stretch destination, type distance, or press Enter (Right click to cancel)</value>
+  </data>
+  <data name="Input.Stretch.SelectBasePoint" xml:space="preserve">
+    <value>Click base point, then stretch destination</value>
+  </data>
+  <data name="Error.CannotCommand" xml:space="preserve">
+    <value>Cannot {0}</value>
+  </data>
+  <data name="Error.ArcTooSmall" xml:space="preserve">
+    <value>Arc is too small</value>
+  </data>
+  <data name="Error.ArcHeightTooSmall" xml:space="preserve">
+    <value>Arc height is too small for the selected points</value>
+  </data>
+  <data name="Error.RectangleTooSmall" xml:space="preserve">
+    <value>Rectangle size is too small</value>
+  </data>
+  <data name="Error.CircleTooSmall" xml:space="preserve">
+    <value>Circle radius is too small</value>
+  </data>
+  <data name="Error.SectorTooSmall" xml:space="preserve">
+    <value>Sector radius is too small</value>
+  </data>
+  <data name="Error.SectorAngleTooSmall" xml:space="preserve">
+    <value>Sector angle is too small</value>
+  </data>
+  <data name="Error.StretchUnavailable" xml:space="preserve">
+    <value>Stretch unavailable — perpendicular parallel sides required at both ends</value>
+  </data>
+  <data name="Error.OffsetZeroDistance" xml:space="preserve">
+    <value>Offset distance is too small</value>
+  </data>
+  <data name="Error.OffsetDegenerate" xml:space="preserve">
+    <value>Offset would collapse the contour</value>
+  </data>
+  <data name="Error.OffsetSelfIntersection" xml:space="preserve">
+    <value>Offset would self-intersect</value>
+  </data>
+  <data name="Error.OffsetUnsupportedFace" xml:space="preserve">
+    <value>Offset is only available for simple closed faces</value>
+  </data>
+  <data name="Selection.NothingSelected" xml:space="preserve">
+    <value>Nothing selected</value>
+  </data>
+  <data name="Selection.Pasted" xml:space="preserve">
+    <value>Pasted</value>
+  </data>
+  <data name="Selection.Edge" xml:space="preserve">
+    <value>Edge</value>
+  </data>
+  <data name="Selection.DimensionWithDistance" xml:space="preserve">
+    <value>Dimension: {0}, offset {1}</value>
+  </data>
+  <data name="Selection.VertexAt" xml:space="preserve">
+    <value>Vertex ({0}, {1})</value>
+  </data>
+  <data name="Selection.PolygonWithArea" xml:space="preserve">
+    <value>{0} ({1})</value>
+  </data>
+  <data name="Selection.MultipleCount" xml:space="preserve">
+    <value>{0} vertex(s), {1} edge(s), {2} polygon(s)</value>
+  </data>
+  <data name="Format.Coordinates" xml:space="preserve">
+    <value>X: {0}  Y: {1}</value>
+  </data>
+  <data name="Format.CoordinatesDefault" xml:space="preserve">
+    <value>X: 0  Y: 0</value>
+  </data>
+  <data name="Format.Area" xml:space="preserve">
+    <value>A: {0}</value>
+  </data>
+  <data name="Format.AreaEmpty" xml:space="preserve">
+    <value>A: —</value>
+  </data>
+  <data name="Action.Gesture.Undo" xml:space="preserve">
+    <value>Ctrl+Z</value>
+  </data>
+  <data name="Action.Gesture.Redo" xml:space="preserve">
+    <value>Ctrl+Y</value>
+  </data>
+  <data name="Action.Gesture.Cut" xml:space="preserve">
+    <value>Ctrl+X</value>
+  </data>
+  <data name="Action.Gesture.Copy" xml:space="preserve">
+    <value>Ctrl+C</value>
+  </data>
+  <data name="Action.Gesture.Paste" xml:space="preserve">
+    <value>Ctrl+V</value>
+  </data>
+  <data name="Action.Gesture.Delete" xml:space="preserve">
+    <value>Del</value>
+  </data>
+  <data name="Tooltip.Tool.Selection" xml:space="preserve">
+    <value>Selection</value>
+  </data>
+  <data name="Tooltip.Tool.Hand" xml:space="preserve">
+    <value>Hand (pan)</value>
+  </data>
+  <data name="Tooltip.Tool.Line" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="Tooltip.Tool.Axis" xml:space="preserve">
+    <value>Axis</value>
+  </data>
+  <data name="Tooltip.Tool.Arc" xml:space="preserve">
+    <value>Arc</value>
+  </data>
+  <data name="Tooltip.Tool.Rectangle" xml:space="preserve">
+    <value>Rectangle</value>
+  </data>
+  <data name="Tooltip.Tool.Circle" xml:space="preserve">
+    <value>Circle</value>
+  </data>
+  <data name="Tooltip.Tool.Sector" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="Tooltip.Tool.Move" xml:space="preserve">
+    <value>Move</value>
+  </data>
+  <data name="Tooltip.Tool.Rotate" xml:space="preserve">
+    <value>Rotate</value>
+  </data>
+  <data name="Tooltip.Tool.Mirror" xml:space="preserve">
+    <value>Mirror</value>
+  </data>
+  <data name="Tooltip.Tool.Offset" xml:space="preserve">
+    <value>Offset</value>
+  </data>
+  <data name="Tooltip.OffsetAxes" xml:space="preserve">
+    <value>Offset axes only</value>
+  </data>
+  <data name="Tooltip.Tool.Stretch" xml:space="preserve">
+    <value>Stretch</value>
+  </data>
+  <data name="Tooltip.Tool.Extend" xml:space="preserve">
+    <value>Extend</value>
+  </data>
+  <data name="Tooltip.Tool.Dimension" xml:space="preserve">
+    <value>Dimension</value>
+  </data>
+  <data name="Tooltip.Tool.Eraser" xml:space="preserve">
+    <value>Eraser</value>
+  </data>
+  <data name="Tooltip.Tool.Fill" xml:space="preserve">
+    <value>Fill face</value>
+  </data>
+  <data name="Tooltip.Tool.PolygonEdit" xml:space="preserve">
+    <value>Polygon edit</value>
+  </data>
+  <data name="Menu.Header.Stretch" xml:space="preserve">
+    <value>Stret_ch</value>
+  </data>
+  <data name="Menu.Header.Extend" xml:space="preserve">
+    <value>E_xtend</value>
+  </data>
+  <data name="Menu.Header.Dimension" xml:space="preserve">
+    <value>_Dimension</value>
+  </data>
+  <data name="Menu.Header.Eraser" xml:space="preserve">
+    <value>_Eraser</value>
+  </data>
+  <data name="Menu.Header.Fill" xml:space="preserve">
+    <value>_Fill</value>
+  </data>
+  <data name="Format.AreaSuffix" xml:space="preserve">
+    <value> m²</value>
+  </data>
+  <data name="Label.DefaultProjectName" xml:space="preserve">
+    <value>Project</value>
+  </data>
 </root>

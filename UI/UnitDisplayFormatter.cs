@@ -1,3 +1,4 @@
+using LiteCad.Resources;
 using LiteCad.Services;
 using System.Globalization;
 
@@ -19,7 +20,7 @@ public static class UnitDisplayFormatter
     public static string FormatArea(double internalSquareMillimeters)
     {
         var squareMeters = (decimal)internalSquareMillimeters / (decimal)SquareMillimetersPerSquareMeter;
-        return $"{FormatTrimmedDecimal(squareMeters)} m²";
+        return $"{FormatTrimmedDecimal(squareMeters)}{Strings.Format_AreaSuffix}";
     }
 
     private static string FormatMillimeters(double internalMillimeters)

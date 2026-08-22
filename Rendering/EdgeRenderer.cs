@@ -8,7 +8,7 @@ namespace LiteCad.Rendering;
 
 public sealed class EdgeRenderer
 {
-    public void Render(DrawingContext context, CadDocument document, Camera camera)
+    public void Render(DrawingContext context, CadDocument document, Camera camera, bool forScreenDisplay = true)
     {
         foreach (var edge in document.Edges)
         {
@@ -24,7 +24,8 @@ public sealed class EdgeRenderer
                 continue;
             }
 
-            var brush = new SolidColorBrush(edge.Color);
+            var displayColor = DocumentDisplayColors.ResolveEdgeColor(edge.Color, forScreenDisplay);
+            var brush = new SolidColorBrush(displayColor);
             var pen = RenderStyles.CreateScreenPen(brush, edge.Thickness, camera.Zoom, GetDashArray(edge.LineType));
             context.DrawLine(
                 pen,
@@ -40,3 +41,4 @@ public sealed class EdgeRenderer
         _ => null
     };
 }
+

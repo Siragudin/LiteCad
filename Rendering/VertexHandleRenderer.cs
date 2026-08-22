@@ -9,13 +9,6 @@ public static class VertexHandleRenderer
 {
     public const double HandleRadiusScreenPixels = 5.0;
 
-    private static readonly SolidColorBrush DefaultFill = CreateBrush(0xFF, 0xFF, 0xFF);
-    private static readonly SolidColorBrush DefaultStroke = CreateBrush(0x21, 0x96, 0xF3);
-    private static readonly SolidColorBrush HoverFill = CreateBrush(0xE3, 0xF2, 0xFD);
-    private static readonly SolidColorBrush HoverStroke = CreateBrush(0x19, 0x76, 0xD2);
-    private static readonly SolidColorBrush SelectedFill = CreateBrush(0xBB, 0xDE, 0xFB);
-    private static readonly SolidColorBrush SelectedStroke = CreateBrush(0x15, 0x65, 0xC0);
-
     public static double GetHandleWorldRadius(double zoom)
         => HandleRadiusScreenPixels / zoom;
 
@@ -49,9 +42,17 @@ public static class VertexHandleRenderer
             radius *= 1.2;
         }
 
-        var fill = isSelected ? SelectedFill : isHovered ? HoverFill : DefaultFill;
-        var stroke = isSelected ? SelectedStroke : isHovered ? HoverStroke : DefaultStroke;
-        var pen = RenderStyles.CreateScreenPen(stroke, 1.5, zoom);
+        var fill = isSelected
+            ? CanvasTheme.CreateFrozenBrush(CanvasTheme.VertexHandleSelectedFill)
+            : isHovered
+                ? CanvasTheme.CreateFrozenBrush(CanvasTheme.VertexHandleHoverFill)
+                : CanvasTheme.CreateFrozenBrush(CanvasTheme.VertexHandleFill);
+        var strokeColor = isSelected
+            ? CanvasTheme.VertexHandleSelectedStroke
+            : isHovered
+                ? CanvasTheme.VertexHandleHoverStroke
+                : CanvasTheme.VertexHandleStroke;
+        var pen = RenderStyles.CreateScreenPen(CanvasTheme.CreateFrozenBrush(strokeColor), 1.5, zoom);
 
         context.DrawEllipse(
             fill,
@@ -92,12 +93,5 @@ public static class VertexHandleRenderer
 
         vertexId = closest.Id;
         return true;
-    }
-
-    private static SolidColorBrush CreateBrush(byte r, byte g, byte b)
-    {
-        var brush = new SolidColorBrush(Color.FromRgb(r, g, b));
-        brush.Freeze();
-        return brush;
     }
 }

@@ -167,21 +167,17 @@ public sealed class MirrorTool : ToolBase
         }
 
         var axisEnd = GetPreviewAxisEnd();
-        var axisPen = RenderStyles.CreateScreenPen(
-            new SolidColorBrush(Color.FromArgb(0xA0, 0xFF, 0x98, 0x00)),
-            1.0,
+        var axisPen = PreviewLineRenderer.CreatePen(
             zoom,
+            Color.FromArgb(0xA0, 0xFF, 0x98, 0x00),
+            1.0,
             [6, 4]);
         context.DrawLine(
             axisPen,
             new Point(_axisStart.X, _axisStart.Y),
             new Point(axisEnd.X, axisEnd.Y));
 
-        var previewPen = RenderStyles.CreateScreenPen(
-            new SolidColorBrush(Color.FromArgb(0xB0, 0x21, 0x96, 0xF3)),
-            1.5,
-            zoom,
-            [4, 2]);
+        var previewPen = PreviewLineRenderer.CreateGhostPen(zoom, 1.5, [4, 2]);
 
         foreach (var entry in _objectSnapshot.Edges)
         {

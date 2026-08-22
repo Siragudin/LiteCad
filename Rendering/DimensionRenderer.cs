@@ -17,7 +17,8 @@ public sealed class DimensionRenderer
         Selection selection,
         Camera camera,
         Size viewport,
-        LinearDisplayUnit linearUnit)
+        LinearDisplayUnit linearUnit,
+        bool forScreenDisplay = true)
     {
         DimensionService.RemoveInvalid(document, TopologyTolerance.ForMutation);
 
@@ -35,7 +36,9 @@ public sealed class DimensionRenderer
             }
 
             var isSelected = selection.SelectedDimensionIds.Contains(dimension.Id);
-            var color = isSelected ? Color.FromRgb(0x1E, 0x88, 0xE5) : Color.FromRgb(0x15, 0x65, 0xC0);
+            var color = forScreenDisplay
+                ? isSelected ? CanvasTheme.DimensionSelected : CanvasTheme.DimensionNormal
+                : isSelected ? Color.FromRgb(0x1E, 0x88, 0xE5) : Color.FromRgb(0x15, 0x65, 0xC0);
             var distanceText = UnitDisplayFormatter.FormatLinear(layout.MeasuredDistance, linearUnit);
             DimensionAnnotationDrawing.Draw(
                 context,

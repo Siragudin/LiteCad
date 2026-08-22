@@ -17,6 +17,11 @@ public class ResourceMigrationTests
 {
     private const double Tol = 1e-4;
 
+    public ResourceMigrationTests()
+    {
+        LocalizationManager.Instance.Initialize(AppLanguage.English);
+    }
+
     private static readonly string[] RequiredResourceKeys =
     [
         "Tool.Selection",

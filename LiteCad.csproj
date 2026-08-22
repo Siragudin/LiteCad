@@ -16,6 +16,9 @@
     <EmbeddedResource Update="Resources\Strings.resx">
       <Generator></Generator>
     </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Strings.ru.resx">
+      <DependentUpon>Strings.resx</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

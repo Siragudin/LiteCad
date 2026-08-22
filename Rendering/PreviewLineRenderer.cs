@@ -10,6 +10,43 @@ namespace LiteCad.Rendering;
 /// </summary>
 public static class PreviewLineRenderer
 {
+    public static Color GetPreviewColor(Color commitColor)
+        => CanvasTheme.IsDark ? CanvasTheme.PreviewForeground : commitColor;
+
+    public static Color GetAnnotationPreviewColor()
+        => CanvasTheme.Preview;
+
+    public static Pen CreatePen(
+        double zoom,
+        Color commitColor,
+        double thickness = 1.5,
+        DoubleCollection? dashArray = null)
+        => RenderStyles.CreateScreenPen(
+            CanvasTheme.CreateFrozenBrush(GetPreviewColor(commitColor)),
+            thickness,
+            zoom,
+            dashArray);
+
+    public static Pen CreateGhostPen(
+        double zoom,
+        double thickness = 1.5,
+        DoubleCollection? dashArray = null)
+        => RenderStyles.CreateScreenPen(
+            CanvasTheme.CreateFrozenBrush(CanvasTheme.PreviewGhost),
+            thickness,
+            zoom,
+            dashArray);
+
+    public static Pen CreateAnnotationPen(
+        double zoom,
+        double thickness = 1.5,
+        DoubleCollection? dashArray = null)
+        => RenderStyles.CreateScreenPen(
+            CanvasTheme.CreateFrozenBrush(GetAnnotationPreviewColor()),
+            thickness,
+            zoom,
+            dashArray);
+
     public static void Draw(
         DrawingContext context,
         PointF start,

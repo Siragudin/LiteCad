@@ -168,7 +168,12 @@ public sealed class RectangleTool : ToolBase
         }
 
         var corners = GetRectangleCorners(_firstCorner, _oppositeCorner);
-        var previewPen = CreatePreviewPen(zoom);
+        var options = Context.Session.LineToolOptions;
+        var previewPen = PreviewLineRenderer.CreatePen(
+            zoom,
+            options.Color,
+            options.Thickness,
+            GetDashArray(options.LineType));
         context.DrawLine(previewPen, ToPoint(corners.V1), ToPoint(corners.V2));
         context.DrawLine(previewPen, ToPoint(corners.V2), ToPoint(corners.V3));
         context.DrawLine(previewPen, ToPoint(corners.V3), ToPoint(corners.V4));
@@ -270,18 +275,6 @@ public sealed class RectangleTool : ToolBase
         template.Thickness = options.Thickness;
         template.LineType = options.LineType;
         return template;
-    }
-
-    private Pen CreatePreviewPen(double zoom)
-    {
-        if (Context is null)
-        {
-            return RenderStyles.EdgePen(zoom);
-        }
-
-        var options = Context.Session.LineToolOptions;
-        var brush = new SolidColorBrush(options.Color);
-        return RenderStyles.CreateScreenPen(brush, options.Thickness, zoom, GetDashArray(options.LineType));
     }
 
     private static DoubleCollection? GetDashArray(EdgeLineType lineType) => lineType switch

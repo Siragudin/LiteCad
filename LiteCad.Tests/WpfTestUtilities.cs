@@ -1,3 +1,4 @@
+using LiteCad.Infrastructure;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Input;
@@ -131,18 +132,32 @@ internal static class WpfTestUtilities
         }
 
         if (Application.Current.Resources.MergedDictionaries.Any(dictionary =>
-                dictionary.Source?.OriginalString.Contains("CadTheme.xaml", StringComparison.OrdinalIgnoreCase) == true))
+                dictionary.Source?.OriginalString.Contains("CadThemeLight.xaml", StringComparison.OrdinalIgnoreCase) == true
+                || dictionary.Source?.OriginalString.Contains("CadThemeDark.xaml", StringComparison.OrdinalIgnoreCase) == true))
         {
             return;
         }
 
         Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
+            Source = new Uri("/LiteCad;component/UI/Resources/CadThemeLight.xaml", UriKind.Relative)
+        });
+        Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
             Source = new Uri("/LiteCad;component/UI/Resources/CadTheme.xaml", UriKind.Relative)
+        });
+        Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri("/LiteCad;component/UI/Resources/CadMenuTheme.xaml", UriKind.Relative)
+        });
+        Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
+        {
+            Source = new Uri("/LiteCad;component/UI/Resources/CadPropertiesPanelTheme.xaml", UriKind.Relative)
         });
         Application.Current.Resources.MergedDictionaries.Add(new ResourceDictionary
         {
             Source = new Uri("/LiteCad;component/UI/Resources/ToolIcons.xaml", UriKind.Relative)
         });
+        ThemeManager.Instance.Initialize(AppTheme.Light);
     }
 }

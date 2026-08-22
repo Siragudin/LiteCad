@@ -307,11 +307,7 @@ public sealed class MoveTool : ToolBase
         }
 
         var delta = GetPreviewDelta();
-        var pen = RenderStyles.CreateScreenPen(
-            new SolidColorBrush(Color.FromArgb(0xB0, 0x21, 0x96, 0xF3)),
-            1.5,
-            zoom,
-            [4, 2]);
+        var pen = PreviewLineRenderer.CreateGhostPen(zoom, 1.5, [4, 2]);
 
         if (_mode == MoveMode.Vertex && _vertexStartPositions is not null)
         {

@@ -5,10 +5,6 @@ namespace LiteCad.Rendering;
 
 public sealed class GridRenderer
 {
-    private static readonly Brush MinorBrush = CreateFrozenBrush(0xEC, 0xEC, 0xEC);
-    private static readonly Brush MajorBrush = CreateFrozenBrush(0xD0, 0xD0, 0xD0);
-    private static readonly Brush OriginBrush = CreateFrozenBrush(0xB0, 0xB0, 0xB0);
-
     public void Render(DrawingContext context, Camera camera, Size viewport)
     {
         var spacing = GetGridSpacing(camera.Zoom);
@@ -22,9 +18,9 @@ public sealed class GridRenderer
         var minY = Math.Floor(Math.Min(topLeft.Y, bottomRight.Y) / spacing) * spacing;
         var maxY = Math.Ceiling(Math.Max(topLeft.Y, bottomRight.Y) / spacing) * spacing;
 
-        var minorPen = RenderStyles.CreateScreenPen(MinorBrush, 1.0, camera.Zoom);
-        var majorPen = RenderStyles.CreateScreenPen(MajorBrush, 1.0, camera.Zoom);
-        var originPen = RenderStyles.CreateScreenPen(OriginBrush, 1.5, camera.Zoom);
+        var minorPen = RenderStyles.CreateScreenPen(CanvasTheme.CreateFrozenBrush(CanvasTheme.GridMinor), 1.0, camera.Zoom);
+        var majorPen = RenderStyles.CreateScreenPen(CanvasTheme.CreateFrozenBrush(CanvasTheme.GridMajor), 1.0, camera.Zoom);
+        var originPen = RenderStyles.CreateScreenPen(CanvasTheme.CreateFrozenBrush(CanvasTheme.GridOrigin), 1.5, camera.Zoom);
 
         for (var x = minX; x <= maxX + spacing * 0.5; x += spacing)
         {
@@ -83,12 +79,5 @@ public sealed class GridRenderer
 
         var ratio = value / step;
         return Math.Abs(ratio - Math.Round(ratio)) < 1e-6;
-    }
-
-    private static SolidColorBrush CreateFrozenBrush(byte r, byte g, byte b)
-    {
-        var brush = new SolidColorBrush(Color.FromRgb(r, g, b));
-        brush.Freeze();
-        return brush;
     }
 }

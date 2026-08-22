@@ -120,15 +120,6 @@
                         Click="ToolButton_OnClick">
                     <Path Style="{StaticResource CadToolIconFillPathStyle}" Data="{StaticResource Icon.Fill}" />
                 </Button>
-
-                <Separator Style="{StaticResource CadToolbarSeparatorStyle}" />
-
-                <Button Style="{StaticResource CadToolButtonStyle}"
-                        Tag="PolygonEdit"
-                        ToolTip="{loc:Loc Key=Tooltip.Tool.PolygonEdit}"
-                        Click="ToolButton_OnClick">
-                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.PolygonEdit}" />
-                </Button>
             </StackPanel>
         </ScrollViewer>
     </Border>

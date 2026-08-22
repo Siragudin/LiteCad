@@ -111,9 +111,8 @@ public sealed class FillTool : ToolBase
             return;
         }
 
-        var fill = new SolidColorBrush(Color.FromArgb(0x30, 0x21, 0x96, 0xF3));
-        fill.Freeze();
-        var stroke = RenderStyles.CreateScreenPen(new SolidColorBrush(Color.FromRgb(0x21, 0x96, 0xF3)), 1.5, camera.Zoom);
+        var fill = CanvasTheme.CreateFrozenBrush(CanvasTheme.SelectionFill);
+        var stroke = RenderStyles.CreateScreenPen(CanvasTheme.CreateFrozenBrush(CanvasTheme.SelectionStroke), 1.5, camera.Zoom);
         context.DrawGeometry(fill, stroke, geometry);
     }
 }

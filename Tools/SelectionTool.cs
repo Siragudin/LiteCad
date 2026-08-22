@@ -85,12 +85,12 @@ public sealed class SelectionTool : ToolBase
         var rect = SelectionBounds.FromPoints(_selectStartWorld, _selectCurrentWorld);
         var isWindow = IsWindowSelection(camera, viewport);
         var fill = new SolidColorBrush(isWindow
-            ? Color.FromArgb(0x30, 0x21, 0x96, 0xF3)
-            : Color.FromArgb(0x30, 0x4C, 0xAF, 0x50));
+            ? CanvasTheme.MarqueeWindowFill
+            : CanvasTheme.MarqueeCrossFill);
         fill.Freeze();
 
         var stroke = RenderStyles.CreateScreenPen(
-            new SolidColorBrush(isWindow ? Color.FromRgb(0x21, 0x96, 0xF3) : Color.FromRgb(0x4C, 0xAF, 0x50)),
+            CanvasTheme.CreateFrozenBrush(isWindow ? CanvasTheme.MarqueeWindowStroke : CanvasTheme.MarqueeCrossStroke),
             1.0,
             camera.Zoom,
             [4, 2]);

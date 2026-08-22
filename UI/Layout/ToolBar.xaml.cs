@@ -8,21 +8,20 @@ namespace LiteCad.UI.Layout;
 public partial class ToolBar : UserControl
 {
     private readonly Dictionary<string, Button> _toolButtons = new(StringComparer.Ordinal);
+    private string? _activeToolTag;
 
     public event EventHandler<string>? ToolRequested;
 
     public ToolBar()
     {
         InitializeComponent();
-        Loaded += ToolBar_OnLoaded;
+        RegisterToolButtons();
     }
 
     public void SetActiveTool(string toolTag)
     {
-        foreach (var (tag, button) in _toolButtons)
-        {
-            ToolBarProperties.SetIsActive(button, tag == toolTag);
-        }
+        _activeToolTag = toolTag;
+        ApplyActiveState();
     }
 
     public void RefreshLocalizedLabels()
@@ -30,6 +29,7 @@ public partial class ToolBar : UserControl
         SetButtonTooltip("Selection", Strings.Tooltip_Tool_Selection);
         SetButtonTooltip("Hand", Strings.Tooltip_Tool_Hand);
         SetButtonTooltip("Line", Strings.Tooltip_Tool_Line);
+        SetButtonTooltip("Axis", Strings.Tooltip_Tool_Axis);
         SetButtonTooltip("Arc", Strings.Tooltip_Tool_Arc);
         SetButtonTooltip("Rectangle", Strings.Tooltip_Tool_Rectangle);
         SetButtonTooltip("Circle", Strings.Tooltip_Tool_Circle);
@@ -42,10 +42,10 @@ public partial class ToolBar : UserControl
         SetButtonTooltip("Extend", Strings.Tooltip_Tool_Extend);
         SetButtonTooltip("Dimension", Strings.Tooltip_Tool_Dimension);
         SetButtonTooltip("Eraser", Strings.Tooltip_Tool_Eraser);
-        SetButtonTooltip("PolygonEdit", Strings.Tooltip_Tool_PolygonEdit);
+        SetButtonTooltip("Fill", Strings.Tooltip_Tool_Fill);
     }
 
-    private void ToolBar_OnLoaded(object sender, RoutedEventArgs e)
+    private void RegisterToolButtons()
     {
         _toolButtons.Clear();
         foreach (var child in ToolButtonPanel.Children)
@@ -54,6 +54,21 @@ public partial class ToolBar : UserControl
             {
                 _toolButtons[tag] = (Button)child;
             }
+        }
+
+        ApplyActiveState();
+    }
+
+    private void ApplyActiveState()
+    {
+        if (_activeToolTag is null)
+        {
+            return;
+        }
+
+        foreach (var (tag, button) in _toolButtons)
+        {
+            ToolBarProperties.SetIsActive(button, tag == _activeToolTag);
         }
     }
 

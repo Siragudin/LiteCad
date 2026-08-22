@@ -16,11 +16,13 @@ public static class FaceFillRenderer
         Polygon polygon,
         Geometry geometry,
         FaceFillStyle style,
-        double zoom)
+        double zoom,
+        bool forScreenDisplay = true)
     {
+        var displayColor = DocumentDisplayColors.ResolveFillColor(style.FillColor, forScreenDisplay);
         if (style.FillPattern == FaceFillPattern.Solid)
         {
-            var fill = new SolidColorBrush(style.FillColor);
+            var fill = new SolidColorBrush(displayColor);
             fill.Freeze();
             context.DrawGeometry(fill, null, geometry);
             return;
@@ -33,7 +35,7 @@ public static class FaceFillRenderer
         }
 
         var pen = RenderStyles.CreateScreenPen(
-            new SolidColorBrush(style.FillColor),
+            new SolidColorBrush(displayColor),
             DiagonalLineWidthScreenPixels,
             zoom);
         var spacing = DiagonalSpacingScreenPixels / zoom;

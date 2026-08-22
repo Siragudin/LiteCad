@@ -174,7 +174,12 @@ public sealed class LineTool : ToolBase
             return;
         }
 
-        var previewPen = CreatePreviewPen(zoom);
+        var options = Context.Session.LineToolOptions;
+        var previewPen = PreviewLineRenderer.CreatePen(
+            zoom,
+            options.Color,
+            options.Thickness,
+            GetDashArray(options.LineType));
         PreviewLineRenderer.Draw(context, _startPoint, _previewEnd, previewPen);
     }
 
@@ -255,18 +260,6 @@ public sealed class LineTool : ToolBase
         }
 
         return Geometry2D.GetOrthoAlignment(start, end, Context.SnapTolerance);
-    }
-
-    private Pen CreatePreviewPen(double zoom)
-    {
-        if (Context is null)
-        {
-            return RenderStyles.EdgePen(zoom);
-        }
-
-        var options = Context.Session.LineToolOptions;
-        var brush = new SolidColorBrush(options.Color);
-        return RenderStyles.CreateScreenPen(brush, options.Thickness, zoom, GetDashArray(options.LineType));
     }
 
     private static DoubleCollection? GetDashArray(EdgeLineType lineType) => lineType switch

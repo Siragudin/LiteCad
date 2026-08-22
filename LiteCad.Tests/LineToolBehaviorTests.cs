@@ -30,6 +30,20 @@ public class LineToolBehaviorTests
     }
 
     [Fact]
+    public void RightClick_AfterFirstClick_KeepsLineToolActive()
+    {
+        RunSta(() =>
+        {
+            var harness = CreateHarness();
+
+            harness.Tool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(0, 0));
+            harness.Tool.OnMouseDown(CreateMouseButton(MouseButton.Right), new PointF(50, 0));
+
+            Assert.Same(harness.Tool, harness.Session.ToolService.ActiveTool);
+        });
+    }
+
+    [Fact]
     public void RightClick_AfterFirstClick_CancelsPreviewWithoutCreatingLine()
     {
         RunSta(() =>

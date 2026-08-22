@@ -114,6 +114,8 @@ public static class Strings
     public static string Label_LineParameters => Get("Label.LineParameters");
     public static string Label_MoveParameters => Get("Label.MoveParameters");
     public static string Label_MirrorParameters => Get("Label.MirrorParameters");
+    public static string Label_OffsetParameters => Get("Label.OffsetParameters");
+    public static string Label_OffsetAxes => Get("Label.OffsetAxes");
     public static string Label_Color => Get("Label.Color");
     public static string Label_Thickness => Get("Label.Thickness");
     public static string Label_Type => Get("Label.Type");
@@ -255,7 +257,9 @@ public static class Strings
     public static string Input_Mirror_SelectObjects => Get("Input.Mirror.SelectObjects");
     public static string Input_Mirror_SelectAxisEnd => Get("Input.Mirror.SelectAxisEnd");
     public static string Input_Offset_Idle => Get("Input.Offset.Idle");
+    public static string Input_Offset_AxisIdle => Get("Input.Offset.AxisIdle");
     public static string Input_Offset_SelectFace => Get("Input.Offset.SelectFace");
+    public static string Input_Offset_SelectAxis => Get("Input.Offset.SelectAxis");
     public static string Input_Offset_SetDistance => Get("Input.Offset.SetDistance");
     public static string Input_Copy_SelectObjects => Get("Input.Copy.SelectObjects");
     public static string Input_Copy_SelectDestination => Get("Input.Copy.SelectDestination");
@@ -294,6 +298,9 @@ public static class Strings
     public static string Format_CoordinatesDefault => Get("Format.CoordinatesDefault");
     public static string Format_Area => Get("Format.Area");
     public static string Format_AreaEmpty => Get("Format.AreaEmpty");
+    public static string Format_AreaSuffix => Get("Format.AreaSuffix");
+
+    public static string Label_DefaultProjectName => Get("Label.DefaultProjectName");
 
     public static string Action_Gesture_Undo => Get("Action.Gesture.Undo");
     public static string Action_Gesture_Redo => Get("Action.Gesture.Redo");
@@ -314,6 +321,7 @@ public static class Strings
     public static string Tooltip_Tool_Rotate => Get("Tooltip.Tool.Rotate");
     public static string Tooltip_Tool_Mirror => Get("Tooltip.Tool.Mirror");
     public static string Tooltip_Tool_Offset => Get("Tooltip.Tool.Offset");
+    public static string Tooltip_OffsetAxes => Get("Tooltip.OffsetAxes");
     public static string Tooltip_Tool_Stretch => Get("Tooltip.Tool.Stretch");
     public static string Tooltip_Tool_Extend => Get("Tooltip.Tool.Extend");
     public static string Tooltip_Tool_Dimension => Get("Tooltip.Tool.Dimension");

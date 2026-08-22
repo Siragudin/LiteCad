@@ -14,7 +14,9 @@ namespace LiteCad
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            LocalizationManager.Instance.Initialize(LanguageSettingsStore.LoadLanguage());
+            var settings = AppSettingsStore.Load();
+            LocalizationManager.Instance.Initialize(settings.Language);
+            ThemeManager.Instance.Initialize(settings.Theme);
             new ProjectStorage().EnsureProjectsDirectoryExists();
             base.OnStartup(e);
         }

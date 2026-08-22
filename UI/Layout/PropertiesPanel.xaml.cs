@@ -31,6 +31,7 @@ public partial class PropertiesPanel : UserControl
     private bool _suppressFaceFillEvents;
     private bool _suppressFillToolEvents;
     private bool _suppressAxisOrthoEvents;
+    private bool _suppressOffsetAxisEvents;
 
     public PropertiesPanel()
     {
@@ -51,6 +52,8 @@ public partial class PropertiesPanel : UserControl
     public bool IsMoveOrthoToggleVisible => IsMoveToolPanelVisible;
 
     public bool IsMirrorOrthoToggleVisible => IsMirrorToolPanelVisible;
+
+    public bool IsOffsetToolPanelVisible => OffsetToolPanel.Visibility == Visibility.Visible;
 
     public bool MoveOrthoIsChecked => MoveOrthoCheckBox.IsChecked == true;
 
@@ -90,12 +93,14 @@ public partial class PropertiesPanel : UserControl
         var isAxisTool = toolId == ToolId.Axis;
         var isMoveTool = toolId == ToolId.Move;
         var isMirrorTool = toolId == ToolId.Mirror;
+        var isOffsetTool = toolId == ToolId.Offset;
         var isDimensionTool = toolId == ToolId.Dimension;
         var isFillTool = toolId == ToolId.Fill;
         LineToolPanel.Visibility = isLineTool ? Visibility.Visible : Visibility.Collapsed;
         AxisToolPanel.Visibility = isAxisTool ? Visibility.Visible : Visibility.Collapsed;
         MoveToolPanel.Visibility = isMoveTool ? Visibility.Visible : Visibility.Collapsed;
         MirrorToolPanel.Visibility = isMirrorTool ? Visibility.Visible : Visibility.Collapsed;
+        OffsetToolPanel.Visibility = isOffsetTool ? Visibility.Visible : Visibility.Collapsed;
         DimensionToolPanel.Visibility = isDimensionTool ? Visibility.Visible : Visibility.Collapsed;
         FillToolPanel.Visibility = isFillTool ? Visibility.Visible : Visibility.Collapsed;
 
@@ -106,7 +111,7 @@ public partial class PropertiesPanel : UserControl
             SyncFaceSelection(_session);
         }
 
-        UpdateNoParametersVisibility(isLineTool, isAxisTool, isMoveTool, isMirrorTool, isDimensionTool, isFillTool);
+        UpdateNoParametersVisibility(isLineTool, isAxisTool, isMoveTool, isMirrorTool, isOffsetTool, isDimensionTool, isFillTool);
 
         if (isAxisTool)
         {
@@ -121,6 +126,11 @@ public partial class PropertiesPanel : UserControl
         if (isMirrorTool)
         {
             SyncMirrorOrthoCheckBoxFromSession();
+        }
+
+        if (isOffsetTool)
+        {
+            SyncOffsetAxisCheckBoxFromSession();
         }
 
         if (isDimensionTool)
@@ -425,6 +435,34 @@ public partial class PropertiesPanel : UserControl
         }
 
         ApplyMoveOrthoEnabled(MoveOrthoCheckBox.IsChecked == true);
+    }
+
+    private void OffsetAxisCheckBox_OnChanged(object sender, RoutedEventArgs e)
+    {
+        if (_session is null || _suppressOffsetAxisEvents)
+        {
+            return;
+        }
+
+        _session.OffsetToolOptions.IsAxisOffset = OffsetAxisCheckBox.IsChecked == true;
+        if (_session.ToolService.ActiveTool is OffsetTool offsetTool)
+        {
+            offsetTool.CancelPendingOperation();
+        }
+
+        _requestRedraw?.Invoke();
+    }
+
+    private void SyncOffsetAxisCheckBoxFromSession()
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        _suppressOffsetAxisEvents = true;
+        OffsetAxisCheckBox.IsChecked = _session.OffsetToolOptions.IsAxisOffset;
+        _suppressOffsetAxisEvents = false;
     }
 
     private void MirrorOrthoCheckBox_OnChanged(object sender, RoutedEventArgs e)
@@ -796,6 +834,7 @@ public partial class PropertiesPanel : UserControl
         bool isAxisTool,
         bool isMoveTool,
         bool isMirrorTool,
+        bool isOffsetTool = false,
         bool isDimensionTool = false,
         bool isFillTool = false)
     {
@@ -803,6 +842,7 @@ public partial class PropertiesPanel : UserControl
             || isAxisTool
             || isMoveTool
             || isMirrorTool
+            || isOffsetTool
             || isDimensionTool
             || isFillTool
             || DimensionSelectionPanel.Visibility == Visibility.Visible

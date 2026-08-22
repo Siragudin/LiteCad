@@ -36,7 +36,7 @@
                     Margin="8,8,4,8"
                     BorderBrush="{StaticResource CadBorderDarkBrush}"
                     BorderThickness="1"
-                    Background="White"
+                    Background="{DynamicResource CadCanvasBackgroundBrush}"
                     ClipToBounds="True"
                     SnapsToDevicePixels="True">
                 <layout:CanvasHost x:Name="MainCanvas"

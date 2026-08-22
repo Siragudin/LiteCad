@@ -15,6 +15,8 @@
         </Grid.ColumnDefinitions>
 
         <Menu Grid.Column="0"
+              Style="{StaticResource CadMenuStyle}"
+              ItemContainerStyle="{StaticResource CadTopLevelMenuItemStyle}"
               Background="Transparent"
               Padding="4,0"
               FontSize="12">
@@ -81,9 +83,18 @@
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Dimension}" Tag="Dimension" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Eraser}" Tag="Eraser" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Fill}" Tag="Fill" Click="ToolMenuItem_OnClick" />
-                <Separator />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.CopyTool}" Tag="Copy" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.PolygonEdit}" Tag="PolygonEdit" Click="ToolMenuItem_OnClick" />
+            </MenuItem>
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Theme}">
+                <MenuItem x:Name="ThemeLightMenuItem"
+                          Header="{loc:Loc Key=Menu.Header.ThemeLight}"
+                          Tag="Light"
+                          IsCheckable="True"
+                          Click="ThemeMenuItem_OnClick" />
+                <MenuItem x:Name="ThemeDarkMenuItem"
+                          Header="{loc:Loc Key=Menu.Header.ThemeDark}"
+                          Tag="Dark"
+                          IsCheckable="True"
+                          Click="ThemeMenuItem_OnClick" />
             </MenuItem>
         </Menu>
 

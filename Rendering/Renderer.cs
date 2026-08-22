@@ -25,16 +25,16 @@ public sealed class Renderer
         ITool? activeTool,
         LinearDisplayUnit linearUnit)
     {
-        context.DrawRectangle(Brushes.White, null, new Rect(0, 0, viewport.Width, viewport.Height));
+        context.DrawRectangle(CanvasTheme.CreateFrozenBrush(CanvasTheme.CanvasBackground), null, new Rect(0, 0, viewport.Width, viewport.Height));
 
         context.PushTransform(new MatrixTransform(camera.GetWorldToScreenMatrix(viewport)));
         try
         {
             _gridRenderer.Render(context, camera, viewport);
-            _polygonRenderer.Render(context, document, camera);
-            _edgeRenderer.Render(context, document, camera);
+            _polygonRenderer.Render(context, document, camera, forScreenDisplay: true);
+            _edgeRenderer.Render(context, document, camera, forScreenDisplay: true);
             _axisRenderer.Render(context, document, camera);
-            _dimensionRenderer.Render(context, document, selection, camera, viewport, linearUnit);
+            _dimensionRenderer.Render(context, document, selection, camera, viewport, linearUnit, forScreenDisplay: true);
             _selectionRenderer.Render(context, document, selection, camera);
             activeTool?.RenderOverlay(context, camera, viewport);
         }
@@ -69,8 +69,8 @@ public sealed class Renderer
         Size contentViewport,
         LinearDisplayUnit linearUnit)
     {
-        _polygonRenderer.Render(context, document, exportCamera);
-        _edgeRenderer.Render(context, document, exportCamera);
+        _polygonRenderer.Render(context, document, exportCamera, forScreenDisplay: false);
+        _edgeRenderer.Render(context, document, exportCamera, forScreenDisplay: false);
         _axisRenderer.Render(context, document, exportCamera);
         _dimensionRenderer.Render(
             context,
@@ -78,6 +78,7 @@ public sealed class Renderer
             new Selection(),
             exportCamera,
             contentViewport,
-            linearUnit);
+            linearUnit,
+            forScreenDisplay: false);
     }
 }

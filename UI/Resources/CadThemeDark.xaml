@@ -1,0 +1,111 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Dark theme color palette -->
+    <Color x:Key="Cad.Background">#2D2D30</Color>
+    <Color x:Key="Cad.Panel">#383838</Color>
+    <Color x:Key="Cad.PropertiesBackground">#333337</Color>
+    <Color x:Key="Cad.Border">#555555</Color>
+    <Color x:Key="Cad.BorderLight">#464647</Color>
+    <Color x:Key="Cad.BorderDark">#656565</Color>
+    <Color x:Key="Cad.TextPrimary">#E8E8E8</Color>
+    <Color x:Key="Cad.TextSecondary">#B0B0B0</Color>
+    <Color x:Key="Cad.TextMuted">#808080</Color>
+    <Color x:Key="Cad.Accent">#3794FF</Color>
+    <Color x:Key="Cad.AccentLight">#264F78</Color>
+    <Color x:Key="Cad.Hover">#434346</Color>
+    <Color x:Key="Cad.InputBackground">#3C3C3C</Color>
+    <Color x:Key="Cad.InputDisabled">#333333</Color>
+    <Color x:Key="Cad.InputActive">#3C3C3C</Color>
+    <Color x:Key="Cad.CanvasBackground">#1E1E1E</Color>
+    <Color x:Key="Cad.ToolTipBackground">#424242</Color>
+    <Color x:Key="Cad.IconDisabled">#666666</Color>
+    <Color x:Key="Cad.MenuForeground">#E8E8E8</Color>
+    <Color x:Key="Cad.MenuPopupBackground">#383838</Color>
+    <Color x:Key="Cad.MenuHover">#434346</Color>
+    <Color x:Key="Cad.MenuBorder">#555555</Color>
+    <Color x:Key="Cad.MenuDisabledForeground">#808080</Color>
+    <Color x:Key="Cad.PropertiesPanelText">#E8E8E8</Color>
+    <Color x:Key="Cad.PropertiesControlBackground">#2A2A2D</Color>
+    <Color x:Key="Cad.PropertiesControlForeground">#E8E8E8</Color>
+    <Color x:Key="Cad.PropertiesControlBorder">#656565</Color>
+    <Color x:Key="Cad.PropertiesControlHover">#434346</Color>
+    <Color x:Key="Cad.PropertiesControlActive">#3C3C3C</Color>
+    <Color x:Key="Cad.PropertiesControlDisabled">#333333</Color>
+    <Color x:Key="Cad.PropertiesControlDisabledForeground">#808080</Color>
+    <Color x:Key="Cad.PropertiesDropdownBackground">#383838</Color>
+    <Color x:Key="Cad.PropertiesDropdownForeground">#E8E8E8</Color>
+    <Color x:Key="Cad.ToolButtonBackground">#00000000</Color>
+    <Color x:Key="Cad.ToolButtonHover">#434346</Color>
+    <Color x:Key="Cad.ToolButtonPressed">#555555</Color>
+    <Color x:Key="Cad.ToolButtonBorder">#00000000</Color>
+    <Color x:Key="Cad.ToolButtonPressedBorder">#707070</Color>
+
+    <!-- Override system menu colors so WPF MenuItem popup templates stay readable in dark theme -->
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuTextBrushKey}" Color="#E8E8E8" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuBrushKey}" Color="#383838" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.MenuBarBrushKey}" Color="#2D2D30" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowBrushKey}" Color="#383838" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.WindowTextBrushKey}" Color="#E8E8E8" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#383838" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlLightBrushKey}" Color="#434346" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlDarkBrushKey}" Color="#555555" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="#E8E8E8" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#434346" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.GrayTextBrushKey}" Color="#808080" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#434346" />
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#808080" />
+
+    <!-- WPF MenuItem popup templates (SubMenuBorder / SubmenuContent) -->
+    <SolidColorBrush x:Key="Menu.Background" Color="{StaticResource Cad.MenuPopupBackground}" />
+    <SolidColorBrush x:Key="Menu.Border" Color="{StaticResource Cad.MenuBorder}" />
+    <SolidColorBrush x:Key="MenuItem.SubLevel.Static.Background" Color="{StaticResource Cad.MenuPopupBackground}" />
+    <SolidColorBrush x:Key="MenuItem.SubLevel.Static.Foreground" Color="{StaticResource Cad.MenuForeground}" />
+    <SolidColorBrush x:Key="MenuItem.SubLevel.Static.Border" Color="{StaticResource Cad.MenuPopupBackground}" />
+    <SolidColorBrush x:Key="MenuItem.Highlight.Background" Color="{StaticResource Cad.MenuHover}" />
+    <SolidColorBrush x:Key="MenuItem.Highlight.Foreground" Color="{StaticResource Cad.MenuForeground}" />
+    <SolidColorBrush x:Key="MenuItem.Highlight.Border" Color="{StaticResource Cad.MenuBorder}" />
+    <SolidColorBrush x:Key="MenuItem.Disabled.Foreground" Color="{StaticResource Cad.MenuDisabledForeground}" />
+
+    <SolidColorBrush x:Key="CadBackgroundBrush" Color="{StaticResource Cad.Background}" />
+    <SolidColorBrush x:Key="CadPanelBrush" Color="{StaticResource Cad.Panel}" />
+    <SolidColorBrush x:Key="CadPropertiesBackgroundBrush" Color="{StaticResource Cad.PropertiesBackground}" />
+    <SolidColorBrush x:Key="CadBorderBrush" Color="{StaticResource Cad.Border}" />
+    <SolidColorBrush x:Key="CadBorderLightBrush" Color="{StaticResource Cad.BorderLight}" />
+    <SolidColorBrush x:Key="CadBorderDarkBrush" Color="{StaticResource Cad.BorderDark}" />
+    <SolidColorBrush x:Key="CadTextPrimaryBrush" Color="{StaticResource Cad.TextPrimary}" />
+    <SolidColorBrush x:Key="CadTextSecondaryBrush" Color="{StaticResource Cad.TextSecondary}" />
+    <SolidColorBrush x:Key="CadTextMutedBrush" Color="{StaticResource Cad.TextMuted}" />
+    <SolidColorBrush x:Key="CadAccentBrush" Color="{StaticResource Cad.Accent}" />
+    <SolidColorBrush x:Key="CadAccentLightBrush" Color="{StaticResource Cad.AccentLight}" />
+    <SolidColorBrush x:Key="CadHoverBrush" Color="{StaticResource Cad.Hover}" />
+    <SolidColorBrush x:Key="CadInputBackgroundBrush" Color="{StaticResource Cad.InputBackground}" />
+    <SolidColorBrush x:Key="CadInputDisabledBrush" Color="{StaticResource Cad.InputDisabled}" />
+    <SolidColorBrush x:Key="CadInputActiveBrush" Color="{StaticResource Cad.InputActive}" />
+    <SolidColorBrush x:Key="CadCanvasBackgroundBrush" Color="{StaticResource Cad.CanvasBackground}" />
+    <SolidColorBrush x:Key="CadToolTipBackgroundBrush" Color="{StaticResource Cad.ToolTipBackground}" />
+    <SolidColorBrush x:Key="CadIconBrush" Color="{StaticResource Cad.TextPrimary}" />
+    <SolidColorBrush x:Key="CadIconDisabledBrush" Color="{StaticResource Cad.IconDisabled}" />
+    <SolidColorBrush x:Key="CadMenuForegroundBrush" Color="{StaticResource Cad.MenuForeground}" />
+    <SolidColorBrush x:Key="CadMenuPopupBackgroundBrush" Color="{StaticResource Cad.MenuPopupBackground}" />
+    <SolidColorBrush x:Key="CadMenuHoverBrush" Color="{StaticResource Cad.MenuHover}" />
+    <SolidColorBrush x:Key="CadMenuBorderBrush" Color="{StaticResource Cad.MenuBorder}" />
+    <SolidColorBrush x:Key="CadMenuDisabledForegroundBrush" Color="{StaticResource Cad.MenuDisabledForeground}" />
+    <SolidColorBrush x:Key="CadPropertiesPanelTextBrush" Color="{StaticResource Cad.PropertiesPanelText}" />
+    <SolidColorBrush x:Key="CadPropertiesControlBackgroundBrush" Color="{StaticResource Cad.PropertiesControlBackground}" />
+    <SolidColorBrush x:Key="CadPropertiesControlForegroundBrush" Color="{StaticResource Cad.PropertiesControlForeground}" />
+    <SolidColorBrush x:Key="CadPropertiesControlBorderBrush" Color="{StaticResource Cad.PropertiesControlBorder}" />
+    <SolidColorBrush x:Key="CadPropertiesControlHoverBrush" Color="{StaticResource Cad.PropertiesControlHover}" />
+    <SolidColorBrush x:Key="CadPropertiesControlActiveBrush" Color="{StaticResource Cad.PropertiesControlActive}" />
+    <SolidColorBrush x:Key="CadPropertiesControlDisabledBrush" Color="{StaticResource Cad.PropertiesControlDisabled}" />
+    <SolidColorBrush x:Key="CadPropertiesControlDisabledForegroundBrush" Color="{StaticResource Cad.PropertiesControlDisabledForeground}" />
+    <SolidColorBrush x:Key="CadPropertiesDropdownBackgroundBrush" Color="{StaticResource Cad.PropertiesDropdownBackground}" />
+    <SolidColorBrush x:Key="CadPropertiesDropdownForegroundBrush" Color="{StaticResource Cad.PropertiesDropdownForeground}" />
+    <SolidColorBrush x:Key="CadToolButtonBackgroundBrush" Color="{StaticResource Cad.ToolButtonBackground}" />
+    <SolidColorBrush x:Key="CadToolButtonHoverBrush" Color="{StaticResource Cad.ToolButtonHover}" />
+    <SolidColorBrush x:Key="CadToolButtonPressedBrush" Color="{StaticResource Cad.ToolButtonPressed}" />
+    <SolidColorBrush x:Key="CadToolButtonBorderBrush" Color="{StaticResource Cad.ToolButtonBorder}" />
+    <SolidColorBrush x:Key="CadToolButtonPressedBorderBrush" Color="{StaticResource Cad.ToolButtonPressedBorder}" />
+
+</ResourceDictionary>

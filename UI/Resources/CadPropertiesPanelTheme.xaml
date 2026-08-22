@@ -1,0 +1,166 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Properties panel labels -->
+    <Style x:Key="CadPropertiesSectionLabelStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource CadSectionLabelStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource CadPropertiesPanelTextBrush}" />
+    </Style>
+
+    <Style x:Key="CadPropertiesValueStyle"
+           TargetType="TextBlock"
+           BasedOn="{StaticResource CadPropertyValueStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource CadPropertiesPanelTextBrush}" />
+    </Style>
+
+    <!-- TextBox -->
+    <Style x:Key="CadPropertiesTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Padding" Value="6,2" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Background" Value="{DynamicResource CadPropertiesControlBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource CadPropertiesControlForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CadPropertiesControlBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CaretBrush" Value="{DynamicResource CadPropertiesControlForegroundBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource CadAccentBrush}" />
+        <Setter Property="SelectionTextBrush" Value="{DynamicResource CadPropertiesControlForegroundBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource CadPropertiesControlDisabledBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource CadPropertiesControlDisabledForegroundBrush}" />
+            </Trigger>
+            <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource CadAccentBrush}" />
+                <Setter Property="Background" Value="{DynamicResource CadPropertiesControlActiveBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ComboBox item -->
+    <Style x:Key="CadPropertiesComboBoxItemStyle" TargetType="ComboBoxItem">
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource CadPropertiesDropdownForegroundBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Style.Triggers>
+            <Trigger Property="IsHighlighted" Value="True">
+                <Setter Property="Background" Value="{DynamicResource CadPropertiesControlHoverBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource CadPropertiesDropdownForegroundBrush}" />
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="{DynamicResource CadPropertiesControlActiveBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource CadPropertiesDropdownForegroundBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource CadPropertiesControlDisabledForegroundBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ComboBox toggle (no default white chrome) -->
+    <Style x:Key="CadPropertiesComboBoxToggleStyle" TargetType="ToggleButton">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Grid Background="Transparent">
+                        <Path Data="M 0 0 L 4 4 L 8 0 Z"
+                              Fill="{DynamicResource CadPropertiesControlForegroundBrush}"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center"
+                              Margin="0,0,6,0"
+                              Stretch="Uniform"
+                              Width="8"
+                              Height="5" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ComboBox -->
+    <Style x:Key="CadPropertiesComboBoxStyle" TargetType="ComboBox">
+        <Setter Property="Height" Value="26" />
+        <Setter Property="Padding" Value="6,2,24,2" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Background" Value="{DynamicResource CadPropertiesControlBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource CadPropertiesControlForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CadPropertiesControlBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource CadPropertiesComboBoxItemStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid SnapsToDevicePixels="True">
+                        <ToggleButton x:Name="ToggleButton"
+                                      Style="{StaticResource CadPropertiesComboBoxToggleStyle}"
+                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                      ClickMode="Press"
+                                      Focusable="False" />
+                        <Border x:Name="Border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                IsHitTestVisible="False" />
+                        <ContentPresenter x:Name="ContentSite"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                          ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                          IsHitTestVisible="False"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                        <Popup x:Name="PART_Popup"
+                               Placement="Bottom"
+                               IsOpen="{TemplateBinding IsDropDownOpen}"
+                               AllowsTransparency="True"
+                               Focusable="False"
+                               PopupAnimation="Slide">
+                            <Border Background="{DynamicResource CadPropertiesDropdownBackgroundBrush}"
+                                    BorderBrush="{DynamicResource CadPropertiesControlBorderBrush}"
+                                    BorderThickness="1"
+                                    MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                                <ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource CadPropertiesControlDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource CadPropertiesControlDisabledForegroundBrush}" />
+                            <Setter Property="Opacity" Value="0.85" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocusWithin" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource CadAccentBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsDropDownOpen" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource CadAccentBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- CheckBox -->
+    <Style x:Key="CadPropertiesCheckBoxStyle"
+           TargetType="CheckBox"
+           BasedOn="{StaticResource CadCheckBoxStyle}">
+        <Setter Property="Foreground" Value="{DynamicResource CadPropertiesPanelTextBrush}" />
+    </Style>
+
+</ResourceDictionary>

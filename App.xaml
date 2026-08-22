@@ -6,7 +6,10 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="UI/Resources/CadThemeLight.xaml" />
                 <ResourceDictionary Source="UI/Resources/CadTheme.xaml" />
+                <ResourceDictionary Source="UI/Resources/CadMenuTheme.xaml" />
+                <ResourceDictionary Source="UI/Resources/CadPropertiesPanelTheme.xaml" />
                 <ResourceDictionary Source="UI/Resources/ToolIcons.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

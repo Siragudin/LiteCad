@@ -37,7 +37,7 @@ public sealed class ExtendTool : ToolBase
 
         if (e.ChangedButton == MouseButton.Right)
         {
-            CancelTool();
+            HandleRightClick();
             e.Handled = true;
             return;
         }
@@ -91,7 +91,7 @@ public sealed class ExtendTool : ToolBase
 
         if (e.Key == Key.Escape)
         {
-            CancelTool();
+            CancelToolAndExit();
             e.Handled = true;
         }
     }
@@ -105,18 +105,14 @@ public sealed class ExtendTool : ToolBase
 
         var document = Context.Session.Document;
         var zoom = camera.Zoom;
-        DrawEdgeHighlight(context, document, _hoveredEdgeId.Value, zoom, Color.FromRgb(0x1E, 0x88, 0xE5), 2.0);
+        DrawEdgeHighlight(context, document, _hoveredEdgeId.Value, zoom, CanvasTheme.DimensionSelected, 2.0);
 
         if (_previewPlan is null)
         {
             return;
         }
 
-        var previewPen = RenderStyles.CreateScreenPen(
-            new SolidColorBrush(Color.FromRgb(0x43, 0xA0, 0x47)),
-            1.5,
-            zoom,
-            [4, 3]);
+        var previewPen = PreviewLineRenderer.CreateAnnotationPen(zoom, 1.5, [4, 3]);
         var from = _previewPlan.ExtendPoint;
         var to = _previewPlan.TargetPoint;
         context.DrawLine(
@@ -156,7 +152,25 @@ public sealed class ExtendTool : ToolBase
         _previewPlan = null;
     }
 
-    private void CancelTool()
+    internal bool HasHoverPreview => _hoveredEdgeId.HasValue;
+
+    internal bool HasExtendPreview => _previewPlan is not null;
+
+    private void HandleRightClick()
+    {
+        if (Context is null)
+        {
+            return;
+        }
+
+        var hadPreview = _hoveredEdgeId.HasValue;
+        ResetHover();
+        Context.Session.Selection.Clear();
+        Context.SetStatus(hadPreview ? Strings.Status_ExtendCancelled : Strings.Status_SelectionCleared);
+        Context.RequestRedraw();
+    }
+
+    private void CancelToolAndExit()
     {
         ResetHover();
         Context?.SetStatus(Strings.Status_ExtendCancelled);

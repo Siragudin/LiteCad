@@ -176,7 +176,11 @@ public sealed class CopyTool : ToolBase
         var delta = GetPreviewDelta();
         foreach (var entry in _objectSnapshot.Edges)
         {
-            var pen = CreatePreviewPen(entry.Template, zoom);
+            var pen = PreviewLineRenderer.CreatePen(
+                zoom,
+                entry.Template.Color,
+                entry.Template.Thickness,
+                GetDashArray(entry.Template.LineType));
             var start = Translate(entry.Start, delta);
             var end = Translate(entry.End, delta);
             context.DrawLine(
@@ -275,12 +279,6 @@ public sealed class CopyTool : ToolBase
 
     private static PointF Translate(PointF point, PointF delta)
         => new(point.X + delta.X, point.Y + delta.Y);
-
-    private static Pen CreatePreviewPen(Edge template, double zoom)
-    {
-        var brush = new SolidColorBrush(template.Color);
-        return RenderStyles.CreateScreenPen(brush, template.Thickness, zoom, GetDashArray(template.LineType));
-    }
 
     private static DoubleCollection? GetDashArray(EdgeLineType lineType) => lineType switch
     {

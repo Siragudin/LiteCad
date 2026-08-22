@@ -217,11 +217,7 @@ public sealed class StretchTool : ToolBase
 
         var delta = GetPreviewDelta();
         var move = StretchOperations.ProjectDeltaOntoNormal(delta, _plan.Normal);
-        var pen = RenderStyles.CreateScreenPen(
-            new SolidColorBrush(Color.FromArgb(0xB0, 0xFF, 0x98, 0x00)),
-            2.0,
-            zoom,
-            [4, 2]);
+        var pen = PreviewLineRenderer.CreateGhostPen(zoom, 2.0, [4, 2]);
 
         var newStart = new Point(
             _plan.StartPosition.X + move.X,

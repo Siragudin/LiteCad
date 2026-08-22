@@ -14,9 +14,6 @@ namespace LiteCad.UI.Layout;
 public partial class StatusBar : System.Windows.Controls.UserControl
 {
     private static readonly object InitializeComponentLock = new();
-    private static readonly SolidColorBrush ActiveFieldBorderBrush = new(Color.FromRgb(0x21, 0x96, 0xF3));
-    private static readonly SolidColorBrush InactiveFieldBorderBrush = new(Color.FromRgb(0xCC, 0xCC, 0xCC));
-    private static readonly SolidColorBrush TypingBackgroundBrush = new(Color.FromArgb(220, 255, 255, 255));
 
     private DisplayUnitSettings? _displayUnitSettings;
     private Action? _onDisplayUnitChanged;
@@ -522,6 +519,25 @@ public partial class StatusBar : System.Windows.Controls.UserControl
         }
     }
 
+    public void RefreshThemeStyles()
+    {
+        UpdateRectangleFieldHighlight();
+        if (_isTyping)
+        {
+            LengthInput.Background = TypingBackgroundBrush;
+        }
+
+        if (_isTypingWidth)
+        {
+            WidthInput.Background = TypingBackgroundBrush;
+        }
+
+        if (_isTypingHeight)
+        {
+            HeightInput.Background = TypingBackgroundBrush;
+        }
+    }
+
     public void RefreshLocalizedLabels()
     {
         if (_isRectangleInputActive)
@@ -818,4 +834,10 @@ public partial class StatusBar : System.Windows.Controls.UserControl
 
         return false;
     }
+
+    private SolidColorBrush ActiveFieldBorderBrush => (SolidColorBrush)FindResource("CadAccentBrush");
+
+    private SolidColorBrush InactiveFieldBorderBrush => (SolidColorBrush)FindResource("CadBorderBrush");
+
+    private SolidColorBrush TypingBackgroundBrush => (SolidColorBrush)FindResource("CadInputActiveBrush");
 }

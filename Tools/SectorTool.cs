@@ -244,7 +244,12 @@ public sealed class SectorTool : ToolBase
             return;
         }
 
-        var previewPen = CreatePreviewPen(zoom);
+        var options = Context.Session.LineToolOptions;
+        var previewPen = PreviewLineRenderer.CreatePen(
+            zoom,
+            options.Color,
+            options.Thickness,
+            GetDashArray(options.LineType));
 
         if (!_hasStart)
         {
@@ -514,18 +519,6 @@ public sealed class SectorTool : ToolBase
         template.Thickness = options.Thickness;
         template.LineType = options.LineType;
         return template;
-    }
-
-    private Pen CreatePreviewPen(double zoom)
-    {
-        if (Context is null)
-        {
-            return RenderStyles.EdgePen(zoom);
-        }
-
-        var options = Context.Session.LineToolOptions;
-        var brush = new SolidColorBrush(options.Color);
-        return RenderStyles.CreateScreenPen(brush, options.Thickness, zoom, GetDashArray(options.LineType));
     }
 
     private static DoubleCollection? GetDashArray(EdgeLineType lineType) => lineType switch

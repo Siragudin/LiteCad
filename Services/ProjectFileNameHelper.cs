@@ -1,5 +1,6 @@
 namespace LiteCad.Services;
 
+using LiteCad.Resources;
 using System.IO;
 
 public static class ProjectFileNameHelper
@@ -12,7 +13,7 @@ public static class ProjectFileNameHelper
     {
         if (string.IsNullOrWhiteSpace(name))
         {
-            return "Project";
+            return Strings.Label_DefaultProjectName;
         }
 
         var trimmed = name.Trim();
@@ -21,7 +22,7 @@ public static class ProjectFileNameHelper
             .Select(ch => invalid.Contains(ch) ? '_' : ch)
             .ToArray();
         var sanitized = new string(chars).Trim('_', '.', ' ');
-        return string.IsNullOrWhiteSpace(sanitized) ? "Project" : sanitized;
+        return string.IsNullOrWhiteSpace(sanitized) ? Strings.Label_DefaultProjectName : sanitized;
     }
 
     public static string NormalizeSitFilePath(string path)

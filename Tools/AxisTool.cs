@@ -182,7 +182,11 @@ public sealed class AxisTool : ToolBase
             context,
             _startPoint,
             _previewEnd,
-            RenderStyles.AxisLinePen(zoom));
+            PreviewLineRenderer.CreatePen(
+                zoom,
+                Color.FromRgb(0x15, 0x65, 0xC0),
+                1.5,
+                [12, 4, 2, 4]));
     }
 
     private void CommitSegment(PointF endPoint)

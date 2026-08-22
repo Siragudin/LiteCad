@@ -1,12 +1,15 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Selection;
 using LiteCad.Rendering;
+using LiteCad.Rendering.Pdf;
 using LiteCad.Services;
+using System.Windows;
 
 namespace LiteCad.Infrastructure;
 
 public sealed class CadSession
 {
+    public const double OpenProjectFitPaddingFraction = 0.15;
     public CadDocument Document { get; } = new();
 
     public Selection Selection { get; } = new();
@@ -29,6 +32,8 @@ public sealed class CadSession
 
     public AxisToolOptions AxisToolOptions { get; } = new();
 
+    public OffsetToolOptions OffsetToolOptions { get; } = new();
+
     public SnapService SnapService { get; } = new();
 
     public DocumentHistoryService History { get; } = new();
@@ -49,6 +54,31 @@ public sealed class CadSession
         ProjectDocumentSerializer.Apply(Document, dto);
         DisplayUnitSettings.LinearUnit = ProjectDocumentSerializer.ParseLinearDisplayUnit(dto.LinearDisplayUnit);
         ProjectFile.MarkSaved(filePath);
+    }
+
+    public void FitCameraToDocument(Size viewport)
+    {
+        if (viewport.Width < 1 || viewport.Height < 1)
+        {
+            return;
+        }
+
+        if (!DocumentBoundsCalculator.TryComputeWorldBounds(
+                Document,
+                DisplayUnitSettings.LinearUnit,
+                out var bounds))
+        {
+            return;
+        }
+
+        var padding = Math.Min(viewport.Width, viewport.Height) * OpenProjectFitPaddingFraction;
+        Camera.FitWorldBounds(
+            bounds.Left,
+            bounds.Top,
+            bounds.Right,
+            bounds.Bottom,
+            viewport,
+            padding);
     }
 
     private void ClearDocumentContent()

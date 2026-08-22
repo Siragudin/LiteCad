@@ -14,7 +14,7 @@
                            Style="{StaticResource CadPanelHeaderStyle}" />
                 <Border Height="1"
                         Margin="0,8,0,0"
-                        Background="{StaticResource CadBorderLightBrush}" />
+                        Background="{DynamicResource CadBorderLightBrush}" />
             </StackPanel>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto"
@@ -22,30 +22,30 @@
                 <StackPanel>
                     <StackPanel Style="{StaticResource CadPropertySectionStyle}">
                         <TextBlock Text="{loc:Loc Key=Label.Tool}"
-                                  Style="{StaticResource CadSectionLabelStyle}" />
+                                  Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                         <TextBlock x:Name="ActiveToolText"
                                    Text="{loc:Loc Key=Label.None}"
-                                   Style="{StaticResource CadPropertyValueStyle}" />
+                                   Style="{StaticResource CadPropertiesValueStyle}" />
                     </StackPanel>
 
                     <StackPanel Style="{StaticResource CadPropertySectionStyle}">
                         <TextBlock Text="{loc:Loc Key=Label.Selection}"
-                                  Style="{StaticResource CadSectionLabelStyle}" />
+                                  Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                         <TextBlock x:Name="SelectionText"
                                    Text="{loc:Loc Key=Selection.NothingSelected}"
-                                   Style="{StaticResource CadPropertyValueStyle}" />
+                                   Style="{StaticResource CadPropertiesValueStyle}" />
                     </StackPanel>
 
                     <StackPanel x:Name="LineToolPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.LineParameters}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.Color}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="LineColorCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="LineColorCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.Color.Black}" Tag="Black" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.Color.Gray}" Tag="Gray" />
@@ -57,9 +57,9 @@
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.Thickness}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="LineThicknessCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="LineThicknessCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="1.0" Tag="1" />
                                 <ComboBoxItem Content="1.5" Tag="1.5" IsSelected="True" />
@@ -70,9 +70,9 @@
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.Type}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="LineTypeCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="LineTypeCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.LineType.Solid}" Tag="Solid" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.LineType.Dashed}" Tag="Dashed" />
@@ -81,7 +81,7 @@
                         </StackPanel>
 
                         <CheckBox x:Name="OrthoCheckBox"
-                                  Style="{StaticResource CadCheckBoxStyle}"
+                                  Style="{StaticResource CadPropertiesCheckBoxStyle}"
                                   Content="{loc:Loc Key=Label.OrthoHorizontalVertical}"
                                   Checked="OrthoCheckBox_OnChanged"
                                   Unchecked="OrthoCheckBox_OnChanged" />
@@ -89,10 +89,10 @@
 
                     <StackPanel x:Name="AxisToolPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.Axis}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
                         <CheckBox x:Name="AxisOrthoCheckBox"
-                                  Style="{StaticResource CadCheckBoxStyle}"
+                                  Style="{StaticResource CadPropertiesCheckBoxStyle}"
                                   Content="{loc:Loc Key=Label.OrthoHorizontalVertical}"
                                   IsChecked="True"
                                   Checked="AxisOrthoCheckBox_OnChanged"
@@ -101,10 +101,10 @@
 
                     <StackPanel x:Name="MoveToolPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.MoveParameters}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
                         <CheckBox x:Name="MoveOrthoCheckBox"
-                                  Style="{StaticResource CadCheckBoxStyle}"
+                                  Style="{StaticResource CadPropertiesCheckBoxStyle}"
                                   Content="{loc:Loc Key=Label.Ortho}"
                                   Checked="MoveOrthoCheckBox_OnChanged"
                                   Unchecked="MoveOrthoCheckBox_OnChanged" />
@@ -112,34 +112,46 @@
 
                     <StackPanel x:Name="MirrorToolPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.MirrorParameters}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
                         <CheckBox x:Name="MirrorOrthoCheckBox"
-                                  Style="{StaticResource CadCheckBoxStyle}"
+                                  Style="{StaticResource CadPropertiesCheckBoxStyle}"
                                   Content="{loc:Loc Key=Label.Ortho}"
                                   Checked="MirrorOrthoCheckBox_OnChanged"
                                   Unchecked="MirrorOrthoCheckBox_OnChanged" />
                     </StackPanel>
 
+                    <StackPanel x:Name="OffsetToolPanel" Visibility="Collapsed">
+                        <TextBlock Text="{loc:Loc Key=Label.OffsetParameters}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
+                                   Margin="0,0,0,8" />
+                        <CheckBox x:Name="OffsetAxisCheckBox"
+                                  Style="{StaticResource CadPropertiesCheckBoxStyle}"
+                                  Content="{loc:Loc Key=Label.OffsetAxes}"
+                                  ToolTip="{loc:Loc Key=Tooltip.OffsetAxes}"
+                                  Checked="OffsetAxisCheckBox_OnChanged"
+                                  Unchecked="OffsetAxisCheckBox_OnChanged" />
+                    </StackPanel>
+
                     <StackPanel x:Name="DimensionToolPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.DimensionParameters}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.DimensionTextSize}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <TextBox x:Name="DimensionToolTextSizeTextBox"
-                                     Style="{StaticResource CadTextBoxStyle}"
+                                     Style="{StaticResource CadPropertiesTextBoxStyle}"
                                      LostFocus="DimensionToolTextSizeTextBox_OnCommit"
                                      KeyDown="DimensionToolTextSizeTextBox_OnKeyDown" />
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.DimensionExtensions}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="DimensionToolExtensionStyleCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="DimensionToolExtensionStyleCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.DimensionExtensionStyle.Full}" Tag="Full" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.DimensionExtensionStyle.Short}" Tag="Short" />
@@ -147,7 +159,7 @@
                         </StackPanel>
 
                         <CheckBox x:Name="DimensionOrthoCheckBox"
-                                  Style="{StaticResource CadCheckBoxStyle}"
+                                  Style="{StaticResource CadPropertiesCheckBoxStyle}"
                                   Content="{loc:Loc Key=Label.Ortho}"
                                   Checked="DimensionOrthoCheckBox_OnChanged"
                                   Unchecked="DimensionOrthoCheckBox_OnChanged" />
@@ -155,14 +167,14 @@
 
                     <StackPanel x:Name="FillToolPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.FaceFill}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.Color}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="FillToolColorCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="FillToolColorCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.Color.LightGray}" Tag="LightGray" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.Color.Black}" Tag="Black" />
@@ -175,9 +187,9 @@
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.FillPattern}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="FillToolPatternCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="FillToolPatternCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Solid}" Tag="Solid" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Diagonal}" Tag="Diagonal" />
@@ -187,32 +199,32 @@
 
                     <StackPanel x:Name="DimensionSelectionPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.DimensionParameters}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.Offset}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <TextBox x:Name="DimensionOffsetTextBox"
-                                     Style="{StaticResource CadTextBoxStyle}"
+                                     Style="{StaticResource CadPropertiesTextBoxStyle}"
                                      LostFocus="DimensionOffsetTextBox_OnCommit"
                                      KeyDown="DimensionOffsetTextBox_OnKeyDown" />
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.DimensionTextSize}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <TextBox x:Name="DimensionTextSizeTextBox"
-                                     Style="{StaticResource CadTextBoxStyle}"
+                                     Style="{StaticResource CadPropertiesTextBoxStyle}"
                                      LostFocus="DimensionTextSizeTextBox_OnCommit"
                                      KeyDown="DimensionTextSizeTextBox_OnKeyDown" />
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.DimensionExtensions}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="DimensionExtensionStyleCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="DimensionExtensionStyleCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.DimensionExtensionStyle.Full}" Tag="Full" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.DimensionExtensionStyle.Short}" Tag="Short" />
@@ -222,41 +234,41 @@
 
                     <StackPanel x:Name="AxisSelectionPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.Axis}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.Start}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <TextBlock x:Name="AxisStartText"
-                                       Style="{StaticResource CadPropertyValueStyle}" />
+                                       Style="{StaticResource CadPropertiesValueStyle}" />
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.End}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <TextBlock x:Name="AxisEndText"
-                                       Style="{StaticResource CadPropertyValueStyle}" />
+                                       Style="{StaticResource CadPropertiesValueStyle}" />
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.LengthValue}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <TextBlock x:Name="AxisLengthText"
-                                       Style="{StaticResource CadPropertyValueStyle}" />
+                                       Style="{StaticResource CadPropertiesValueStyle}" />
                         </StackPanel>
                     </StackPanel>
 
                     <StackPanel x:Name="FaceSelectionPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.FaceFill}"
-                                   Style="{StaticResource CadSectionLabelStyle}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
                                    Margin="0,0,0,8" />
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.Color}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="FaceFillColorCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="FaceFillColorCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.Color.LightGray}" Tag="LightGray" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.Color.Black}" Tag="Black" />
@@ -269,9 +281,9 @@
 
                         <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
                             <TextBlock Text="{loc:Loc Key=Label.FillPattern}"
-                                       Style="{StaticResource CadSectionLabelStyle}" />
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="FaceFillPatternCombo"
-                                      Style="{StaticResource CadComboBoxStyle}"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
                                       SelectionChanged="FaceFillPatternCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Solid}" Tag="Solid" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Diagonal}" Tag="Diagonal" />
@@ -282,7 +294,7 @@
                     <TextBlock x:Name="NoParametersText"
                                Text="{loc:Loc Key=Label.NoParameters}"
                                FontSize="13"
-                               Foreground="{StaticResource CadTextMutedBrush}" />
+                               Foreground="{DynamicResource CadTextMutedBrush}" />
                 </StackPanel>
             </ScrollViewer>
         </DockPanel>
