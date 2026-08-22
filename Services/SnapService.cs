@@ -236,7 +236,8 @@ public sealed class SnapService
     {
         var raw = CollectStaticCandidates(document, tolerance);
         var canonical = CanonicalizeCandidates(document, raw, tolerance);
-        var staticCandidates = DeduplicateCandidates(canonical);
+        var byIdentity = DeduplicateCandidates(canonical);
+        var staticCandidates = DeduplicateByPosition(byIdentity, tolerance);
 
         return new DocumentSnapCache
         {
@@ -286,53 +287,7 @@ public sealed class SnapService
                 SnapIdentity.ForAxisMidpoint(axis.Id)));
         }
 
-        var intersectionGroups = new Dictionary<string, (PointF Position, HashSet<Guid> EdgeIds)>(StringComparer.Ordinal);
-
-        foreach (var edgeA in document.Edges)
-        {
-            foreach (var edgeB in document.Edges)
-            {
-                if (edgeA.Id.CompareTo(edgeB.Id) >= 0)
-                {
-                    continue;
-                }
-
-                if (!IntersectionService.TryGetSegmentIntersection(
-                        document,
-                        edgeA,
-                        edgeB,
-                        out var intersection,
-                        tolerance))
-                {
-                    continue;
-                }
-
-                if (TopologyService.FindVertex(document, intersection, tolerance) is not null)
-                {
-                    continue;
-                }
-
-                var groupKey = FindIntersectionGroupKey(intersectionGroups, intersection, tolerance);
-                if (!intersectionGroups.TryGetValue(groupKey, out var group))
-                {
-                    group = (intersection, []);
-                    intersectionGroups[groupKey] = group;
-                }
-
-                group.EdgeIds.Add(edgeA.Id);
-                group.EdgeIds.Add(edgeB.Id);
-                intersectionGroups[groupKey] = group;
-            }
-        }
-
-        foreach (var group in intersectionGroups.Values)
-        {
-            candidates.Add((
-                new SnapPoint(group.Position, SnapKind.Intersection),
-                SnapIdentity.ForIntersection(group.EdgeIds)));
-        }
-
-        AddAxisIntersectionCandidates(document, candidates, tolerance);
+        AddLinearContactCandidates(document, candidates, tolerance);
         return candidates;
     }
 
@@ -381,13 +336,41 @@ public sealed class SnapService
         }
     }
 
-    private static void AddAxisIntersectionCandidates(
+    private static void AddLinearContactCandidates(
         CadDocument document,
         List<(SnapPoint Snap, SnapIdentity Identity)> candidates,
         double tolerance)
     {
+        var edgeEdgeGroups = new Dictionary<string, (PointF Position, HashSet<Guid> EdgeIds)>(StringComparer.Ordinal);
         var axisEdgeGroups = new Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)>(StringComparer.Ordinal);
         var axisAxisGroups = new Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)>(StringComparer.Ordinal);
+
+        foreach (var edgeA in document.Edges)
+        {
+            var aStart = TopologyService.GetEdgeStartPoint(document, edgeA);
+            var aEnd = TopologyService.GetEdgeEndPoint(document, edgeA);
+
+            foreach (var edgeB in document.Edges)
+            {
+                if (edgeA.Id.CompareTo(edgeB.Id) >= 0)
+                {
+                    continue;
+                }
+
+                var bStart = TopologyService.GetEdgeStartPoint(document, edgeB);
+                var bEnd = TopologyService.GetEdgeEndPoint(document, edgeB);
+
+                foreach (var contact in CollectSegmentContactPoints(aStart, aEnd, bStart, bEnd, tolerance))
+                {
+                    if (TopologyService.FindVertex(document, contact, tolerance) is not null)
+                    {
+                        continue;
+                    }
+
+                    RegisterEdgeContactGroup(edgeEdgeGroups, contact, edgeA.Id, edgeB.Id, tolerance);
+                }
+            }
+        }
 
         foreach (var axis in document.Axes)
         {
@@ -395,17 +378,16 @@ public sealed class SnapService
             {
                 var edgeStart = TopologyService.GetEdgeStartPoint(document, edge);
                 var edgeEnd = TopologyService.GetEdgeEndPoint(document, edge);
-                if (!Geometry2D.TryGetSegmentIntersection(axis.Start, axis.End, edgeStart, edgeEnd, out var intersection, tolerance))
-                {
-                    continue;
-                }
 
-                if (TopologyService.FindVertex(document, intersection, tolerance) is not null)
+                foreach (var contact in CollectSegmentContactPoints(axis.Start, axis.End, edgeStart, edgeEnd, tolerance))
                 {
-                    continue;
-                }
+                    if (TopologyService.FindVertex(document, contact, tolerance) is not null)
+                    {
+                        continue;
+                    }
 
-                RegisterIntersectionGroup(axisEdgeGroups, intersection, axis.Id, edge.Id, tolerance);
+                    RegisterIntersectionGroup(axisEdgeGroups, contact, axis.Id, edge.Id, tolerance);
+                }
             }
 
             foreach (var otherAxis in document.Axes)
@@ -415,13 +397,23 @@ public sealed class SnapService
                     continue;
                 }
 
-                if (!Geometry2D.TryGetSegmentIntersection(axis.Start, axis.End, otherAxis.Start, otherAxis.End, out var intersection, tolerance))
+                foreach (var contact in CollectSegmentContactPoints(
+                             axis.Start,
+                             axis.End,
+                             otherAxis.Start,
+                             otherAxis.End,
+                             tolerance))
                 {
-                    continue;
+                    RegisterIntersectionGroup(axisAxisGroups, contact, axis.Id, otherAxis.Id, tolerance);
                 }
-
-                RegisterIntersectionGroup(axisAxisGroups, intersection, axis.Id, otherAxis.Id, tolerance);
             }
+        }
+
+        foreach (var group in edgeEdgeGroups.Values)
+        {
+            candidates.Add((
+                new SnapPoint(group.Position, SnapKind.Intersection),
+                SnapIdentity.ForIntersection(group.EdgeIds)));
         }
 
         foreach (var group in axisEdgeGroups.Values)
@@ -437,6 +429,86 @@ public sealed class SnapService
                 new SnapPoint(group.Position, SnapKind.AxisIntersection),
                 SnapIdentity.ForAxisIntersection(group.ObjectIds)));
         }
+    }
+
+    private static IEnumerable<PointF> CollectSegmentContactPoints(
+        PointF aStart,
+        PointF aEnd,
+        PointF bStart,
+        PointF bEnd,
+        double tolerance)
+    {
+        var contacts = new List<PointF>();
+
+        if (Geometry2D.TryGetSegmentIntersection(aStart, aEnd, bStart, bEnd, out var intersection, tolerance))
+        {
+            AddUniqueContactPoint(contacts, intersection, tolerance);
+        }
+
+        TryAddEndpointOnSegmentContact(aStart, aEnd, aStart, contacts, tolerance);
+        TryAddEndpointOnSegmentContact(aStart, aEnd, aEnd, contacts, tolerance);
+        TryAddEndpointOnSegmentContact(bStart, bEnd, bStart, contacts, tolerance);
+        TryAddEndpointOnSegmentContact(bStart, bEnd, bEnd, contacts, tolerance);
+
+        return contacts;
+    }
+
+    private static void TryAddEndpointOnSegmentContact(
+        PointF hostStart,
+        PointF hostEnd,
+        PointF endpoint,
+        List<PointF> contacts,
+        double tolerance)
+    {
+        if (MathUtils.Distance(hostStart, hostEnd) <= tolerance)
+        {
+            if (MathUtils.ArePointsEqual(endpoint, hostStart, tolerance))
+            {
+                AddUniqueContactPoint(contacts, hostStart, tolerance);
+            }
+
+            return;
+        }
+
+        if (!Geometry2D.TryProjectPointOnSegment(endpoint, hostStart, hostEnd, out var projection, out var distance, tolerance) ||
+            distance > tolerance)
+        {
+            return;
+        }
+
+        AddUniqueContactPoint(contacts, projection, tolerance);
+    }
+
+    private static void AddUniqueContactPoint(List<PointF> contacts, PointF point, double tolerance)
+    {
+        foreach (var existing in contacts)
+        {
+            if (MathUtils.ArePointsEqual(existing, point, tolerance))
+            {
+                return;
+            }
+        }
+
+        contacts.Add(point);
+    }
+
+    private static void RegisterEdgeContactGroup(
+        Dictionary<string, (PointF Position, HashSet<Guid> EdgeIds)> groups,
+        PointF contact,
+        Guid firstEdgeId,
+        Guid secondEdgeId,
+        double tolerance)
+    {
+        var groupKey = FindIntersectionGroupKey(groups, contact, tolerance);
+        if (!groups.TryGetValue(groupKey, out var group))
+        {
+            group = (contact, []);
+            groups[groupKey] = group;
+        }
+
+        group.EdgeIds.Add(firstEdgeId);
+        group.EdgeIds.Add(secondEdgeId);
+        groups[groupKey] = group;
     }
 
     private static void RegisterIntersectionGroup(
@@ -504,6 +576,9 @@ public sealed class SnapService
 
         foreach (var edgeA in document.Edges)
         {
+            var aStart = TopologyService.GetEdgeStartPoint(document, edgeA);
+            var aEnd = TopologyService.GetEdgeEndPoint(document, edgeA);
+
             foreach (var edgeB in document.Edges)
             {
                 if (edgeA.Id.CompareTo(edgeB.Id) >= 0)
@@ -511,22 +586,55 @@ public sealed class SnapService
                     continue;
                 }
 
-                if (!IntersectionService.TryGetSegmentIntersection(
-                        document,
-                        edgeA,
-                        edgeB,
-                        out var intersection,
-                        tolerance))
+                var bStart = TopologyService.GetEdgeStartPoint(document, edgeB);
+                var bEnd = TopologyService.GetEdgeEndPoint(document, edgeB);
+
+                foreach (var contact in CollectSegmentContactPoints(aStart, aEnd, bStart, bEnd, tolerance))
+                {
+                    if (TopologyService.FindVertex(document, contact, tolerance) is not null)
+                    {
+                        continue;
+                    }
+
+                    AddUniquePoint(points, contact, tolerance);
+                }
+            }
+        }
+
+        foreach (var axis in document.Axes)
+        {
+            foreach (var edge in document.Edges)
+            {
+                var edgeStart = TopologyService.GetEdgeStartPoint(document, edge);
+                var edgeEnd = TopologyService.GetEdgeEndPoint(document, edge);
+
+                foreach (var contact in CollectSegmentContactPoints(axis.Start, axis.End, edgeStart, edgeEnd, tolerance))
+                {
+                    if (TopologyService.FindVertex(document, contact, tolerance) is not null)
+                    {
+                        continue;
+                    }
+
+                    AddUniquePoint(points, contact, tolerance);
+                }
+            }
+
+            foreach (var otherAxis in document.Axes)
+            {
+                if (axis.Id.CompareTo(otherAxis.Id) >= 0)
                 {
                     continue;
                 }
 
-                if (TopologyService.FindVertex(document, intersection, tolerance) is not null)
+                foreach (var contact in CollectSegmentContactPoints(
+                             axis.Start,
+                             axis.End,
+                             otherAxis.Start,
+                             otherAxis.End,
+                             tolerance))
                 {
-                    continue;
+                    AddUniquePoint(points, contact, tolerance);
                 }
-
-                AddUniquePoint(points, intersection, tolerance);
             }
         }
 
@@ -601,6 +709,64 @@ public sealed class SnapService
         }
 
         return bestByIdentity.Values.ToList();
+    }
+
+    private static List<(SnapPoint Snap, SnapIdentity Identity)> DeduplicateByPosition(
+        IReadOnlyList<(SnapPoint Snap, SnapIdentity Identity)> candidates,
+        double tolerance)
+    {
+        var bestByPosition = new List<(SnapPoint Snap, SnapIdentity Identity)>();
+
+        foreach (var candidate in candidates)
+        {
+            var existingIndex = -1;
+            for (var i = 0; i < bestByPosition.Count; i++)
+            {
+                if (MathUtils.ArePointsEqual(bestByPosition[i].Snap.Position, candidate.Snap.Position, tolerance))
+                {
+                    existingIndex = i;
+                    break;
+                }
+            }
+
+            if (existingIndex < 0)
+            {
+                bestByPosition.Add(candidate);
+                continue;
+            }
+
+            var existing = bestByPosition[existingIndex];
+            if (ShouldPreferSnapCandidate(candidate, existing))
+            {
+                bestByPosition[existingIndex] = candidate;
+            }
+        }
+
+        return bestByPosition;
+    }
+
+    private static bool ShouldPreferSnapCandidate(
+        (SnapPoint Snap, SnapIdentity Identity) candidate,
+        (SnapPoint Snap, SnapIdentity Identity) existing)
+    {
+        var candidatePriority = GetKindPriority(candidate.Identity.Kind);
+        var existingPriority = GetKindPriority(existing.Identity.Kind);
+        if (candidatePriority != existingPriority)
+        {
+            return candidatePriority < existingPriority;
+        }
+
+        if (candidate.Snap.VertexId.HasValue && !existing.Snap.VertexId.HasValue)
+        {
+            return true;
+        }
+
+        if (!candidate.Snap.VertexId.HasValue && existing.Snap.VertexId.HasValue)
+        {
+            return false;
+        }
+
+        return false;
     }
 
     private static IReadOnlyList<SnapCandidate> ResolveDistances(

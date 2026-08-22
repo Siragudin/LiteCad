@@ -14,6 +14,7 @@ namespace LiteCad.Tools;
 
 public sealed class DimensionTool : ToolBase
 {
+    private readonly DimensionPreviewRenderer _previewRenderer = new();
     private Guid? _firstVertexId;
     private Guid? _secondVertexId;
     private PointF _firstAnchor;
@@ -66,7 +67,7 @@ public sealed class DimensionTool : ToolBase
             return;
         }
 
-        if (!TryResolveVertexSnap(world, out var vertexId, out var anchor))
+        if (!TryCommitMeasurementAnchor(world, out var vertexId, out var anchor))
         {
             e.Handled = true;
             return;
@@ -206,18 +207,16 @@ public sealed class DimensionTool : ToolBase
         var distanceText = UnitDisplayFormatter.FormatLinear(
             layout.MeasuredDistance,
             Context.Session.DisplayUnitSettings.LinearUnit);
-        DimensionAnnotationDrawing.Draw(
+        _previewRenderer.Draw(
             context,
             layout,
-            _offset,
             camera.Zoom,
             previewColor,
-            isSelected: false,
             camera,
             viewport,
-            distanceText: distanceText,
-            extensionStyle: Context.Session.DimensionToolOptions.ExtensionStyle,
-            textWorldHeight: Context.Session.DimensionToolOptions.TextSize);
+            distanceText,
+            Context.Session.DimensionToolOptions.ExtensionStyle,
+            Context.Session.DimensionToolOptions.TextSize);
         DrawAnchorMarker(context, camera, layout.FirstAnchor);
         DrawAnchorMarker(context, camera, layout.SecondAnchor);
     }
@@ -282,12 +281,12 @@ public sealed class DimensionTool : ToolBase
 
     private void UpdateVertexHover(PointF world)
     {
-        _hoverVertexSnap = null;
-        if (TryResolveVertexSnap(world, out var vertexId, out var anchor))
-        {
-            _hoverVertexSnap = new SnapPoint(anchor, SnapKind.Endpoint, vertexId: vertexId);
-        }
+        _hoverVertexSnap = TryFindMeasurementSnap(world, out var snap) ? snap : null;
     }
+
+    internal SnapPoint? HoverMeasurementSnap => _hoverVertexSnap;
+
+    internal DimensionPreviewRenderer PreviewRenderer => _previewRenderer;
 
     internal bool HasPendingOperation => _firstVertexId.HasValue;
 
@@ -328,12 +327,12 @@ public sealed class DimensionTool : ToolBase
         _offset = _lastOffset;
         _orthogonalIsHorizontal = true;
         _hoverVertexSnap = null;
+        _previewRenderer.Invalidate();
     }
 
-    private bool TryResolveVertexSnap(PointF world, out Guid vertexId, out PointF anchor)
+    private bool TryFindMeasurementSnap(PointF world, out SnapPoint snap)
     {
-        vertexId = Guid.Empty;
-        anchor = PointF.Zero;
+        snap = default;
         if (Context is null)
         {
             return false;
@@ -350,13 +349,29 @@ public sealed class DimensionTool : ToolBase
             return false;
         }
 
+        snap = result.Snap!.Value;
+        return IsMeasurementSnap(snap.Kind);
+    }
+
+    private bool TryCommitMeasurementAnchor(PointF world, out Guid vertexId, out PointF anchor)
+    {
+        vertexId = Guid.Empty;
+        anchor = PointF.Zero;
+        if (Context is null || !TryFindMeasurementSnap(world, out var snap))
+        {
+            return false;
+        }
+
         return SnapService.TryResolveMeasurementAnchor(
             Context.Session.Document,
-            result.Snap!.Value,
+            snap,
             Context.SnapTolerance,
             out vertexId,
             out anchor);
     }
+
+    private static bool IsMeasurementSnap(SnapKind kind)
+        => kind is SnapKind.Endpoint or SnapKind.Intersection or SnapKind.AxisIntersection;
 
     private static bool TryParseOffset(string input, out double offset)
     {

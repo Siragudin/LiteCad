@@ -3,6 +3,7 @@ using LiteCad.Core.Geometry;
 using LiteCad.Infrastructure;
 using LiteCad.Services;
 using LiteCad.Tools;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using Xunit;
@@ -183,6 +184,164 @@ public class OffsetAxisToolTests
             Assert.Equal(edgeCountBefore, harness.Session.Document.Edges.Count);
             Assert.Equal(axisCountBefore, harness.Session.Document.Axes.Count);
         });
+    }
+
+    [Fact]
+    public void AxisOffset_MouseMove_IncludesEdgeEndpointSnap()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateAxisHarness();
+            SetPreciseOffsetZoom(harness);
+            harness.Session.OffsetToolOptions.IsAxisOffset = true;
+            harness.ToolService.ActivateTool(harness.OffsetTool);
+
+            harness.OffsetTool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(50, 0));
+            harness.OffsetTool.OnMouseMove(CreateMouseEvent(), new PointF(100, 50.05));
+
+            var visibleSnaps = GetVisibleSnaps(harness.OffsetTool);
+            Assert.Contains(visibleSnaps, snap => snap.Kind == SnapKind.Endpoint);
+            Assert.Contains(
+                visibleSnaps,
+                snap => MathUtils.ArePointsEqual(snap.Position, new PointF(100, 50), Tol));
+        });
+    }
+
+    [Fact]
+    public void AxisOffset_MouseMove_UsesStandardSnapResolverForDistance()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateAxisHarness();
+            SetPreciseOffsetZoom(harness);
+            harness.Session.OffsetToolOptions.IsAxisOffset = true;
+            harness.ToolService.ActivateTool(harness.OffsetTool);
+
+            harness.OffsetTool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(50, 0));
+            harness.OffsetTool.OnMouseMove(CreateMouseEvent(), new PointF(100, 50.05));
+
+            Assert.Equal(50, harness.OffsetTool.PreviewSignedDistance, 1);
+        });
+    }
+
+    [Fact]
+    public void AxisOffset_MouseMove_IncludesTouchPointAtAxisEndpoint()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateAxisHarness();
+            TestDocumentHelpers.AddEdge(harness.Session.Document, new PointF(100, 0), new PointF(100, 50), Tol);
+            SetPreciseOffsetZoom(harness);
+            harness.Session.OffsetToolOptions.IsAxisOffset = true;
+            harness.ToolService.ActivateTool(harness.OffsetTool);
+
+            harness.OffsetTool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(50, 0));
+            harness.OffsetTool.OnMouseMove(CreateMouseEvent(), new PointF(100.05f, 0.05f));
+
+            var snapTolerance = MathUtils.SnapToleranceWorld(harness.Session.Camera.Zoom);
+            var snap = harness.Session.SnapService.FindBestSnap(
+                harness.Session.Document,
+                new PointF(100.05f, 0.05f),
+                snapTolerance,
+                includeOnEdge: true);
+            Assert.True(snap.HasSnap);
+            Assert.True(
+                snap.Snap!.Value.Kind is SnapKind.Endpoint or SnapKind.Intersection,
+                $"Expected endpoint or intersection snap, got {snap.Snap.Value.Kind}");
+        });
+    }
+
+    [Fact]
+    public void AxisOffset_Commit_InvalidatesSnapCache()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateAxisHarness();
+            SetPreciseOffsetZoom(harness);
+            harness.Session.OffsetToolOptions.IsAxisOffset = true;
+            harness.ToolService.ActivateTool(harness.OffsetTool);
+
+            harness.Session.SnapService.GetVisibleSnaps(
+                harness.Session.Document,
+                new PointF(50, 0),
+                MathUtils.SnapToleranceWorld(harness.Session.Camera.Zoom));
+            Assert.NotNull(GetSnapCache(harness.Session.SnapService));
+
+            harness.OffsetTool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(50, 0));
+            harness.OffsetTool.OnMouseMove(CreateMouseEvent(), new PointF(50, 20));
+            harness.OffsetTool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(50, 20));
+
+            Assert.Null(GetSnapCache(harness.Session.SnapService));
+        });
+    }
+
+    [Fact]
+    public void AxisOffset_CommitCreatedEdge_SupportsEndpointSnap()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateAxisHarness();
+            SetPreciseOffsetZoom(harness);
+            harness.Session.OffsetToolOptions.IsAxisOffset = true;
+            harness.ToolService.ActivateTool(harness.OffsetTool);
+
+            harness.OffsetTool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(50, 0));
+            harness.OffsetTool.OnMouseMove(CreateMouseEvent(), new PointF(50, 20));
+            harness.OffsetTool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(50, 20));
+
+            var touch = new PointF(100, 20);
+            var snap = harness.Session.SnapService.FindBestSnap(
+                harness.Session.Document,
+                touch,
+                MathUtils.SnapToleranceWorld(harness.Session.Camera.Zoom));
+
+            Assert.True(snap.HasSnap);
+            Assert.Equal(SnapKind.Endpoint, snap.Snap!.Value.Kind);
+            Assert.True(MathUtils.ArePointsEqual(snap.Snap.Value.Position, touch, 1));
+        });
+    }
+
+    [Fact]
+    public void AxisOffset_CommitCreatedEdge_SupportsDimensionAnchor()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateAxisHarness();
+            SetPreciseOffsetZoom(harness);
+            harness.Session.OffsetToolOptions.IsAxisOffset = true;
+            harness.ToolService.ActivateTool(harness.OffsetTool);
+
+            harness.OffsetTool.OnMouseDown(CreateMouseButton(MouseButton.Left), new PointF(50, 0));
+            harness.OffsetTool.TryApplyLengthInput("20");
+
+            var endpoint = new PointF(0, 20);
+            var snap = harness.Session.SnapService.FindBestSnap(
+                harness.Session.Document,
+                endpoint,
+                MathUtils.SnapToleranceWorld(harness.Session.Camera.Zoom));
+
+            Assert.True(snap.HasSnap);
+            Assert.True(SnapService.TryResolveMeasurementAnchor(
+                harness.Session.Document,
+                snap.Snap!.Value,
+                Tol,
+                out var vertexId,
+                out var anchor));
+            Assert.NotEqual(Guid.Empty, vertexId);
+            Assert.True(MathUtils.ArePointsEqual(anchor, endpoint, Tol));
+        });
+    }
+
+    private static IReadOnlyList<SnapPoint> GetVisibleSnaps(OffsetTool offsetTool)
+    {
+        var field = typeof(OffsetTool).GetField("_visibleSnaps", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        return ((IEnumerable<SnapPoint>)field.GetValue(offsetTool)!).ToList();
+    }
+
+    private static object? GetSnapCache(SnapService snapService)
+    {
+        var field = typeof(SnapService).GetField("_cache", BindingFlags.NonPublic | BindingFlags.Instance)!;
+        return field.GetValue(snapService);
     }
 
     private static OffsetToolHarness CreateAxisHarness(bool withSquareFace = false)

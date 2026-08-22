@@ -34,7 +34,15 @@ public sealed class Renderer
             _polygonRenderer.Render(context, document, camera, forScreenDisplay: true);
             _edgeRenderer.Render(context, document, camera, forScreenDisplay: true);
             _axisRenderer.Render(context, document, camera);
-            _dimensionRenderer.Render(context, document, selection, camera, viewport, linearUnit, forScreenDisplay: true);
+            _dimensionRenderer.Render(
+                context,
+                document,
+                selection,
+                camera,
+                viewport,
+                linearUnit,
+                activeTool,
+                forScreenDisplay: true);
             _selectionRenderer.Render(context, document, selection, camera);
             activeTool?.RenderOverlay(context, camera, viewport);
         }
@@ -79,6 +87,7 @@ public sealed class Renderer
             exportCamera,
             contentViewport,
             linearUnit,
+            activeTool: null,
             forScreenDisplay: false);
     }
 }

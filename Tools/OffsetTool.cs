@@ -141,7 +141,7 @@ public sealed class OffsetTool : ToolBase
                 return;
             }
 
-            _cursorPoint = ResolveAxisSnap(world);
+            _cursorPoint = ResolveSnap(world);
             UpdateAxisSignedDistance();
             SyncAxisDistanceInput();
             Context!.SetStatus(Strings.Input_Offset_SetDistance);
@@ -204,10 +204,7 @@ public sealed class OffsetTool : ToolBase
         _visibleSnaps.Clear();
         foreach (var snap in Context.Session.SnapService.GetVisibleSnaps(document, world, tolerance))
         {
-            if (IsAxisRelatedSnap(snap))
-            {
-                _visibleSnaps.Add(snap);
-            }
+            _visibleSnaps.Add(snap);
         }
 
         if (_sourceAxisId is null)
@@ -216,7 +213,7 @@ public sealed class OffsetTool : ToolBase
         }
         else
         {
-            _cursorPoint = ResolveAxisSnap(world);
+            _cursorPoint = ResolveSnap(world);
             UpdateAxisSignedDistance();
             UpdateAxisDistancePreviewDisplay();
         }
@@ -575,6 +572,7 @@ public sealed class OffsetTool : ToolBase
         }
 
         ResetAxisPreview();
+        Context.Session.SnapService.InvalidateCache();
         Context.SetStatus(Strings.Status_OffsetCompleted);
         Context.RequestRedraw();
         return true;
@@ -690,54 +688,6 @@ public sealed class OffsetTool : ToolBase
         }
 
         Context.SetLength(Math.Abs(_signedDistance));
-    }
-
-    private PointF ResolveAxisSnap(PointF world)
-    {
-        if (Context is null)
-        {
-            return world;
-        }
-
-        var snap = Context.Session.SnapService.FindBestSnap(
-            Context.Session.Document,
-            world,
-            Context.SnapTolerance,
-            includeOnEdge: true);
-
-        if (snap.HasSnap && IsAxisRelatedSnap(snap.Snap!.Value))
-        {
-            return snap.Resolve(world);
-        }
-
-        return world;
-    }
-
-    private bool IsAxisRelatedSnap(SnapPoint snap)
-    {
-        if (Context is null)
-        {
-            return false;
-        }
-
-        var tolerance = Context.SnapTolerance;
-        foreach (var axis in Context.Session.Document.Axes)
-        {
-            if (MathUtils.ArePointsEqual(snap.Position, axis.Start, tolerance)
-                || MathUtils.ArePointsEqual(snap.Position, axis.End, tolerance)
-                || MathUtils.ArePointsEqual(snap.Position, MathUtils.Midpoint(axis.Start, axis.End), tolerance))
-            {
-                return true;
-            }
-
-            if (Geometry2D.TryProjectPointOnSegment(snap.Position, axis.Start, axis.End, out _, out var distance, tolerance)
-                && distance <= tolerance)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private void RenderAxisOverlay(DrawingContext context, Camera camera)

@@ -39,6 +39,7 @@ public partial class PdfPreviewWindow : Window
         _targetPdfPath = targetPdfPath;
         _sheet = new PdfSheet(document);
         InitializeComponent();
+        Background = (Brush)FindResource("CadBackgroundBrush");
         Owner = owner;
         RefreshPreview();
     }
