@@ -11,8 +11,6 @@ namespace LiteCad.Rendering.Pdf;
 
 internal static class PdfDimensionTextRenderer
 {
-    private const double TextGapScreen = 12.0;
-
     public static void Draw(
         XGraphics graphics,
         CadDocument document,
@@ -60,6 +58,9 @@ internal static class PdfDimensionTextRenderer
             (startScreen.X + endScreen.X) * 0.5,
             (startScreen.Y + endScreen.Y) * 0.5);
 
+        const double dipToPoint = PdfExportLayout.PointsPerInch / PdfExportLayout.DipPerInch;
+        var annotativeSize = PdfAnnotationTable.TextGapPoints / dipToPoint * view.Scale;
+
         var length = Math.Sqrt(dx * dx + dy * dy);
         if (length > 1e-9)
         {
@@ -72,14 +73,13 @@ internal static class PdfDimensionTextRenderer
             }
 
             center = new Point(
-                center.X + nx * TextGapScreen,
-                center.Y + ny * TextGapScreen);
+                center.X + nx * annotativeSize,
+                center.Y + ny * annotativeSize);
         }
 
         var angleRadians = GetTextAngleRadians(dx, dy);
         var exportPoint = ToExportContentPoint(layout, view, center);
-        var textWorldHeight = Dimension.NormalizeTextSize(dimension.TextSize);
-        var fontSize = textWorldHeight * layout.ExportCamera.Zoom * GetTextScale(layout) * view.Scale;
+        var fontSize = PdfAnnotationTable.DimensionTextHeightPoints / dipToPoint * view.Scale;
         var font = new XFont("Segoe UI", fontSize, XFontStyleEx.Regular);
         var brush = new XSolidBrush(XColor.FromArgb(0x15, 0x65, 0xC0));
         var format = new XStringFormat
@@ -115,9 +115,6 @@ internal static class PdfDimensionTextRenderer
 
         return angle;
     }
-
-    private static double GetTextScale(PdfExportLayout layout)
-        => layout.NeedsZoomCompensation ? layout.ZoomCompensation : 1.0;
 
     private static Point ToExportContentPoint(PdfExportLayout layout, PdfDrawingView view, Point contentPoint)
     {

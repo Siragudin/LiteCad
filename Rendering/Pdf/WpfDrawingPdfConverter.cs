@@ -92,10 +92,12 @@ internal static class WpfDrawingPdfConverter
             graphics.DrawPath(null, CreateBrush(fillBrush), path);
         }
 
-        if (drawing.Pen is { Brush: SolidColorBrush strokeBrush } pen)
+        if (drawing.Pen is Pen pen && pen.Brush is SolidColorBrush strokeBrush)
         {
-            var strokeWidth = ScaleStrokeWidth(pen.Thickness, uniformScale);
-            graphics.DrawPath(CreatePen(pen, strokeBrush, strokeWidth), null, path);
+            var strokeWidth = PdfStyledSolidColorBrush.IsPdfExportPen(pen)
+                ? pen.Thickness
+                : ScaleStrokeWidth(pen.Thickness, uniformScale);
+            graphics.DrawPath(CreatePen(pen, strokeBrush.Color, strokeWidth), null, path);
         }
     }
 
@@ -203,14 +205,14 @@ internal static class WpfDrawingPdfConverter
             _ => FillRule.EvenOdd
         };
 
-    private static XPen CreatePen(Pen pen, SolidColorBrush brush, double strokeWidth)
+    private static XPen CreatePen(Pen pen, Color color, double strokeWidth)
     {
-        var xPen = new XPen(ToXColor(brush.Color), strokeWidth);
+        var xPen = new XPen(ToXColor(color), strokeWidth);
         if (pen.DashStyle.Dashes.Count > 0 && pen.Thickness > 1e-9)
         {
             xPen.DashStyle = XDashStyle.Custom;
-            xPen.DashPattern = pen.DashStyle.Dashes.Select(value => value / pen.Thickness).ToArray();
-            xPen.DashOffset = pen.DashStyle.Offset / pen.Thickness;
+            xPen.DashPattern = pen.DashStyle.Dashes.ToArray();
+            xPen.DashOffset = pen.DashStyle.Offset;
         }
 
         return xPen;

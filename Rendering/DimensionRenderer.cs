@@ -126,7 +126,8 @@ public sealed class DimensionRenderer
                 viewport,
                 distanceText: distanceText,
                 extensionStyle: dimension.ExtensionStyle,
-                textWorldHeight: DimensionAnnotationDrawing.GetWorldTextHeight(dimension));
+                textWorldHeight: DimensionAnnotationDrawing.GetWorldTextHeight(dimension),
+                forScreenDisplay: forScreenDisplay);
         }
     }
 }

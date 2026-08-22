@@ -1,5 +1,6 @@
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
+using LiteCad.Rendering.Pdf;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
@@ -31,14 +32,25 @@ public static class DimensionAnnotationDrawing
         Size viewport,
         string? distanceText = null,
         DimensionExtensionStyle extensionStyle = DimensionExtensionStyle.Full,
-        double textWorldHeight = Dimension.DefaultTextSize)
+        double textWorldHeight = Dimension.DefaultTextSize,
+        bool forScreenDisplay = true)
     {
-        var brush = new SolidColorBrush(color);
-        var extensionPen = RenderStyles.CreateScreenPen(brush, ExtensionThicknessScreen, zoom);
-        var dimensionPen = RenderStyles.CreateScreenPen(
-            brush,
-            isSelected ? SelectedDimensionLineThicknessScreen : DimensionLineThicknessScreen,
-            zoom);
+        Pen extensionPen;
+        Pen dimensionPen;
+        if (forScreenDisplay)
+        {
+            var brush = new SolidColorBrush(color);
+            extensionPen = RenderStyles.CreateScreenPen(brush, ExtensionThicknessScreen, zoom);
+            dimensionPen = RenderStyles.CreateScreenPen(
+                brush,
+                isSelected ? SelectedDimensionLineThicknessScreen : DimensionLineThicknessScreen,
+                zoom);
+        }
+        else
+        {
+            extensionPen = PdfExportPenFactory.Create(PenStyle.Extension, color);
+            dimensionPen = PdfExportPenFactory.Create(PenStyle.Dimension, color);
+        }
 
         DrawExtensionLine(
             context,

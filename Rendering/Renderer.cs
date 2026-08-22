@@ -79,7 +79,7 @@ public sealed class Renderer
     {
         _polygonRenderer.Render(context, document, exportCamera, forScreenDisplay: false);
         _edgeRenderer.Render(context, document, exportCamera, forScreenDisplay: false);
-        _axisRenderer.Render(context, document, exportCamera);
+        _axisRenderer.Render(context, document, exportCamera, forScreenDisplay: false);
         _dimensionRenderer.Render(
             context,
             document,
