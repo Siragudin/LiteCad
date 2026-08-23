@@ -1,5 +1,4 @@
 using LiteCad.Core.Geometry;
-using LiteCad.Dimensions;
 using LiteCad.Leaders;
 using System.Globalization;
 using System.Windows;
@@ -40,7 +39,7 @@ public static class LeaderAnnotationDrawing
             context.DrawLine(pen, ToPoint(start), ToPoint(end));
         }
 
-        DrawText(context, leader.Text, layout, color, camera, viewport, zoom);
+        DrawText(context, leader.Text, layout, color, camera, viewport);
     }
 
     private static void DrawText(
@@ -49,15 +48,14 @@ public static class LeaderAnnotationDrawing
         LeaderLayout layout,
         Color color,
         Camera camera,
-        Size viewport,
-        double zoom)
+        Size viewport)
     {
         if (string.IsNullOrWhiteSpace(text))
         {
             return;
         }
 
-        var screenFontSize = Dimension.NormalizeTextSize(Dimension.DefaultTextSize) * zoom;
+        var screenFontSize = LeaderGeometry.TextHeightScreen;
         var formattedText = new FormattedText(
             text,
             CultureInfo.InvariantCulture,

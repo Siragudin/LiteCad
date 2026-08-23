@@ -100,6 +100,14 @@ public class LeaderElevationTests
     }
 
     [Fact]
+    public void TextHeight_FitsTheFixedShelf()
+    {
+        Assert.True(LeaderGeometry.TextHeightScreen > 0);
+        Assert.True(LeaderGeometry.TextHeightScreen < LeaderGeometry.ShelfLengthScreen);
+        Assert.Equal(LeaderGeometry.ShelfLengthScreen / 3.0, LeaderGeometry.TextHeightScreen, 6);
+    }
+
+    [Fact]
     public void Layout_FacesLeftWhenLandingIsToTheLeft()
     {
         var layout = LeaderGeometry.CreateLayout(new PointF(0, 0), new PointF(-80, 10), zoom: 1);

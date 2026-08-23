@@ -44,9 +44,8 @@ internal static class PdfLeaderTextRenderer
             (elbowScreen.X + landingScreen.X) * 0.5,
             (elbowScreen.Y + landingScreen.Y) * 0.5 - LeaderGeometry.TextGapAboveShelfScreen);
 
-        const double dipToPoint = PdfExportLayout.PointsPerInch / PdfExportLayout.DipPerInch;
         var exportPoint = ToExportContentPoint(layout, view, screen);
-        var fontSize = PdfAnnotationTable.DimensionTextHeightPoints / dipToPoint * view.Scale;
+        var fontSize = LeaderGeometry.TextHeightScreen * view.Scale;
         var font = new XFont("Segoe UI", fontSize, XFontStyleEx.Italic);
         var brush = new XSolidBrush(XColor.FromArgb(0x15, 0x65, 0xC0));
         var format = new XStringFormat

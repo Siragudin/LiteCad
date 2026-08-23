@@ -23,6 +23,8 @@ public static class LeaderGeometry
 
     public const double ShelfLengthScreen = 36.0;
 
+    public const double TextHeightScreen = 12.0;
+
     public const double TextGapAboveShelfScreen = 3.0;
 
     public static LeaderLayout CreateLayout(PointF target, PointF textPosition, double zoom = 1.0)
