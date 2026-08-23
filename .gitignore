@@ -5,3 +5,21 @@ obj/
 *.user
 *.suo
 .env
+
+# Build/test output
+_buildout/
+_testout/
+TestResults/
+
+# Test and diagnostic artifacts
+*.trx
+*.patch
+preview-compare/
+before-pdf-rollback-status.txt
+full-test-output.txt
+pre-rotate-fail.txt
+run-no-rotate-2.txt
+
+# Local helper scripts
+_fix_diplo.py
+_gen_ru_resx.py
