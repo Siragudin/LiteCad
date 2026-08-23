@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\FeedbackQr.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="PDFsharp" Version="6.2.0" />
   </ItemGroup>
 

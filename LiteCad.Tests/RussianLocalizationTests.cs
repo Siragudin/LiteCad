@@ -150,6 +150,7 @@ public class RussianLocalizationTests : IDisposable
                 Assert.Contains("_Правка", headers);
                 Assert.Contains("_Инструменты", headers);
                 Assert.Contains("_Тема", headers);
+                Assert.Contains("_Справка", headers);
             }
             finally
             {
@@ -175,9 +176,9 @@ public class RussianLocalizationTests : IDisposable
                     .Where(tooltip => !string.IsNullOrWhiteSpace(tooltip))
                     .ToList();
 
-                Assert.Contains("Ось", tooltips);
-                Assert.Contains("Заливка грани", tooltips);
-                Assert.Contains("Выбор", tooltips);
+                Assert.Contains(tooltips, tooltip => tooltip!.Contains("Ось", StringComparison.Ordinal));
+                Assert.Contains(tooltips, tooltip => tooltip!.Contains("Заливка грани", StringComparison.Ordinal));
+                Assert.Contains(tooltips, tooltip => tooltip!.Contains("Выбор", StringComparison.Ordinal));
                 Assert.All(tooltips, tooltip =>
                 {
                     Assert.DoesNotContain("Copy", tooltip, StringComparison.OrdinalIgnoreCase);

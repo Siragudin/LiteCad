@@ -12,6 +12,8 @@ public partial class MenuBar : UserControl
 
     public event EventHandler<string>? FileCommandRequested;
 
+    public event EventHandler<string>? HelpCommandRequested;
+
     public LanguageSelector LanguageSelector => LanguageSelectorControl;
 
     public MenuBar()
@@ -53,6 +55,14 @@ public partial class MenuBar : UserControl
         if (sender is MenuItem { Tag: string command })
         {
             FileCommandRequested?.Invoke(this, command);
+        }
+    }
+
+    private void HelpMenuItem_OnClick(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { Tag: string command })
+        {
+            HelpCommandRequested?.Invoke(this, command);
         }
     }
 

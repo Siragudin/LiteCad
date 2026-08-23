@@ -332,6 +332,62 @@
   <data name="Menu.Header.About" xml:space="preserve">
     <value>_О программе LiteCad</value>
   </data>
+  <data name="Menu.Header.KeyboardShortcuts" xml:space="preserve">
+    <value>_Горячие клавиши</value>
+  </data>
+  <data name="Menu.Header.Feedback" xml:space="preserve">
+    <value>_Обратная связь</value>
+  </data>
+  <data name="Help.Feedback.Url" xml:space="preserve">
+    <value>https://t.me/my_cool_software_fb_bot</value>
+  </data>
+  <data name="Help.Feedback.Handle" xml:space="preserve">
+    <value>@my_cool_software_fb_bot</value>
+  </data>
+  <data name="Help.Feedback.Hint" xml:space="preserve">
+    <value>Отсканируйте QR-код, чтобы написать боту.</value>
+  </data>
+  <data name="Help.Feedback.Failed" xml:space="preserve">
+    <value>Не удалось открыть браузер. Откройте страницу вручную:{0}{1}</value>
+  </data>
+  <data name="Dialog.Feedback.Title" xml:space="preserve">
+    <value>Обратная связь</value>
+  </data>
+  <data name="Help.KeyboardShortcuts.Body" xml:space="preserve">
+    <value>Инструменты
+H — Панорамирование
+L — Линия
+X — Ось
+A — Дуга
+R — Прямоугольник
+C — Окружность
+M — Перемещение
+O — Смещение
+D — Размер
+T — Текст
+F — Заливка
+
+Общие
+Пробел — панорама (удерживать)
+Средняя кнопка мыши — панорама
+Колесо мыши — масштаб
+Esc — отмена
+ПКМ — отмена текущего шага
+Alt+ПКМ — инструмент выбора
+Shift — добавить к выбору
+Ctrl+Z — отменить
+Ctrl+Y — повторить
+Ctrl+C — копировать
+Ctrl+X — вырезать
+Ctrl+V — вставить
+Del — удалить
+
+Точный ввод
+Цифры — длина или размер в строке состояния
+Enter — применить введённое значение
+Alt — переключить ширину/высоту (прямоугольник, перемещение)
+Alt+Enter — новая строка (текст)</value>
+  </data>
   <data name="Label.AppTitle" xml:space="preserve">
     <value>LiteCad 0.4.1</value>
   </data>
@@ -926,32 +982,65 @@
   <data name="Action.Gesture.Delete" xml:space="preserve">
     <value>Del</value>
   </data>
+  <data name="Action.Gesture.Hand" xml:space="preserve">
+    <value>H</value>
+  </data>
+  <data name="Action.Gesture.Line" xml:space="preserve">
+    <value>L</value>
+  </data>
+  <data name="Action.Gesture.Axis" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="Action.Gesture.Arc" xml:space="preserve">
+    <value>A</value>
+  </data>
+  <data name="Action.Gesture.Rectangle" xml:space="preserve">
+    <value>R</value>
+  </data>
+  <data name="Action.Gesture.Circle" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="Action.Gesture.Move" xml:space="preserve">
+    <value>M</value>
+  </data>
+  <data name="Action.Gesture.Offset" xml:space="preserve">
+    <value>O</value>
+  </data>
+  <data name="Action.Gesture.Dimension" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="Action.Gesture.Text" xml:space="preserve">
+    <value>T</value>
+  </data>
+  <data name="Action.Gesture.Fill" xml:space="preserve">
+    <value>F</value>
+  </data>
   <data name="Tooltip.Tool.Selection" xml:space="preserve">
     <value>Выбор</value>
   </data>
   <data name="Tooltip.Tool.Hand" xml:space="preserve">
-    <value>Панорамирование</value>
+    <value>Панорамирование (H)</value>
   </data>
   <data name="Tooltip.Tool.Line" xml:space="preserve">
-    <value>Линия</value>
+    <value>Линия (L)</value>
   </data>
   <data name="Tooltip.Tool.Axis" xml:space="preserve">
-    <value>Ось</value>
+    <value>Ось (X)</value>
   </data>
   <data name="Tooltip.Tool.Arc" xml:space="preserve">
-    <value>Дуга</value>
+    <value>Дуга (A)</value>
   </data>
   <data name="Tooltip.Tool.Rectangle" xml:space="preserve">
-    <value>Прямоугольник</value>
+    <value>Прямоугольник (R)</value>
   </data>
   <data name="Tooltip.Tool.Circle" xml:space="preserve">
-    <value>Окружность</value>
+    <value>Окружность (C)</value>
   </data>
   <data name="Tooltip.Tool.Sector" xml:space="preserve">
     <value>Сектор</value>
   </data>
   <data name="Tooltip.Tool.Move" xml:space="preserve">
-    <value>Перемещение</value>
+    <value>Перемещение (M)</value>
   </data>
   <data name="Tooltip.Tool.Rotate" xml:space="preserve">
     <value>Поворот</value>
@@ -960,7 +1049,7 @@
     <value>Зеркальное отражение</value>
   </data>
   <data name="Tooltip.Tool.Offset" xml:space="preserve">
-    <value>Смещение</value>
+    <value>Смещение (O)</value>
   </data>
   <data name="Tooltip.OffsetAxes" xml:space="preserve">
     <value>Смещать только оси</value>
@@ -972,13 +1061,13 @@
     <value>Удлинение</value>
   </data>
   <data name="Tooltip.Tool.Dimension" xml:space="preserve">
-    <value>Размер</value>
+    <value>Размер (D)</value>
   </data>
   <data name="Tooltip.Tool.Eraser" xml:space="preserve">
     <value>Ластик</value>
   </data>
   <data name="Tooltip.Tool.Fill" xml:space="preserve">
-    <value>Заливка грани</value>
+    <value>Заливка грани (F)</value>
   </data>
   <data name="Tooltip.Tool.PolygonEdit" xml:space="preserve">
     <value>Редактирование контура</value>
@@ -1065,7 +1154,7 @@
     <value>Текст</value>
   </data>
   <data name="Tooltip.Tool.Text" xml:space="preserve">
-    <value>Текст</value>
+    <value>Текст (T)</value>
   </data>
   <data name="Menu.Header.Text" xml:space="preserve">
     <value>_Текст</value>

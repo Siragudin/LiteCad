@@ -66,25 +66,25 @@
             </MenuItem>
             <MenuItem Header="{loc:Loc Key=Menu.Header.Tools}">
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Selection}" Tag="Selection" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Hand}" Tag="Hand" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Line}" Tag="Line" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Axis}" Tag="Axis" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Arc}" Tag="Arc" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Rectangle}" Tag="Rectangle" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Circle}" Tag="Circle" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Hand}" Tag="Hand" InputGestureText="{loc:Loc Key=Action.Gesture.Hand}" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Line}" Tag="Line" InputGestureText="{loc:Loc Key=Action.Gesture.Line}" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Axis}" Tag="Axis" InputGestureText="{loc:Loc Key=Action.Gesture.Axis}" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Arc}" Tag="Arc" InputGestureText="{loc:Loc Key=Action.Gesture.Arc}" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Rectangle}" Tag="Rectangle" InputGestureText="{loc:Loc Key=Action.Gesture.Rectangle}" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Circle}" Tag="Circle" InputGestureText="{loc:Loc Key=Action.Gesture.Circle}" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Sector}" Tag="Sector" Click="ToolMenuItem_OnClick" />
                 <Separator />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Move}" Tag="Move" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Move}" Tag="Move" InputGestureText="{loc:Loc Key=Action.Gesture.Move}" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Rotate}" Tag="Rotate" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Mirror}" Tag="Mirror" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Offset}" Tag="Offset" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Offset}" Tag="Offset" InputGestureText="{loc:Loc Key=Action.Gesture.Offset}" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Stretch}" Tag="Stretch" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Extend}" Tag="Extend" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Dimension}" Tag="Dimension" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Dimension}" Tag="Dimension" InputGestureText="{loc:Loc Key=Action.Gesture.Dimension}" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Leader}" Tag="Leader" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Text}" Tag="Text" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Text}" Tag="Text" InputGestureText="{loc:Loc Key=Action.Gesture.Text}" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Eraser}" Tag="Eraser" Click="ToolMenuItem_OnClick" />
-                <MenuItem Header="{loc:Loc Key=Menu.Header.Fill}" Tag="Fill" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Fill}" Tag="Fill" InputGestureText="{loc:Loc Key=Action.Gesture.Fill}" Click="ToolMenuItem_OnClick" />
             </MenuItem>
             <MenuItem Header="{loc:Loc Key=Menu.Header.Theme}">
                 <MenuItem x:Name="ThemeLightMenuItem"
@@ -97,6 +97,14 @@
                           Tag="Dark"
                           IsCheckable="True"
                           Click="ThemeMenuItem_OnClick" />
+            </MenuItem>
+            <MenuItem Header="{loc:Loc Key=Menu.Header.Help}">
+                <MenuItem Header="{loc:Loc Key=Menu.Header.KeyboardShortcuts}"
+                          Tag="Shortcuts"
+                          Click="HelpMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Feedback}"
+                          Tag="Feedback"
+                          Click="HelpMenuItem_OnClick" />
             </MenuItem>
         </Menu>
 

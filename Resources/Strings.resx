@@ -332,6 +332,62 @@
   <data name="Menu.Header.About" xml:space="preserve">
     <value>_About LiteCad</value>
   </data>
+  <data name="Menu.Header.KeyboardShortcuts" xml:space="preserve">
+    <value>_Keyboard shortcuts</value>
+  </data>
+  <data name="Menu.Header.Feedback" xml:space="preserve">
+    <value>_Feedback</value>
+  </data>
+  <data name="Help.Feedback.Url" xml:space="preserve">
+    <value>https://t.me/my_cool_software_fb_bot</value>
+  </data>
+  <data name="Help.Feedback.Handle" xml:space="preserve">
+    <value>@my_cool_software_fb_bot</value>
+  </data>
+  <data name="Help.Feedback.Hint" xml:space="preserve">
+    <value>Scan the QR code to send a message to the bot.</value>
+  </data>
+  <data name="Help.Feedback.Failed" xml:space="preserve">
+    <value>Could not open the browser. Open this page manually:{0}{1}</value>
+  </data>
+  <data name="Dialog.Feedback.Title" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="Help.KeyboardShortcuts.Body" xml:space="preserve">
+    <value>Tools
+H — Hand
+L — Line
+X — Axis
+A — Arc
+R — Rectangle
+C — Circle
+M — Move
+O — Offset
+D — Dimension
+T — Text
+F — Fill
+
+General
+Space — Pan (hold)
+Middle mouse — Pan
+Mouse wheel — Zoom
+Esc — Cancel
+Right click — Cancel current step
+Alt+Right click — Selection tool
+Shift — Add to selection
+Ctrl+Z — Undo
+Ctrl+Y — Redo
+Ctrl+C — Copy
+Ctrl+X — Cut
+Ctrl+V — Paste
+Del — Delete
+
+Exact input
+Type numbers — Length or size in the status bar
+Enter — Apply typed value
+Alt — Switch width/height (rectangle, move)
+Alt+Enter — New line (text)</value>
+  </data>
   <data name="Label.AppTitle" xml:space="preserve">
     <value>LiteCad 0.4.1</value>
   </data>
@@ -926,32 +982,65 @@
   <data name="Action.Gesture.Delete" xml:space="preserve">
     <value>Del</value>
   </data>
+  <data name="Action.Gesture.Hand" xml:space="preserve">
+    <value>H</value>
+  </data>
+  <data name="Action.Gesture.Line" xml:space="preserve">
+    <value>L</value>
+  </data>
+  <data name="Action.Gesture.Axis" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="Action.Gesture.Arc" xml:space="preserve">
+    <value>A</value>
+  </data>
+  <data name="Action.Gesture.Rectangle" xml:space="preserve">
+    <value>R</value>
+  </data>
+  <data name="Action.Gesture.Circle" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="Action.Gesture.Move" xml:space="preserve">
+    <value>M</value>
+  </data>
+  <data name="Action.Gesture.Offset" xml:space="preserve">
+    <value>O</value>
+  </data>
+  <data name="Action.Gesture.Dimension" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="Action.Gesture.Text" xml:space="preserve">
+    <value>T</value>
+  </data>
+  <data name="Action.Gesture.Fill" xml:space="preserve">
+    <value>F</value>
+  </data>
   <data name="Tooltip.Tool.Selection" xml:space="preserve">
     <value>Selection</value>
   </data>
   <data name="Tooltip.Tool.Hand" xml:space="preserve">
-    <value>Hand (pan)</value>
+    <value>Hand / pan (H)</value>
   </data>
   <data name="Tooltip.Tool.Line" xml:space="preserve">
-    <value>Line</value>
+    <value>Line (L)</value>
   </data>
   <data name="Tooltip.Tool.Axis" xml:space="preserve">
-    <value>Axis</value>
+    <value>Axis (X)</value>
   </data>
   <data name="Tooltip.Tool.Arc" xml:space="preserve">
-    <value>Arc</value>
+    <value>Arc (A)</value>
   </data>
   <data name="Tooltip.Tool.Rectangle" xml:space="preserve">
-    <value>Rectangle</value>
+    <value>Rectangle (R)</value>
   </data>
   <data name="Tooltip.Tool.Circle" xml:space="preserve">
-    <value>Circle</value>
+    <value>Circle (C)</value>
   </data>
   <data name="Tooltip.Tool.Sector" xml:space="preserve">
     <value>Sector</value>
   </data>
   <data name="Tooltip.Tool.Move" xml:space="preserve">
-    <value>Move</value>
+    <value>Move (M)</value>
   </data>
   <data name="Tooltip.Tool.Rotate" xml:space="preserve">
     <value>Rotate</value>
@@ -960,7 +1049,7 @@
     <value>Mirror</value>
   </data>
   <data name="Tooltip.Tool.Offset" xml:space="preserve">
-    <value>Offset</value>
+    <value>Offset (O)</value>
   </data>
   <data name="Tooltip.OffsetAxes" xml:space="preserve">
     <value>Offset axes only</value>
@@ -972,13 +1061,13 @@
     <value>Extend</value>
   </data>
   <data name="Tooltip.Tool.Dimension" xml:space="preserve">
-    <value>Dimension</value>
+    <value>Dimension (D)</value>
   </data>
   <data name="Tooltip.Tool.Eraser" xml:space="preserve">
     <value>Eraser</value>
   </data>
   <data name="Tooltip.Tool.Fill" xml:space="preserve">
-    <value>Fill face</value>
+    <value>Fill face (F)</value>
   </data>
   <data name="Tooltip.Tool.PolygonEdit" xml:space="preserve">
     <value>Polygon edit</value>
@@ -1065,7 +1154,7 @@
     <value>Text</value>
   </data>
   <data name="Tooltip.Tool.Text" xml:space="preserve">
-    <value>Text</value>
+    <value>Text (T)</value>
   </data>
   <data name="Menu.Header.Text" xml:space="preserve">
     <value>_Text</value>

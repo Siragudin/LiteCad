@@ -105,6 +105,14 @@ public static class Strings
     public static string Menu_Header_Layers => Get("Menu.Header.Layers");
     public static string Menu_Header_Help => Get("Menu.Header.Help");
     public static string Menu_Header_About => Get("Menu.Header.About");
+    public static string Menu_Header_KeyboardShortcuts => Get("Menu.Header.KeyboardShortcuts");
+    public static string Menu_Header_Feedback => Get("Menu.Header.Feedback");
+    public static string Help_Feedback_Url => Get("Help.Feedback.Url");
+    public static string Help_Feedback_Handle => Get("Help.Feedback.Handle");
+    public static string Help_Feedback_Hint => Get("Help.Feedback.Hint");
+    public static string Help_Feedback_Failed => Get("Help.Feedback.Failed");
+    public static string Dialog_Feedback_Title => Get("Dialog.Feedback.Title");
+    public static string Help_KeyboardShortcuts_Body => Get("Help.KeyboardShortcuts.Body");
 
     public static string Label_AppTitle => Get("Label.AppTitle");
     public static string Label_Properties => Get("Label.Properties");
@@ -309,6 +317,17 @@ public static class Strings
     public static string Action_Gesture_Copy => Get("Action.Gesture.Copy");
     public static string Action_Gesture_Paste => Get("Action.Gesture.Paste");
     public static string Action_Gesture_Delete => Get("Action.Gesture.Delete");
+    public static string Action_Gesture_Hand => Get("Action.Gesture.Hand");
+    public static string Action_Gesture_Line => Get("Action.Gesture.Line");
+    public static string Action_Gesture_Axis => Get("Action.Gesture.Axis");
+    public static string Action_Gesture_Arc => Get("Action.Gesture.Arc");
+    public static string Action_Gesture_Rectangle => Get("Action.Gesture.Rectangle");
+    public static string Action_Gesture_Circle => Get("Action.Gesture.Circle");
+    public static string Action_Gesture_Move => Get("Action.Gesture.Move");
+    public static string Action_Gesture_Offset => Get("Action.Gesture.Offset");
+    public static string Action_Gesture_Dimension => Get("Action.Gesture.Dimension");
+    public static string Action_Gesture_Text => Get("Action.Gesture.Text");
+    public static string Action_Gesture_Fill => Get("Action.Gesture.Fill");
 
     public static string Tooltip_Tool_Selection => Get("Tooltip.Tool.Selection");
     public static string Tooltip_Tool_Hand => Get("Tooltip.Tool.Hand");

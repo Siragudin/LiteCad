@@ -6,6 +6,7 @@ using LiteCad.Services;
 using LiteCad.Tools;
 using LiteCad.UI;
 using LiteCad.UI.Layout;
+using LiteCad.UI.Help;
 using LiteCad.UI.Pdf;
 using Microsoft.Win32;
 using System.Globalization;
@@ -113,6 +114,7 @@ public partial class MainWindow : Window
         MainMenuBar.ToolRequested += OnToolRequested;
         MainMenuBar.EditCommandRequested += OnEditCommandRequested;
         MainMenuBar.FileCommandRequested += OnFileCommandRequested;
+        MainMenuBar.HelpCommandRequested += OnHelpCommandRequested;
         LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
         ThemeManager.Instance.ThemeChanged += OnThemeChanged;
         _projectStorage.EnsureProjectsDirectoryExists();
@@ -428,11 +430,64 @@ public partial class MainWindow : Window
             }
         }
 
+        if (Keyboard.Modifiers == ModifierKeys.None
+            && ViewModel.Session.ToolService.ActiveTool?.CapturesTextInput != true
+            && TryActivateToolShortcut(e.Key))
+        {
+            e.Handled = true;
+            return;
+        }
+
         if (e.Key == Key.Delete)
         {
             ExecuteEditCommand("Delete");
             e.Handled = true;
         }
+    }
+
+    private void OnHelpCommandRequested(object? sender, string command)
+    {
+        switch (command)
+        {
+            case "Shortcuts":
+                MessageBox.Show(
+                    this,
+                    Strings.Help_KeyboardShortcuts_Body,
+                    Strings.Menu_Header_KeyboardShortcuts,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+                break;
+            case "Feedback":
+                new FeedbackWindow { Owner = this }.ShowDialog();
+                break;
+        }
+    }
+
+    private bool TryActivateToolShortcut(Key key)
+    {
+        var toolTag = key switch
+        {
+            Key.H => "Hand",
+            Key.L => "Line",
+            Key.X => "Axis",
+            Key.A => "Arc",
+            Key.R => "Rectangle",
+            Key.C => "Circle",
+            Key.M => "Move",
+            Key.O => "Offset",
+            Key.D => "Dimension",
+            Key.T => "Text",
+            Key.F => "Fill",
+            _ => null
+        };
+
+        if (toolTag is null || !_tools.TryGetValue(toolTag, out var tool))
+        {
+            return false;
+        }
+
+        ActivateTool(tool);
+        return true;
     }
 
     private void ExecuteEditCommand(string command)
