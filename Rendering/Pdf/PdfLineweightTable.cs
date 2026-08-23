@@ -13,13 +13,13 @@ public enum PenStyle
 
 public static class PdfLineweightTable
 {
-    public const double AxisMm = 0.25;
-    public const double AxisEdgeMm = 0.25;
+    public const double AxisMm = 0.125;
+    public const double AxisEdgeMm = 0.125;
     public const double EdgeMm = 0.18;
     public const double EdgeDashedMm = 0.18;
     public const double EdgeDottedMm = 0.13;
-    public const double DimensionMm = 0.13;
-    public const double ExtensionMm = 0.13;
+    public const double DimensionMm = 0.065;
+    public const double ExtensionMm = 0.065;
 
     public const double MinVisiblePrintThicknessMm = 0.1;
 

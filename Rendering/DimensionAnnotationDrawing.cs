@@ -1,6 +1,5 @@
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
-using LiteCad.Rendering.Pdf;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
@@ -35,22 +34,12 @@ public static class DimensionAnnotationDrawing
         double textWorldHeight = Dimension.DefaultTextSize,
         bool forScreenDisplay = true)
     {
-        Pen extensionPen;
-        Pen dimensionPen;
-        if (forScreenDisplay)
-        {
-            var brush = new SolidColorBrush(color);
-            extensionPen = RenderStyles.CreateScreenPen(brush, ExtensionThicknessScreen, zoom);
-            dimensionPen = RenderStyles.CreateScreenPen(
-                brush,
-                isSelected ? SelectedDimensionLineThicknessScreen : DimensionLineThicknessScreen,
-                zoom);
-        }
-        else
-        {
-            extensionPen = PdfExportPenFactory.Create(PenStyle.Extension, color);
-            dimensionPen = PdfExportPenFactory.Create(PenStyle.Dimension, color);
-        }
+        var brush = new SolidColorBrush(color);
+        var extensionPen = RenderStyles.CreateScreenPen(brush, ExtensionThicknessScreen, zoom);
+        var dimensionPen = RenderStyles.CreateScreenPen(
+            brush,
+            isSelected ? SelectedDimensionLineThicknessScreen : DimensionLineThicknessScreen,
+            zoom);
 
         DrawExtensionLine(
             context,

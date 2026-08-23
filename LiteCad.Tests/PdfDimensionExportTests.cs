@@ -115,6 +115,43 @@ public class PdfDimensionExportTests : IDisposable
         });
     }
 
+    [Fact]
+    public void Export_AxisAndDimensionScreenPens_UsePdfLineweightTableWidths()
+    {
+        WpfTestUtilities.RunSta(() =>
+        {
+            var document = CreateOrientedDimensionsDocument();
+            AxisService.Create(document, new PointF(-200, 750), new PointF(2_200, 750), Tolerance);
+            document.Edges[0].IsAxis = true;
+
+            var pdfPath = Path.Combine(_tempRoot, "PhysicalLineweights.pdf");
+            PdfExporter.Export(document, LinearDisplayUnit.Millimeters, new Renderer(), pdfPath);
+
+            var strokeWidths = ExtractStrokeWidths(ReadPdfPageContent(pdfPath));
+            Assert.NotEmpty(strokeWidths);
+
+            AssertContainsPhysicalWidth(strokeWidths, PenStyle.Axis);
+            AssertContainsPhysicalWidth(strokeWidths, PenStyle.AxisEdge);
+            AssertContainsPhysicalWidth(strokeWidths, PenStyle.Dimension);
+            AssertContainsPhysicalWidth(strokeWidths, PenStyle.Extension);
+
+            var clampedDimensionPoints = PdfLineweightTable.MinVisiblePrintThicknessPoints;
+            Assert.DoesNotContain(
+                strokeWidths,
+                width => Math.Abs(width - clampedDimensionPoints) < 0.01
+                    && Math.Abs(width - PdfLineweightTable.ToPoints(PenStyle.Dimension)) > 0.01);
+        });
+    }
+
+    private static void AssertContainsPhysicalWidth(List<double> strokeWidths, PenStyle style)
+    {
+        var points = PdfLineweightTable.ToPoints(style);
+        var dip = points * PdfExportLayout.DipPerInch / PdfExportLayout.PointsPerInch;
+        Assert.True(
+            strokeWidths.Any(width => Math.Abs(width - points) < 0.02 || Math.Abs(width - dip) < 0.02),
+            $"Missing {style} lineweight. expected {points:G6} pt or {dip:G6} DIP, actual [{string.Join(", ", strokeWidths.Select(width => width.ToString("G6")))}].");
+    }
+
     private static double FindMaxPenThickness(DrawingGroup group)
     {
         var max = 0.0;

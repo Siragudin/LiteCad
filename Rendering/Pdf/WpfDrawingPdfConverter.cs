@@ -25,12 +25,17 @@ internal static class WpfDrawingPdfConverter
 
         graphics.Save();
         graphics.ScaleTransform(DipToPoint, DipToPoint);
-        DrawGroup(drawing, graphics, Matrix.Identity, skipDimensionGlyphs: true);
+        DrawGroup(drawing, graphics, Matrix.Identity, skipDimensionGlyphs: true, layout.ExportCamera.Zoom);
         PdfDimensionTextRenderer.Draw(graphics, sheet.Document, layout, sheet.PrimaryView, linearUnit);
         graphics.Restore();
     }
 
-    private static void DrawGroup(DrawingGroup group, XGraphics graphics, Matrix parentTransform, bool skipDimensionGlyphs)
+    private static void DrawGroup(
+        DrawingGroup group,
+        XGraphics graphics,
+        Matrix parentTransform,
+        bool skipDimensionGlyphs,
+        double exportZoom)
     {
         var groupTransform = group.Transform?.Value ?? Matrix.Identity;
         var combinedTransform = Multiply(groupTransform, parentTransform);
@@ -42,23 +47,28 @@ internal static class WpfDrawingPdfConverter
             {
                 graphics.Save();
                 graphics.IntersectClip(clipPath);
-                DrawGroupChildren(group, graphics, combinedTransform, skipDimensionGlyphs);
+                DrawGroupChildren(group, graphics, combinedTransform, skipDimensionGlyphs, exportZoom);
                 graphics.Restore();
                 return;
             }
         }
 
-        DrawGroupChildren(group, graphics, combinedTransform, skipDimensionGlyphs);
+        DrawGroupChildren(group, graphics, combinedTransform, skipDimensionGlyphs, exportZoom);
     }
 
-    private static void DrawGroupChildren(DrawingGroup group, XGraphics graphics, Matrix transform, bool skipDimensionGlyphs)
+    private static void DrawGroupChildren(
+        DrawingGroup group,
+        XGraphics graphics,
+        Matrix transform,
+        bool skipDimensionGlyphs,
+        double exportZoom)
     {
         foreach (var child in group.Children)
         {
             switch (child)
             {
                 case GeometryDrawing geometryDrawing:
-                    DrawGeometryDrawing(geometryDrawing, graphics, transform);
+                    DrawGeometryDrawing(geometryDrawing, graphics, transform, exportZoom);
                     break;
                 case GlyphRunDrawing when skipDimensionGlyphs:
                     break;
@@ -66,13 +76,17 @@ internal static class WpfDrawingPdfConverter
                     DrawGlyphRun(glyphRunDrawing, graphics, transform);
                     break;
                 case DrawingGroup nestedGroup:
-                    DrawGroup(nestedGroup, graphics, transform, skipDimensionGlyphs);
+                    DrawGroup(nestedGroup, graphics, transform, skipDimensionGlyphs, exportZoom);
                     break;
             }
         }
     }
 
-    private static void DrawGeometryDrawing(GeometryDrawing drawing, XGraphics graphics, Matrix transform)
+    private static void DrawGeometryDrawing(
+        GeometryDrawing drawing,
+        XGraphics graphics,
+        Matrix transform,
+        double exportZoom)
     {
         if (drawing.Geometry is null)
         {
@@ -94,12 +108,96 @@ internal static class WpfDrawingPdfConverter
 
         if (drawing.Pen is Pen pen && pen.Brush is SolidColorBrush strokeBrush)
         {
-            var strokeWidth = PdfStyledSolidColorBrush.IsPdfExportPen(pen)
-                ? pen.Thickness
-                : ScaleStrokeWidth(pen.Thickness, uniformScale);
+            var strokeWidth = ResolveStrokeWidth(pen, uniformScale, exportZoom);
             graphics.DrawPath(CreatePen(pen, strokeBrush.Color, strokeWidth), null, path);
         }
     }
+
+    private static double ResolveStrokeWidth(Pen pen, double uniformScale, double exportZoom)
+    {
+        if (PdfStyledSolidColorBrush.IsPdfExportPen(pen))
+        {
+            return pen.Thickness;
+        }
+
+        if (TryMapScreenPenToPhysicalDip(pen, exportZoom, out var physicalDip))
+        {
+            return physicalDip;
+        }
+
+        return ScaleStrokeWidth(pen.Thickness, uniformScale);
+    }
+
+    private static bool TryMapScreenPenToPhysicalDip(Pen pen, double exportZoom, out double thicknessDip)
+    {
+        thicknessDip = 0;
+        if (exportZoom <= 1e-12)
+        {
+            return false;
+        }
+
+        var screenPx = pen.Thickness * exportZoom;
+        var dashes = pen.DashStyle.Dashes;
+
+        if (DashesEqual(dashes, 12, 4, 2, 4) && Approximately(screenPx, 1.5))
+        {
+            thicknessDip = PhysicalDip(PenStyle.Axis);
+            return true;
+        }
+
+        if (DashesEqual(dashes, 6, 4) && Approximately(screenPx, 1.5))
+        {
+            thicknessDip = PhysicalDip(PenStyle.AxisEdge);
+            return true;
+        }
+
+        if (dashes.Count == 0
+            && pen.Brush is SolidColorBrush brush
+            && IsDimensionExportColor(brush.Color))
+        {
+            if (Approximately(screenPx, 1.0))
+            {
+                thicknessDip = PhysicalDip(PenStyle.Extension);
+                return true;
+            }
+
+            if (Approximately(screenPx, 1.5) || Approximately(screenPx, 2.0))
+            {
+                thicknessDip = PhysicalDip(PenStyle.Dimension);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static double PhysicalDip(PenStyle style)
+        => PdfLineweightTable.ToPoints(style) / DipToPoint;
+
+    private static bool IsDimensionExportColor(Color color)
+        => (color.R == 0x15 && color.G == 0x65 && color.B == 0xC0)
+            || (color.R == 0x1E && color.G == 0x88 && color.B == 0xE5);
+
+    private static bool DashesEqual(DoubleCollection dashes, params double[] expected)
+    {
+        if (dashes.Count != expected.Length)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < expected.Length; i++)
+        {
+            if (Math.Abs(dashes[i] - expected[i]) > 1e-9)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool Approximately(double actual, double expected)
+        => Math.Abs(actual - expected) <= 0.05;
 
     private static void DrawGlyphRun(GlyphRunDrawing drawing, XGraphics graphics, Matrix transform)
     {
