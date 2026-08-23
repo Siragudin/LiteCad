@@ -1,6 +1,7 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Core.Selection;
+using LiteCad.Texts;
 
 namespace LiteCad.Services;
 
@@ -33,6 +34,21 @@ public sealed class MoveAxisSnapshot
     public required PointF End { get; init; }
 }
 
+public sealed class MoveTextSnapshot
+{
+    public required Guid OriginalTextId { get; init; }
+
+    public required TextNoteKind Kind { get; init; }
+
+    public required PointF Origin { get; init; }
+
+    public required PointF? ArrowTip { get; init; }
+
+    public required string Text { get; init; }
+
+    public required double TextSize { get; init; }
+}
+
 public sealed class MoveObjectSnapshot
 {
     public List<MoveEdgeSnapshot> Edges { get; } = [];
@@ -40,6 +56,8 @@ public sealed class MoveObjectSnapshot
     public List<MovePolygonSnapshot> UserPolygons { get; } = [];
 
     public List<MoveAxisSnapshot> Axes { get; } = [];
+
+    public List<MoveTextSnapshot> Texts { get; } = [];
 }
 
 public static class MoveOperations
@@ -86,6 +104,20 @@ public static class MoveOperations
                 OriginalAxisId = axis.Id,
                 Start = axis.Start,
                 End = axis.End
+            });
+        }
+
+        foreach (var textId in selection.SelectedTextIds.OrderBy(id => id))
+        {
+            var note = document.Texts.First(item => item.Id == textId);
+            snapshot.Texts.Add(new MoveTextSnapshot
+            {
+                OriginalTextId = note.Id,
+                Kind = note.Kind,
+                Origin = note.Origin,
+                ArrowTip = note.ArrowTip,
+                Text = note.Text,
+                TextSize = note.TextSize
             });
         }
 
@@ -179,6 +211,18 @@ public static class MoveOperations
             axis.End = Translate(entry.End, delta);
         }
 
+        foreach (var entry in snapshot.Texts)
+        {
+            var note = document.Texts.FirstOrDefault(item => item.Id == entry.OriginalTextId);
+            if (note is null)
+            {
+                continue;
+            }
+
+            note.Origin = Translate(entry.Origin, delta);
+            note.ArrowTip = entry.ArrowTip is PointF tip ? Translate(tip, delta) : null;
+        }
+
         selection.SelectedEdgeIds.Clear();
         selection.SelectedPolygonIds.Clear();
 
@@ -194,13 +238,15 @@ public static class MoveOperations
         => selection.SelectedVertexIds.Count > 0
             || selection.SelectedEdgeIds.Count > 0
             || selection.SelectedPolygonIds.Count > 0
-            || selection.SelectedAxisIds.Count > 0;
+            || selection.SelectedAxisIds.Count > 0
+            || selection.SelectedTextIds.Count > 0;
 
     public static bool UsesVertexMove(Selection selection)
         => selection.SelectedVertexIds.Count > 0
             && selection.SelectedEdgeIds.Count == 0
             && selection.SelectedPolygonIds.Count == 0
-            && selection.SelectedAxisIds.Count == 0;
+            && selection.SelectedAxisIds.Count == 0
+            && selection.SelectedTextIds.Count == 0;
 
     private static HashSet<Guid> CollectSelectedEdgeIds(CadDocument document, Selection selection)
     {

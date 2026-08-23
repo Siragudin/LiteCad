@@ -2,6 +2,7 @@ using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
 using LiteCad.Leaders;
+using LiteCad.Texts;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -46,6 +47,7 @@ public static class ProjectDocumentSerializer
             Dimensions = document.Dimensions.Select(MapDimension).ToList(),
             Axes = document.Axes.Select(MapAxis).ToList(),
             Leaders = document.Leaders.Select(MapLeader).ToList(),
+            Texts = document.Texts.Select(MapTextNote).ToList(),
             ElevationBaseY = document.ElevationBaseY,
             SuppressedFaceGeometryKeys = document.SuppressedFaceGeometryKeys.ToList(),
             FaceFillStyles = document.FaceFillStyles.ToDictionary(
@@ -74,6 +76,7 @@ public static class ProjectDocumentSerializer
         document.Dimensions.Clear();
         document.Axes.Clear();
         document.Leaders.Clear();
+        document.Texts.Clear();
         document.ElevationBaseY = dto.ElevationBaseY;
         document.SuppressedFaceGeometryKeys.Clear();
         document.FaceFillStyles.Clear();
@@ -131,6 +134,20 @@ public static class ProjectDocumentSerializer
                 new PointF((float)leader.TargetX, (float)leader.TargetY),
                 new PointF((float)leader.TextX, (float)leader.TextY),
                 leader.Text ?? string.Empty));
+        }
+
+        foreach (var note in dto.Texts ?? [])
+        {
+            PointF? arrowTip = note.ArrowTipX is double tipX && note.ArrowTipY is double tipY
+                ? new PointF((float)tipX, (float)tipY)
+                : null;
+            document.Texts.Add(new TextNote(
+                note.Id == Guid.Empty ? Guid.NewGuid() : note.Id,
+                ParseEnum(note.Kind, TextNoteKind.Plain),
+                new PointF((float)note.OriginX, (float)note.OriginY),
+                arrowTip,
+                note.Text ?? string.Empty,
+                note.TextSize));
         }
 
         foreach (var key in dto.SuppressedFaceGeometryKeys)
@@ -212,6 +229,19 @@ public static class ProjectDocumentSerializer
             TextX = leader.TextPosition.X,
             TextY = leader.TextPosition.Y,
             Text = leader.Text
+        };
+
+    private static TextNoteDto MapTextNote(TextNote note)
+        => new()
+        {
+            Id = note.Id,
+            Kind = note.Kind.ToString(),
+            OriginX = note.Origin.X,
+            OriginY = note.Origin.Y,
+            ArrowTipX = note.ArrowTip?.X,
+            ArrowTipY = note.ArrowTip?.Y,
+            Text = note.Text,
+            TextSize = note.TextSize
         };
 
     private static DimensionDto MapDimension(Dimension dimension)

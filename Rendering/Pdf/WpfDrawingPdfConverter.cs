@@ -28,6 +28,7 @@ internal static class WpfDrawingPdfConverter
         DrawGroup(drawing, graphics, Matrix.Identity, skipDimensionGlyphs: true, layout.ExportCamera.Zoom);
         PdfDimensionTextRenderer.Draw(graphics, sheet.Document, layout, sheet.PrimaryView, linearUnit);
         PdfLeaderTextRenderer.Draw(graphics, sheet.Document, layout, sheet.PrimaryView);
+        PdfTextNoteRenderer.Draw(graphics, sheet.Document, layout, sheet.PrimaryView);
         graphics.Restore();
     }
 

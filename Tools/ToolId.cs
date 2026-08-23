@@ -19,6 +19,7 @@ public enum ToolId
     Extend,
     Dimension,
     Leader,
+    Text,
     Eraser,
     Copy,
     Fill,

@@ -198,6 +198,32 @@
                         </StackPanel>
                     </StackPanel>
 
+                    <StackPanel x:Name="TextToolPanel" Visibility="Collapsed">
+                        <TextBlock Text="{loc:Loc Key=Label.TextParameters}"
+                                   Style="{StaticResource CadPropertiesSectionLabelStyle}"
+                                   Margin="0,0,0,8" />
+
+                        <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
+                            <TextBlock Text="{loc:Loc Key=Label.TextMode}"
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
+                            <ComboBox x:Name="TextToolModeCombo"
+                                      Style="{StaticResource CadPropertiesComboBoxStyle}"
+                                      SelectionChanged="TextToolModeCombo_OnSelectionChanged">
+                                <ComboBoxItem Content="{loc:Loc Key=Label.TextMode.Plain}" Tag="Plain" IsSelected="True" />
+                                <ComboBoxItem Content="{loc:Loc Key=Label.TextMode.Arrow}" Tag="Arrow" />
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
+                            <TextBlock Text="{loc:Loc Key=Label.DimensionTextSize}"
+                                       Style="{StaticResource CadPropertiesSectionLabelStyle}" />
+                            <TextBox x:Name="TextToolTextSizeTextBox"
+                                     Style="{StaticResource CadPropertiesTextBoxStyle}"
+                                     LostFocus="TextToolTextSizeTextBox_OnCommit"
+                                     KeyDown="TextToolTextSizeTextBox_OnKeyDown" />
+                        </StackPanel>
+                    </StackPanel>
+
                     <StackPanel x:Name="DimensionSelectionPanel" Visibility="Collapsed">
                         <TextBlock Text="{loc:Loc Key=Label.DimensionParameters}"
                                    Style="{StaticResource CadPropertiesSectionLabelStyle}"

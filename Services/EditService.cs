@@ -6,6 +6,7 @@ using LiteCad.Core.Selection;
 
 using LiteCad.Dimensions;
 using LiteCad.Leaders;
+using LiteCad.Texts;
 
 using LiteCad.Infrastructure;
 
@@ -87,6 +88,7 @@ public sealed class EditService
 
         DimensionService.DeleteSelected(session.Document, session.Selection);
         LeaderService.DeleteSelected(session.Document, session.Selection);
+        TextNoteService.DeleteSelected(session.Document, session.Selection);
 
         RemoveSelection(session);
 
@@ -106,7 +108,8 @@ public sealed class EditService
             session.Document,
             world,
             tolerance,
-            MathUtils.SelectionPickToleranceWorld(session.Camera.Zoom));
+            MathUtils.SelectionPickToleranceWorld(session.Camera.Zoom),
+            session.Camera.Zoom);
 
         if (pick is null)
 

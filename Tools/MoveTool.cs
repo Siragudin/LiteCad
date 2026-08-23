@@ -4,6 +4,7 @@ using LiteCad.Core.Selection;
 using LiteCad.Rendering;
 using LiteCad.Resources;
 using LiteCad.Services;
+using LiteCad.Texts;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -351,6 +352,25 @@ public sealed class MoveTool : ToolBase
                 pen,
                 new Point(start.X, start.Y),
                 new Point(end.X, end.Y));
+        }
+
+        var previewColor = PreviewLineRenderer.GetAnnotationPreviewColor();
+        foreach (var entry in _objectSnapshot.Texts)
+        {
+            var origin = Translate(entry.Origin, delta);
+            PointF? arrowTip = entry.ArrowTip is PointF tip ? Translate(tip, delta) : null;
+            TextAnnotationDrawing.DrawDraft(
+                context,
+                entry.Kind,
+                origin,
+                arrowTip,
+                entry.Text,
+                entry.TextSize,
+                zoom,
+                previewColor,
+                camera,
+                viewport,
+                showCaret: false);
         }
     }
 

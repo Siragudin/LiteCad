@@ -808,6 +808,7 @@ public sealed class SnapService
             hash = (hash * 31) + document.Edges.Count;
             hash = (hash * 31) + document.Axes.Count;
             hash = (hash * 31) + document.Dimensions.Count;
+            hash = (hash * 31) + document.Texts.Count;
 
             foreach (var vertex in document.Vertices)
             {

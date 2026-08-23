@@ -82,6 +82,7 @@
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Extend}" Tag="Extend" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Dimension}" Tag="Dimension" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Leader}" Tag="Leader" Click="ToolMenuItem_OnClick" />
+                <MenuItem Header="{loc:Loc Key=Menu.Header.Text}" Tag="Text" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Eraser}" Tag="Eraser" Click="ToolMenuItem_OnClick" />
                 <MenuItem Header="{loc:Loc Key=Menu.Header.Fill}" Tag="Fill" Click="ToolMenuItem_OnClick" />
             </MenuItem>

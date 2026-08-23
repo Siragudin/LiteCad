@@ -18,6 +18,7 @@
     <Geometry x:Key="Icon.Extend">M3,8 L11,8 M11,8 L9,6 M11,8 L9,10 M13,8 L15,8</Geometry>
     <Geometry x:Key="Icon.Dimension">M2,8 L14,8 M2,6 L2,10 M14,6 L14,10 M6,8 L6,5 M6,8 L6,11 M10,8 L10,5 M10,8 L10,11</Geometry>
     <Geometry x:Key="Icon.Leader">M2,14 L8,14 M5,14 L2.5,10 L7.5,10 M5,14 L5,5 L13,5</Geometry>
+    <Geometry x:Key="Icon.Text">M3,4 L13,4 M8,4 L8,13 M5,13 L11,13</Geometry>
     <Geometry x:Key="Icon.Eraser">M4,11 L6,13 L12,7 L10,5 Z M3,12 L5,14 L4,15 L2,14 Z</Geometry>
     <Geometry x:Key="Icon.Fill">M3,5 L13,5 L13,11 L3,11 Z</Geometry>
     <Geometry x:Key="Icon.PolygonEdit">M3,6 L8,3 L13,6 L11,12 L5,12 Z M8,6 L8,9 M6,8 L10,8</Geometry>

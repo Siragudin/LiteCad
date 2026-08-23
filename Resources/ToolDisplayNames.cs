@@ -24,6 +24,7 @@ public static class ToolDisplayNames
             ToolId.Extend => Strings.Tool_Extend,
             ToolId.Dimension => Strings.Tool_Dimension,
             ToolId.Leader => Strings.Tool_Leader,
+            ToolId.Text => Strings.Tool_Text,
             ToolId.Eraser => Strings.Tool_Eraser,
             ToolId.Copy => Strings.Tool_Copy,
             ToolId.Fill => Strings.Tool_Fill,

@@ -3,6 +3,7 @@ using LiteCad.Core.Geometry;
 using LiteCad.Rendering;
 using LiteCad.Resources;
 using LiteCad.Services;
+using LiteCad.Texts;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -106,6 +107,22 @@ public sealed class EraserTool : ToolBase
             case SelectionPickKind.Polygon:
                 DrawPolygonHighlight(context, document, _hoveredPick.Value.Id, zoom);
                 break;
+
+            case SelectionPickKind.Text:
+                var note = document.Texts.FirstOrDefault(item => item.Id == _hoveredPick.Value.Id);
+                if (note is not null)
+                {
+                    TextAnnotationDrawing.Draw(
+                        context,
+                        note,
+                        zoom,
+                        Color.FromRgb(0xE5, 0x39, 0x35),
+                        camera,
+                        viewport,
+                        isSelected: true);
+                }
+
+                break;
         }
     }
 
@@ -121,7 +138,8 @@ public sealed class EraserTool : ToolBase
             Context.Session.Document,
             world,
             Context.SnapTolerance,
-            Context.SelectionPickTolerance);
+            Context.SelectionPickTolerance,
+            Context.Session.Camera.Zoom);
     }
 
     private static void DrawEdgeHighlight(

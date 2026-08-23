@@ -1,5 +1,6 @@
 using LiteCad.Dimensions;
 using LiteCad.Leaders;
+using LiteCad.Texts;
 
 namespace LiteCad.Core.Document;
 
@@ -16,6 +17,8 @@ public sealed class CadDocument
     public List<Axis> Axes { get; } = [];
 
     public List<Leader> Leaders { get; } = [];
+
+    public List<TextNote> Texts { get; } = [];
 
     /// <summary>
     /// User-defined elevation zero in model Y. Null until the first elevation leader is placed.

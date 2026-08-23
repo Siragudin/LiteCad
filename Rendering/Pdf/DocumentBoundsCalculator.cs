@@ -2,6 +2,7 @@ using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
 using LiteCad.Leaders;
+using LiteCad.Texts;
 using LiteCad.Services;
 using LiteCad.UI;
 using System.Windows;
@@ -46,7 +47,11 @@ public static class DocumentBoundsCalculator
         out Rect bounds)
     {
         bounds = default;
-        if (document.Vertices.Count == 0 && document.Dimensions.Count == 0 && document.Axes.Count == 0 && document.Leaders.Count == 0)
+        if (document.Vertices.Count == 0
+            && document.Dimensions.Count == 0
+            && document.Axes.Count == 0
+            && document.Leaders.Count == 0
+            && document.Texts.Count == 0)
         {
             return false;
         }
@@ -138,6 +143,23 @@ public static class DocumentBoundsCalculator
             ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, leaderLayout.TextPosition, padding);
             ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, leaderLayout.ChevronLeft, padding);
             ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, leaderLayout.ChevronRight, padding);
+        }
+
+        foreach (var note in document.Texts)
+        {
+            var textLayout = TextGeometry.CreateLayout(note, safeZoom);
+            var padding = Math.Max(8.0, ScreenPixelsToWorldMargin(note.TextSize, safeZoom));
+            ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, textLayout.Origin, padding);
+            ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, textLayout.UnderlineEnd, padding);
+            if (textLayout.ArrowTip is PointF tip)
+            {
+                ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, tip, padding);
+                ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, textLayout.ChevronLeft, padding);
+                ExpandPointWithMargin(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, textLayout.ChevronRight, padding);
+            }
+
+            var height = Math.Max(8.0, textLayout.TextScreenSize.Height / safeZoom);
+            Expand(ref hasBounds, ref minX, ref maxX, ref minY, ref maxY, textLayout.Origin.X, textLayout.Origin.Y + height);
         }
 
         if (!hasBounds)

@@ -2,6 +2,7 @@ using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
 using LiteCad.Leaders;
+using LiteCad.Texts;
 using LiteCad.Rendering;
 using LiteCad.Resources;
 using LiteCad.Services;
@@ -131,6 +132,12 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
+        if (TryToggleTextAt(document, selection, world, segmentPickTolerance, additive))
+        {
+            UpdateSelectionUi();
+            return;
+        }
+
         if (TryToggleAxisAt(document, selection, world, segmentPickTolerance, additive))
         {
             UpdateSelectionUi();
@@ -229,6 +236,23 @@ public sealed class SelectionTool : ToolBase
             if (hit)
             {
                 selection.SelectedLeaderIds.Add(leader.Id);
+            }
+        }
+
+        foreach (var note in document.Texts)
+        {
+            var layout = TextGeometry.CreateLayout(note, Context?.Session.Camera.Zoom ?? 1.0);
+            var hit = bounds.Contains(layout.Origin) || bounds.Contains(layout.UnderlineEnd);
+            if (!hit && layout.ArrowTip is PointF tip)
+            {
+                hit = windowSelection
+                    ? bounds.ContainsSegmentFully(tip, layout.Origin)
+                    : bounds.IntersectsSegment(tip, layout.Origin);
+            }
+
+            if (hit)
+            {
+                selection.SelectedTextIds.Add(note.Id);
             }
         }
 
@@ -433,6 +457,36 @@ public sealed class SelectionTool : ToolBase
         return true;
     }
 
+    private bool TryToggleTextAt(
+        CadDocument document,
+        Core.Selection.Selection selection,
+        PointF world,
+        double tolerance,
+        bool additive)
+    {
+        if (!TextPickOperations.TryPickAt(
+            document,
+            world,
+            tolerance,
+            out var textId,
+            Context?.Session.Camera.Zoom ?? 1.0))
+        {
+            return false;
+        }
+
+        if (additive && selection.SelectedTextIds.Contains(textId))
+        {
+            selection.SelectedTextIds.Remove(textId);
+        }
+        else
+        {
+            selection.SelectedTextIds.Add(textId);
+        }
+
+        Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_TextSelected);
+        return true;
+    }
+
     private void UpdateSelectionUi(string? status = null)
     {
         if (Context is null)
@@ -448,8 +502,9 @@ public sealed class SelectionTool : ToolBase
         var dimensionCount = selection.SelectedDimensionIds.Count;
         var axisCount = selection.SelectedAxisIds.Count;
         var leaderCount = selection.SelectedLeaderIds.Count;
+        var textCount = selection.SelectedTextIds.Count;
 
-        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0 && leaderCount == 0)
+        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0 && leaderCount == 0 && textCount == 0)
         {
             Context.SetArea(null);
             Context.SetLength(null);
@@ -458,13 +513,23 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
-        if (leaderCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0)
+        if (leaderCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0 && textCount == 0)
         {
             var leader = document.Leaders.First(item => selection.SelectedLeaderIds.Contains(item.Id));
             Context.SetLength(null);
             Context.SetArea(null);
             Context.SetSelectionInfo(Strings.Format(Strings.Selection_LeaderWithText, leader.Text));
             Context.SetStatus(status ?? Strings.Status_LeaderSelected);
+            return;
+        }
+
+        if (textCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0 && leaderCount == 0)
+        {
+            var note = document.Texts.First(item => selection.SelectedTextIds.Contains(item.Id));
+            Context.SetLength(null);
+            Context.SetArea(null);
+            Context.SetSelectionInfo(Strings.Format(Strings.Selection_TextWithContent, note.Text.Replace('\n', ' ')));
+            Context.SetStatus(status ?? Strings.Status_TextSelected);
             return;
         }
 

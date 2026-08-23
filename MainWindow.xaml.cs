@@ -48,6 +48,7 @@ public partial class MainWindow : Window
             ["Extend"] = new ExtendTool(),
             ["Dimension"] = new DimensionTool(),
             ["Leader"] = new LeaderTool(),
+            ["Text"] = new TextTool(),
             ["Eraser"] = new EraserTool(),
             ["Copy"] = new CopyTool(),
             ["Fill"] = new FillTool(),

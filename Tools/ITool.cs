@@ -26,6 +26,10 @@ public interface ITool
 
     void OnKeyDown(KeyEventArgs e);
 
+    void OnTextInput(TextCompositionEventArgs e);
+
+    bool CapturesTextInput { get; }
+
     bool TryApplyLength(double length);
 
     bool TryApplyLengthInput(string input);
@@ -56,6 +60,10 @@ public abstract class ToolBase : ITool
     public virtual void OnMouseUp(MouseButtonEventArgs e, PointF world) { }
 
     public virtual void OnKeyDown(KeyEventArgs e) { }
+
+    public virtual void OnTextInput(TextCompositionEventArgs e) { }
+
+    public virtual bool CapturesTextInput => false;
 
     public virtual bool TryApplyLength(double length) => false;
 

@@ -334,11 +334,26 @@ public static class Strings
     public static string Menu_Header_Extend => Get("Menu.Header.Extend");
     public static string Menu_Header_Dimension => Get("Menu.Header.Dimension");
     public static string Menu_Header_Leader => Get("Menu.Header.Leader");
+    public static string Menu_Header_Text => Get("Menu.Header.Text");
     public static string Menu_Header_Eraser => Get("Menu.Header.Eraser");
     public static string Menu_Header_Fill => Get("Menu.Header.Fill");
 
     public static string Tool_Leader => Get("Tool.Leader");
     public static string Tooltip_Tool_Leader => Get("Tooltip.Tool.Leader");
+    public static string Tool_Text => Get("Tool.Text");
+    public static string Tooltip_Tool_Text => Get("Tooltip.Tool.Text");
+    public static string Label_TextParameters => Get("Label.TextParameters");
+    public static string Label_TextMode => Get("Label.TextMode");
+    public static string Label_TextMode_Plain => Get("Label.TextMode.Plain");
+    public static string Label_TextMode_Arrow => Get("Label.TextMode.Arrow");
+    public static string Input_Text_SelectPoint => Get("Input.Text.SelectPoint");
+    public static string Input_Text_SelectArrow => Get("Input.Text.SelectArrow");
+    public static string Input_Text_SelectLanding => Get("Input.Text.SelectLanding");
+    public static string Input_Text_Type => Get("Input.Text.Type");
+    public static string Status_TextCreated => Get("Status.TextCreated");
+    public static string Status_TextCancelled => Get("Status.TextCancelled");
+    public static string Status_TextSelected => Get("Status.TextSelected");
+    public static string Selection_TextWithContent => Get("Selection.TextWithContent");
     public static string Label_Leader => Get("Label.Leader");
     public static string Label_Elevation => Get("Label.Elevation");
     public static string Label_LeaderText => Get("Label.LeaderText");

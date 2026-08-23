@@ -28,6 +28,8 @@ public sealed class CadSession
 
     public LeaderToolOptions LeaderToolOptions { get; } = new();
 
+    public TextToolOptions TextToolOptions { get; } = new();
+
     public DisplayUnitSettings DisplayUnitSettings { get; } = new();
 
     public FillToolOptions FillToolOptions { get; } = new();
@@ -91,6 +93,7 @@ public sealed class CadSession
         Document.Dimensions.Clear();
         Document.Axes.Clear();
         Document.Leaders.Clear();
+        Document.Texts.Clear();
         Document.ElevationBaseY = null;
         Document.SuppressedFaceGeometryKeys.Clear();
         Document.FaceFillStyles.Clear();

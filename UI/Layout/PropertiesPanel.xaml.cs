@@ -4,8 +4,10 @@ using LiteCad.Dimensions;
 using LiteCad.Infrastructure;
 using LiteCad.Resources;
 using LiteCad.Services;
+using LiteCad.Texts;
 using LiteCad.Tools;
 using LiteCad.UI;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -30,6 +32,7 @@ public partial class PropertiesPanel : UserControl
     private bool _suppressDimensionOrthoEvents;
     private bool _suppressFaceFillEvents;
     private bool _suppressFillToolEvents;
+    private bool _suppressTextToolEvents;
     private bool _suppressAxisOrthoEvents;
     private bool _suppressOffsetAxisEvents;
 
@@ -96,6 +99,7 @@ public partial class PropertiesPanel : UserControl
         var isOffsetTool = toolId == ToolId.Offset;
         var isDimensionTool = toolId == ToolId.Dimension;
         var isFillTool = toolId == ToolId.Fill;
+        var isTextTool = toolId == ToolId.Text;
         LineToolPanel.Visibility = isLineTool ? Visibility.Visible : Visibility.Collapsed;
         AxisToolPanel.Visibility = isAxisTool ? Visibility.Visible : Visibility.Collapsed;
         MoveToolPanel.Visibility = isMoveTool ? Visibility.Visible : Visibility.Collapsed;
@@ -103,6 +107,7 @@ public partial class PropertiesPanel : UserControl
         OffsetToolPanel.Visibility = isOffsetTool ? Visibility.Visible : Visibility.Collapsed;
         DimensionToolPanel.Visibility = isDimensionTool ? Visibility.Visible : Visibility.Collapsed;
         FillToolPanel.Visibility = isFillTool ? Visibility.Visible : Visibility.Collapsed;
+        TextToolPanel.Visibility = isTextTool ? Visibility.Visible : Visibility.Collapsed;
 
         if (_session is not null)
         {
@@ -111,7 +116,7 @@ public partial class PropertiesPanel : UserControl
             SyncFaceSelection(_session);
         }
 
-        UpdateNoParametersVisibility(isLineTool, isAxisTool, isMoveTool, isMirrorTool, isOffsetTool, isDimensionTool, isFillTool);
+        UpdateNoParametersVisibility(isLineTool, isAxisTool, isMoveTool, isMirrorTool, isOffsetTool, isDimensionTool, isFillTool, isTextTool);
 
         if (isAxisTool)
         {
@@ -143,6 +148,11 @@ public partial class PropertiesPanel : UserControl
         if (isFillTool)
         {
             SyncFillToolPanelFromSession();
+        }
+
+        if (isTextTool)
+        {
+            SyncTextToolPanelFromSession();
         }
     }
 
@@ -836,7 +846,8 @@ public partial class PropertiesPanel : UserControl
         bool isMirrorTool,
         bool isOffsetTool = false,
         bool isDimensionTool = false,
-        bool isFillTool = false)
+        bool isFillTool = false,
+        bool isTextTool = false)
     {
         NoParametersText.Visibility = isLineTool
             || isAxisTool
@@ -845,11 +856,78 @@ public partial class PropertiesPanel : UserControl
             || isOffsetTool
             || isDimensionTool
             || isFillTool
+            || isTextTool
             || DimensionSelectionPanel.Visibility == Visibility.Visible
             || AxisSelectionPanel.Visibility == Visibility.Visible
             || FaceSelectionPanel.Visibility == Visibility.Visible
             ? Visibility.Collapsed
             : Visibility.Visible;
+    }
+
+    public void SyncTextToolPanelFromSession()
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        _suppressTextToolEvents = true;
+        var tag = _session.TextToolOptions.Kind == TextNoteKind.Arrow ? "Arrow" : "Plain";
+        foreach (ComboBoxItem item in TextToolModeCombo.Items)
+        {
+            if (item.Tag?.ToString() == tag)
+            {
+                TextToolModeCombo.SelectedItem = item;
+                break;
+            }
+        }
+
+        TextToolTextSizeTextBox.Text = _session.TextToolOptions.TextSize.ToString("0.##", CultureInfo.InvariantCulture);
+        _suppressTextToolEvents = false;
+    }
+
+    private void TextToolModeCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (_session is null || _suppressTextToolEvents || TextToolModeCombo.SelectedItem is not ComboBoxItem item)
+        {
+            return;
+        }
+
+        _session.TextToolOptions.Kind = item.Tag?.ToString() == "Arrow"
+            ? TextNoteKind.Arrow
+            : TextNoteKind.Plain;
+        _requestRedraw?.Invoke();
+    }
+
+    private void TextToolTextSizeTextBox_OnCommit(object sender, RoutedEventArgs e)
+        => CommitTextToolTextSize();
+
+    private void TextToolTextSizeTextBox_OnKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter)
+        {
+            CommitTextToolTextSize();
+            e.Handled = true;
+        }
+    }
+
+    private void CommitTextToolTextSize()
+    {
+        if (_session is null || _suppressTextToolEvents)
+        {
+            return;
+        }
+
+        var normalized = TextToolTextSizeTextBox.Text?.Trim().Replace(',', '.');
+        if (!double.TryParse(normalized, NumberStyles.Float, CultureInfo.InvariantCulture, out var textSize))
+        {
+            SyncTextToolPanelFromSession();
+            return;
+        }
+
+        _session.TextToolOptions.TextSize = TextNote.NormalizeTextSize(textSize);
+        SyncTextToolPanelFromSession();
+        _requestRedraw?.Invoke();
     }
 
     private void FillToolColorCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

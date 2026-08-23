@@ -115,6 +115,12 @@
                     <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Leader}" />
                 </Button>
                 <Button Style="{StaticResource CadToolButtonStyle}"
+                        Tag="Text"
+                        ToolTip="{loc:Loc Key=Tooltip.Tool.Text}"
+                        Click="ToolButton_OnClick">
+                    <Path Style="{StaticResource CadToolIconPathStyle}" Data="{StaticResource Icon.Text}" />
+                </Button>
+                <Button Style="{StaticResource CadToolButtonStyle}"
                         Tag="Eraser"
                         ToolTip="{loc:Loc Key=Tooltip.Tool.Eraser}"
                         Click="ToolButton_OnClick">

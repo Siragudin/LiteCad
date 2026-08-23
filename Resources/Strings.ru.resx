@@ -1061,4 +1061,49 @@
   <data name="Selection.LeaderWithText" xml:space="preserve">
     <value>Выноска: {0}</value>
   </data>
+  <data name="Tool.Text" xml:space="preserve">
+    <value>Текст</value>
+  </data>
+  <data name="Tooltip.Tool.Text" xml:space="preserve">
+    <value>Текст</value>
+  </data>
+  <data name="Menu.Header.Text" xml:space="preserve">
+    <value>_Текст</value>
+  </data>
+  <data name="Label.TextParameters" xml:space="preserve">
+    <value>Текст</value>
+  </data>
+  <data name="Label.TextMode" xml:space="preserve">
+    <value>Режим</value>
+  </data>
+  <data name="Label.TextMode.Plain" xml:space="preserve">
+    <value>Текст</value>
+  </data>
+  <data name="Label.TextMode.Arrow" xml:space="preserve">
+    <value>Указатель</value>
+  </data>
+  <data name="Input.Text.SelectPoint" xml:space="preserve">
+    <value>Укажите точку текста</value>
+  </data>
+  <data name="Input.Text.SelectArrow" xml:space="preserve">
+    <value>Укажите точку стрелки</value>
+  </data>
+  <data name="Input.Text.SelectLanding" xml:space="preserve">
+    <value>Укажите точку текста</value>
+  </data>
+  <data name="Input.Text.Type" xml:space="preserve">
+    <value>Введите текст (Enter — готово, Alt+Enter — новая строка)</value>
+  </data>
+  <data name="Status.TextCreated" xml:space="preserve">
+    <value>Текст создан</value>
+  </data>
+  <data name="Status.TextCancelled" xml:space="preserve">
+    <value>Текст отменён</value>
+  </data>
+  <data name="Status.TextSelected" xml:space="preserve">
+    <value>Текст выбран</value>
+  </data>
+  <data name="Selection.TextWithContent" xml:space="preserve">
+    <value>Текст: {0}</value>
+  </data>
 </root>

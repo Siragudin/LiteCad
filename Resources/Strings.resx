@@ -1061,4 +1061,49 @@
   <data name="Selection.LeaderWithText" xml:space="preserve">
     <value>Leader: {0}</value>
   </data>
+  <data name="Tool.Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Tooltip.Tool.Text" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Menu.Header.Text" xml:space="preserve">
+    <value>_Text</value>
+  </data>
+  <data name="Label.TextParameters" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Label.TextMode" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="Label.TextMode.Plain" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="Label.TextMode.Arrow" xml:space="preserve">
+    <value>Arrow</value>
+  </data>
+  <data name="Input.Text.SelectPoint" xml:space="preserve">
+    <value>Click to place text</value>
+  </data>
+  <data name="Input.Text.SelectArrow" xml:space="preserve">
+    <value>Select arrow point</value>
+  </data>
+  <data name="Input.Text.SelectLanding" xml:space="preserve">
+    <value>Select text point</value>
+  </data>
+  <data name="Input.Text.Type" xml:space="preserve">
+    <value>Type text (Enter to finish, Alt+Enter for new line)</value>
+  </data>
+  <data name="Status.TextCreated" xml:space="preserve">
+    <value>Text created</value>
+  </data>
+  <data name="Status.TextCancelled" xml:space="preserve">
+    <value>Text cancelled</value>
+  </data>
+  <data name="Status.TextSelected" xml:space="preserve">
+    <value>Text selected</value>
+  </data>
+  <data name="Selection.TextWithContent" xml:space="preserve">
+    <value>Text: {0}</value>
+  </data>
 </root>

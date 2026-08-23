@@ -14,6 +14,8 @@ public sealed class Selection
 
     public HashSet<Guid> SelectedLeaderIds { get; } = [];
 
+    public HashSet<Guid> SelectedTextIds { get; } = [];
+
     public void Clear()
     {
         SelectedEdgeIds.Clear();
@@ -22,6 +24,7 @@ public sealed class Selection
         SelectedDimensionIds.Clear();
         SelectedAxisIds.Clear();
         SelectedLeaderIds.Clear();
+        SelectedTextIds.Clear();
     }
 
     public bool IsEmpty =>
@@ -30,5 +33,6 @@ public sealed class Selection
         SelectedVertexIds.Count == 0 &&
         SelectedDimensionIds.Count == 0 &&
         SelectedAxisIds.Count == 0 &&
-        SelectedLeaderIds.Count == 0;
+        SelectedLeaderIds.Count == 0 &&
+        SelectedTextIds.Count == 0;
 }

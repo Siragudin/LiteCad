@@ -1,5 +1,6 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
+using LiteCad.Texts;
 
 namespace LiteCad.Services;
 
@@ -8,7 +9,8 @@ public enum SelectionPickKind
     Vertex,
     Axis,
     Edge,
-    Polygon
+    Polygon,
+    Text
 }
 
 public readonly record struct SelectionPick(SelectionPickKind Kind, Guid Id);
@@ -19,7 +21,8 @@ public static class SelectionPickOperations
         CadDocument document,
         PointF world,
         double tolerance,
-        double? edgePickTolerance = null)
+        double? edgePickTolerance = null,
+        double zoom = 1.0)
     {
         var segmentTolerance = edgePickTolerance ?? tolerance;
 
@@ -31,6 +34,11 @@ public static class SelectionPickOperations
         if (TryPickAxis(document, world, segmentTolerance, out var axisId))
         {
             return new SelectionPick(SelectionPickKind.Axis, axisId);
+        }
+
+        if (TryPickText(document, world, segmentTolerance, out var textId, zoom))
+        {
+            return new SelectionPick(SelectionPickKind.Text, textId);
         }
 
         if (TryPickEdge(document, world, segmentTolerance, out var edgeId))
@@ -63,6 +71,9 @@ public static class SelectionPickOperations
                 break;
             case SelectionPickKind.Polygon:
                 selection.SelectedPolygonIds.Add(pick.Id);
+                break;
+            case SelectionPickKind.Text:
+                selection.SelectedTextIds.Add(pick.Id);
                 break;
         }
     }
@@ -130,6 +141,14 @@ public static class SelectionPickOperations
         axisId = closestAxis.Id;
         return true;
     }
+
+    public static bool TryPickText(
+        CadDocument document,
+        PointF world,
+        double tolerance,
+        out Guid textId,
+        double zoom = 1.0)
+        => TextPickOperations.TryPickAt(document, world, tolerance, out textId, zoom);
 
     private static bool TryPickVertex(CadDocument document, PointF world, double tolerance, out Guid vertexId)
     {

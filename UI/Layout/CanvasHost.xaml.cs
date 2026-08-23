@@ -59,7 +59,7 @@ public partial class CanvasHost : System.Windows.Controls.UserControl
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
     {
-        if (e.Key == Key.Space && !_isSpaceDown)
+        if (e.Key == Key.Space && !_isSpaceDown && Session?.ToolService.ActiveTool?.CapturesTextInput != true)
         {
             _isSpaceDown = true;
             Cursor = Cursors.Hand;
@@ -69,6 +69,12 @@ public partial class CanvasHost : System.Windows.Controls.UserControl
 
         base.OnPreviewKeyDown(e);
         Session?.ToolService.ActiveTool?.OnKeyDown(e);
+    }
+
+    protected override void OnPreviewTextInput(TextCompositionEventArgs e)
+    {
+        base.OnPreviewTextInput(e);
+        Session?.ToolService.ActiveTool?.OnTextInput(e);
     }
 
     protected override void OnPreviewKeyUp(KeyEventArgs e)

@@ -18,6 +18,8 @@ public sealed class ProjectDocumentDto
 
     public List<LeaderDto> Leaders { get; set; } = [];
 
+    public List<TextNoteDto> Texts { get; set; } = [];
+
     public double? ElevationBaseY { get; set; }
 
     public List<string> SuppressedFaceGeometryKeys { get; set; } = [];
@@ -97,6 +99,25 @@ public sealed class LeaderDto
     public double TextY { get; set; }
 
     public string Text { get; set; } = string.Empty;
+}
+
+public sealed class TextNoteDto
+{
+    public Guid Id { get; set; }
+
+    public string Kind { get; set; } = "Plain";
+
+    public double OriginX { get; set; }
+
+    public double OriginY { get; set; }
+
+    public double? ArrowTipX { get; set; }
+
+    public double? ArrowTipY { get; set; }
+
+    public string Text { get; set; } = string.Empty;
+
+    public double TextSize { get; set; } = 12;
 }
 
 public sealed class DimensionDto
