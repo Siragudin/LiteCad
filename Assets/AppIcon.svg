@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="LiteCAD">
+  <!-- LC monogram. Coordinates are the source of truth for AppIcon.ico. -->
+  <rect width="256" height="256" rx="36" fill="#14324A"/>
+  <!-- L -->
+  <path fill="#F3F6F8" d="M40 48h44v120h88v40H40z"/>
+  <!-- C: annular sector opening to the right -->
+  <path fill="#F3F6F8" fill-rule="evenodd" d="
+    M 238.62 178.49
+    A 82 82 0 1 1 238.62 77.51
+    L 207.10 102.14
+    A 42 42 0 1 0 207.10 153.86
+    Z"/>
+</svg>
