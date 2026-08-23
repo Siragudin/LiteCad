@@ -41,6 +41,7 @@ public partial class ToolBar : UserControl
         SetButtonTooltip("Stretch", Strings.Tooltip_Tool_Stretch);
         SetButtonTooltip("Extend", Strings.Tooltip_Tool_Extend);
         SetButtonTooltip("Dimension", Strings.Tooltip_Tool_Dimension);
+        SetButtonTooltip("Leader", Strings.Tooltip_Tool_Leader);
         SetButtonTooltip("Eraser", Strings.Tooltip_Tool_Eraser);
         SetButtonTooltip("Fill", Strings.Tooltip_Tool_Fill);
     }

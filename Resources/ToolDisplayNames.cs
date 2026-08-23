@@ -23,6 +23,7 @@ public static class ToolDisplayNames
             ToolId.Stretch => Strings.Tool_Stretch,
             ToolId.Extend => Strings.Tool_Extend,
             ToolId.Dimension => Strings.Tool_Dimension,
+            ToolId.Leader => Strings.Tool_Leader,
             ToolId.Eraser => Strings.Tool_Eraser,
             ToolId.Copy => Strings.Tool_Copy,
             ToolId.Fill => Strings.Tool_Fill,

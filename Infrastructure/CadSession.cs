@@ -26,6 +26,8 @@ public sealed class CadSession
 
     public DimensionToolOptions DimensionToolOptions { get; } = new();
 
+    public LeaderToolOptions LeaderToolOptions { get; } = new();
+
     public DisplayUnitSettings DisplayUnitSettings { get; } = new();
 
     public FillToolOptions FillToolOptions { get; } = new();
@@ -88,6 +90,8 @@ public sealed class CadSession
         Document.Polygons.Clear();
         Document.Dimensions.Clear();
         Document.Axes.Clear();
+        Document.Leaders.Clear();
+        Document.ElevationBaseY = null;
         Document.SuppressedFaceGeometryKeys.Clear();
         Document.FaceFillStyles.Clear();
         Selection.Clear();

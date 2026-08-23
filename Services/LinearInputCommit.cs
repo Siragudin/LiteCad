@@ -6,6 +6,11 @@ public static class LinearInputCommit
 {
     public static bool TryCommitLength(ITool tool, string input, LinearDisplayUnit unit, LineInputLabelMode mode)
     {
+        if (mode == LineInputLabelMode.Text)
+        {
+            return tool.TryApplyLengthInput(input);
+        }
+
         if (mode == LineInputLabelMode.Angle)
         {
             return tool.TryApplyLengthInput(input);

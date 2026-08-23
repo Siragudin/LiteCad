@@ -14,6 +14,7 @@ public sealed class Renderer
     private readonly EdgeRenderer _edgeRenderer = new();
     private readonly AxisRenderer _axisRenderer = new();
     private readonly DimensionRenderer _dimensionRenderer = new();
+    private readonly LeaderRenderer _leaderRenderer = new();
     private readonly SelectionRenderer _selectionRenderer = new();
 
     public void Render(
@@ -42,6 +43,13 @@ public sealed class Renderer
                 viewport,
                 linearUnit,
                 activeTool,
+                forScreenDisplay: true);
+            _leaderRenderer.Render(
+                context,
+                document,
+                selection,
+                camera,
+                viewport,
                 forScreenDisplay: true);
             _selectionRenderer.Render(context, document, selection, camera);
             activeTool?.RenderOverlay(context, camera, viewport);
@@ -88,6 +96,13 @@ public sealed class Renderer
             contentViewport,
             linearUnit,
             activeTool: null,
+            forScreenDisplay: false);
+        _leaderRenderer.Render(
+            context,
+            document,
+            new Selection(),
+            exportCamera,
+            contentViewport,
             forScreenDisplay: false);
     }
 }

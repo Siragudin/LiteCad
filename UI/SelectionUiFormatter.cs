@@ -2,6 +2,7 @@ using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
 using LiteCad.Infrastructure;
+using LiteCad.Leaders;
 using LiteCad.Resources;
 using LiteCad.Services;
 using LiteCad.UI;
@@ -21,9 +22,17 @@ internal static class SelectionUiFormatter
         var dimensionCount = selection.SelectedDimensionIds.Count;
         var axisCount = selection.SelectedAxisIds.Count;
 
-        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0)
+        var leaderCount = selection.SelectedLeaderIds.Count;
+
+        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0 && leaderCount == 0)
         {
             return Strings.Selection_NothingSelected;
+        }
+
+        if (leaderCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0)
+        {
+            var leader = document.Leaders.First(item => selection.SelectedLeaderIds.Contains(item.Id));
+            return Strings.Format(Strings.Selection_LeaderWithText, leader.Text);
         }
 
         if (dimensionCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0)

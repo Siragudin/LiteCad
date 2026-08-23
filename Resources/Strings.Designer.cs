@@ -332,6 +332,26 @@ public static class Strings
     public static string Menu_Header_Stretch => Get("Menu.Header.Stretch");
     public static string Menu_Header_Extend => Get("Menu.Header.Extend");
     public static string Menu_Header_Dimension => Get("Menu.Header.Dimension");
+    public static string Menu_Header_Leader => Get("Menu.Header.Leader");
     public static string Menu_Header_Eraser => Get("Menu.Header.Eraser");
     public static string Menu_Header_Fill => Get("Menu.Header.Fill");
+
+    public static string Tool_Leader => Get("Tool.Leader");
+    public static string Tooltip_Tool_Leader => Get("Tooltip.Tool.Leader");
+    public static string Label_Leader => Get("Label.Leader");
+    public static string Label_Elevation => Get("Label.Elevation");
+    public static string Label_LeaderText => Get("Label.LeaderText");
+    public static string Label_LeaderParameters => Get("Label.LeaderParameters");
+    public static string Label_LeaderMode => Get("Label.LeaderMode");
+    public static string Input_Leader_SelectTarget => Get("Input.Leader.SelectTarget");
+    public static string Input_Leader_SelectText => Get("Input.Leader.SelectText");
+    public static string Input_Leader_EnterText => Get("Input.Leader.EnterText");
+    public static string Input_Leader_SetZero => Get("Input.Leader.SetZero");
+    public static string Input_Leader_SelectElevation => Get("Input.Leader.SelectElevation");
+    public static string Status_ZeroElevationSet => Get("Status.ZeroElevationSet");
+    public static string Status_LeaderCreated => Get("Status.LeaderCreated");
+    public static string Status_LeaderCancelled => Get("Status.LeaderCancelled");
+    public static string Status_LeaderSelected => Get("Status.LeaderSelected");
+    public static string Status_SetZeroElevationFirst => Get("Status.SetZeroElevationFirst");
+    public static string Selection_LeaderWithText => Get("Selection.LeaderWithText");
 }

@@ -1,6 +1,7 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
+using LiteCad.Leaders;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -44,6 +45,8 @@ public static class ProjectDocumentSerializer
                 .ToList(),
             Dimensions = document.Dimensions.Select(MapDimension).ToList(),
             Axes = document.Axes.Select(MapAxis).ToList(),
+            Leaders = document.Leaders.Select(MapLeader).ToList(),
+            ElevationBaseY = document.ElevationBaseY,
             SuppressedFaceGeometryKeys = document.SuppressedFaceGeometryKeys.ToList(),
             FaceFillStyles = document.FaceFillStyles.ToDictionary(
                 pair => pair.Key,
@@ -70,6 +73,8 @@ public static class ProjectDocumentSerializer
         document.Polygons.Clear();
         document.Dimensions.Clear();
         document.Axes.Clear();
+        document.Leaders.Clear();
+        document.ElevationBaseY = dto.ElevationBaseY;
         document.SuppressedFaceGeometryKeys.Clear();
         document.FaceFillStyles.Clear();
 
@@ -116,6 +121,16 @@ public static class ProjectDocumentSerializer
                 axis.Id,
                 new PointF((float)axis.StartX, (float)axis.StartY),
                 new PointF((float)axis.EndX, (float)axis.EndY)));
+        }
+
+        foreach (var leader in dto.Leaders ?? [])
+        {
+            document.Leaders.Add(new Leader(
+                leader.Id,
+                ParseEnum(leader.Kind, LeaderKind.Text),
+                new PointF((float)leader.TargetX, (float)leader.TargetY),
+                new PointF((float)leader.TextX, (float)leader.TextY),
+                leader.Text ?? string.Empty));
         }
 
         foreach (var key in dto.SuppressedFaceGeometryKeys)
@@ -185,6 +200,18 @@ public static class ProjectDocumentSerializer
             StartY = axis.Start.Y,
             EndX = axis.End.X,
             EndY = axis.End.Y
+        };
+
+    private static LeaderDto MapLeader(Leader leader)
+        => new()
+        {
+            Id = leader.Id,
+            Kind = leader.Kind.ToString(),
+            TargetX = leader.Target.X,
+            TargetY = leader.Target.Y,
+            TextX = leader.TextPosition.X,
+            TextY = leader.TextPosition.Y,
+            Text = leader.Text
         };
 
     private static DimensionDto MapDimension(Dimension dimension)

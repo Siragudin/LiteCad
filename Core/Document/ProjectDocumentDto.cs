@@ -16,6 +16,10 @@ public sealed class ProjectDocumentDto
 
     public List<AxisDto> Axes { get; set; } = [];
 
+    public List<LeaderDto> Leaders { get; set; } = [];
+
+    public double? ElevationBaseY { get; set; }
+
     public List<string> SuppressedFaceGeometryKeys { get; set; } = [];
 
     public Dictionary<string, FaceFillStyleDto> FaceFillStyles { get; set; } = new(StringComparer.Ordinal);
@@ -76,6 +80,23 @@ public sealed class AxisDto
     public double EndX { get; set; }
 
     public double EndY { get; set; }
+}
+
+public sealed class LeaderDto
+{
+    public Guid Id { get; set; }
+
+    public string Kind { get; set; } = "Text";
+
+    public double TargetX { get; set; }
+
+    public double TargetY { get; set; }
+
+    public double TextX { get; set; }
+
+    public double TextY { get; set; }
+
+    public string Text { get; set; } = string.Empty;
 }
 
 public sealed class DimensionDto

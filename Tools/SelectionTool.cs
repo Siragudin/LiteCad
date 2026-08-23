@@ -1,6 +1,7 @@
 using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
+using LiteCad.Leaders;
 using LiteCad.Rendering;
 using LiteCad.Resources;
 using LiteCad.Services;
@@ -124,6 +125,12 @@ public sealed class SelectionTool : ToolBase
             return;
         }
 
+        if (TryToggleLeaderAt(document, selection, world, segmentPickTolerance, additive))
+        {
+            UpdateSelectionUi();
+            return;
+        }
+
         if (TryToggleAxisAt(document, selection, world, segmentPickTolerance, additive))
         {
             UpdateSelectionUi();
@@ -193,6 +200,35 @@ public sealed class SelectionTool : ToolBase
                     : bounds.IntersectsSegment(axis.Start, axis.End))
             {
                 selection.SelectedAxisIds.Add(axis.Id);
+            }
+        }
+
+        foreach (var leader in document.Leaders)
+        {
+            var layout = LeaderGeometry.CreateLayout(
+                leader.Target,
+                leader.TextPosition,
+                Context?.Session.Camera.Zoom ?? 1.0);
+            var hit = false;
+            foreach (var (start, end) in LeaderGeometry.GetSegments(layout))
+            {
+                hit = windowSelection
+                    ? bounds.ContainsSegmentFully(start, end)
+                    : bounds.IntersectsSegment(start, end);
+                if (hit)
+                {
+                    break;
+                }
+            }
+
+            if (!hit)
+            {
+                hit = bounds.Contains(layout.TextPosition);
+            }
+
+            if (hit)
+            {
+                selection.SelectedLeaderIds.Add(leader.Id);
             }
         }
 
@@ -367,6 +403,36 @@ public sealed class SelectionTool : ToolBase
         return true;
     }
 
+    private bool TryToggleLeaderAt(
+        CadDocument document,
+        Core.Selection.Selection selection,
+        PointF world,
+        double tolerance,
+        bool additive)
+    {
+        if (!LeaderPickOperations.TryPickAt(
+            document,
+            world,
+            tolerance,
+            out var leaderId,
+            Context?.Session.Camera.Zoom ?? 1.0))
+        {
+            return false;
+        }
+
+        if (additive && selection.SelectedLeaderIds.Contains(leaderId))
+        {
+            selection.SelectedLeaderIds.Remove(leaderId);
+        }
+        else
+        {
+            selection.SelectedLeaderIds.Add(leaderId);
+        }
+
+        Context!.SetStatus(additive ? Strings.Status_SelectionUpdated : Strings.Status_LeaderSelected);
+        return true;
+    }
+
     private void UpdateSelectionUi(string? status = null)
     {
         if (Context is null)
@@ -381,13 +447,24 @@ public sealed class SelectionTool : ToolBase
         var vertexCount = selection.SelectedVertexIds.Count;
         var dimensionCount = selection.SelectedDimensionIds.Count;
         var axisCount = selection.SelectedAxisIds.Count;
+        var leaderCount = selection.SelectedLeaderIds.Count;
 
-        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0)
+        if (edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0 && leaderCount == 0)
         {
             Context.SetArea(null);
             Context.SetLength(null);
             Context.SetSelectionInfo(Strings.Selection_NothingSelected);
             Context.SetStatus(status ?? Strings.Status_SelectionCleared);
+            return;
+        }
+
+        if (leaderCount == 1 && edgeCount == 0 && polygonCount == 0 && vertexCount == 0 && dimensionCount == 0 && axisCount == 0)
+        {
+            var leader = document.Leaders.First(item => selection.SelectedLeaderIds.Contains(item.Id));
+            Context.SetLength(null);
+            Context.SetArea(null);
+            Context.SetSelectionInfo(Strings.Format(Strings.Selection_LeaderWithText, leader.Text));
+            Context.SetStatus(status ?? Strings.Status_LeaderSelected);
             return;
         }
 

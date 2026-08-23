@@ -7,5 +7,6 @@ public enum LineInputLabelMode
     Radius,
     ArcHeight,
     Angle,
-    Offset
+    Offset,
+    Text
 }

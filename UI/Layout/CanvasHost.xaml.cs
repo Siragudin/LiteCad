@@ -110,6 +110,12 @@ public partial class CanvasHost : System.Windows.Controls.UserControl
     {
         Focus();
 
+        if (Session?.ToolService.TryHandleAltRightClick(e, Keyboard.Modifiers) == true)
+        {
+            e.Handled = true;
+            return;
+        }
+
         if (IsPanGesture(e))
         {
             _isPanning = true;

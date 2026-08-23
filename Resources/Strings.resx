@@ -1001,4 +1001,61 @@
   <data name="Label.DefaultProjectName" xml:space="preserve">
     <value>Project</value>
   </data>
+  <data name="Tool.Leader" xml:space="preserve">
+    <value>Leader</value>
+  </data>
+  <data name="Tooltip.Tool.Leader" xml:space="preserve">
+    <value>Leader</value>
+  </data>
+  <data name="Menu.Header.Leader" xml:space="preserve">
+    <value>_Leader</value>
+  </data>
+  <data name="Label.Leader" xml:space="preserve">
+    <value>Leader</value>
+  </data>
+  <data name="Label.Elevation" xml:space="preserve">
+    <value>Elevation</value>
+  </data>
+  <data name="Label.LeaderText" xml:space="preserve">
+    <value>Leader Text</value>
+  </data>
+  <data name="Label.LeaderParameters" xml:space="preserve">
+    <value>Leader</value>
+  </data>
+  <data name="Label.LeaderMode" xml:space="preserve">
+    <value>Mode</value>
+  </data>
+  <data name="Input.Leader.SelectTarget" xml:space="preserve">
+    <value>Select target point</value>
+  </data>
+  <data name="Input.Leader.SelectText" xml:space="preserve">
+    <value>Select text position</value>
+  </data>
+  <data name="Input.Leader.EnterText" xml:space="preserve">
+    <value>Enter leader text</value>
+  </data>
+  <data name="Input.Leader.SetZero" xml:space="preserve">
+    <value>Set Zero Elevation</value>
+  </data>
+  <data name="Input.Leader.SelectElevation" xml:space="preserve">
+    <value>Select elevation point</value>
+  </data>
+  <data name="Status.ZeroElevationSet" xml:space="preserve">
+    <value>Zero Elevation Set</value>
+  </data>
+  <data name="Status.LeaderCreated" xml:space="preserve">
+    <value>Leader created</value>
+  </data>
+  <data name="Status.LeaderCancelled" xml:space="preserve">
+    <value>Leader cancelled</value>
+  </data>
+  <data name="Status.LeaderSelected" xml:space="preserve">
+    <value>Leader selected</value>
+  </data>
+  <data name="Status.SetZeroElevationFirst" xml:space="preserve">
+    <value>Set the zero elevation first</value>
+  </data>
+  <data name="Selection.LeaderWithText" xml:space="preserve">
+    <value>Leader: {0}</value>
+  </data>
 </root>

@@ -557,7 +557,8 @@ public partial class StatusBar : System.Windows.Controls.UserControl
             or LineInputLabelMode.Radius
             or LineInputLabelMode.ArcHeight
             or LineInputLabelMode.Angle
-            or LineInputLabelMode.Offset;
+            or LineInputLabelMode.Offset
+            or LineInputLabelMode.Text;
 
     private bool IsMoveDistanceInput()
         => _isInputActive && _lineInputLabelMode == LineInputLabelMode.Distance;
@@ -573,6 +574,7 @@ public partial class StatusBar : System.Windows.Controls.UserControl
             LineInputLabelMode.ArcHeight => Strings.Label_ArcHeight,
             LineInputLabelMode.Angle => Strings.Label_Angle,
             LineInputLabelMode.Offset => Strings.Label_Offset,
+            LineInputLabelMode.Text => Strings.Label_LeaderText,
             _ => Strings.Label_Length
         };
 

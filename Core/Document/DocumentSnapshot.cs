@@ -1,5 +1,6 @@
 using LiteCad.Core.Geometry;
 using LiteCad.Dimensions;
+using LiteCad.Leaders;
 
 namespace LiteCad.Core.Document;
 
@@ -11,6 +12,8 @@ public sealed class DocumentSnapshot
         List<Polygon> userPolygons,
         List<Dimension> dimensions,
         List<Axis> axes,
+        List<Leader> leaders,
+        double? elevationBaseY,
         HashSet<string> suppressedFaceGeometryKeys,
         Dictionary<string, FaceFillStyle> faceFillStyles)
     {
@@ -19,6 +22,8 @@ public sealed class DocumentSnapshot
         UserPolygons = userPolygons;
         Dimensions = dimensions;
         Axes = axes;
+        Leaders = leaders;
+        ElevationBaseY = elevationBaseY;
         SuppressedFaceGeometryKeys = suppressedFaceGeometryKeys;
         FaceFillStyles = faceFillStyles;
     }
@@ -36,6 +41,10 @@ public sealed class DocumentSnapshot
 
     public List<Axis> Axes { get; }
 
+    public List<Leader> Leaders { get; }
+
+    public double? ElevationBaseY { get; }
+
     public HashSet<string> SuppressedFaceGeometryKeys { get; }
 
     public Dictionary<string, FaceFillStyle> FaceFillStyles { get; }
@@ -50,6 +59,7 @@ public sealed class DocumentSnapshot
             .ToList();
         var dimensions = document.Dimensions.Select(dimension => dimension.Clone()).ToList();
         var axes = document.Axes.Select(axis => axis.Clone()).ToList();
+        var leaders = document.Leaders.Select(leader => leader.Clone()).ToList();
         var suppressedFaceGeometryKeys = new HashSet<string>(
             document.SuppressedFaceGeometryKeys,
             StringComparer.Ordinal);
@@ -64,6 +74,8 @@ public sealed class DocumentSnapshot
             userPolygons,
             dimensions,
             axes,
+            leaders,
+            document.ElevationBaseY,
             suppressedFaceGeometryKeys,
             faceFillStyles);
     }
@@ -76,6 +88,8 @@ public sealed class DocumentSnapshot
         document.Polygons.Clear();
         document.Dimensions.Clear();
         document.Axes.Clear();
+        document.Leaders.Clear();
+        document.ElevationBaseY = null;
         document.SuppressedFaceGeometryKeys.Clear();
         document.FaceFillStyles.Clear();
 
@@ -103,6 +117,13 @@ public sealed class DocumentSnapshot
         {
             document.Axes.Add(axis.Clone());
         }
+
+        foreach (var leader in Leaders)
+        {
+            document.Leaders.Add(leader.Clone());
+        }
+
+        document.ElevationBaseY = ElevationBaseY;
 
         foreach (var key in SuppressedFaceGeometryKeys)
         {

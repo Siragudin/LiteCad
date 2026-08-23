@@ -1,4 +1,5 @@
 using LiteCad.Tools;
+using System.Windows.Input;
 
 namespace LiteCad.Services;
 
@@ -25,4 +26,23 @@ public sealed class ToolService
 
         ActiveTool.OnActivated();
     }
+
+    public bool TryHandleAltRightClick(MouseButtonEventArgs e, ModifierKeys modifiers)
+    {
+        if (!IsAltRightClick(e, modifiers))
+        {
+            return false;
+        }
+
+        if (ActiveTool?.Id != ToolId.Selection)
+        {
+            _context?.ActivateSelectionTool();
+        }
+
+        return true;
+    }
+
+    public static bool IsAltRightClick(MouseButtonEventArgs e, ModifierKeys modifiers)
+        => e.ChangedButton == MouseButton.Right
+           && (modifiers & ModifierKeys.Alt) == ModifierKeys.Alt;
 }

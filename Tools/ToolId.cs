@@ -18,6 +18,7 @@ public enum ToolId
     Stretch,
     Extend,
     Dimension,
+    Leader,
     Eraser,
     Copy,
     Fill,
