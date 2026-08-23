@@ -266,6 +266,84 @@ public class PdfSheetPreviewTests : IDisposable
     }
 
     [Fact]
+    public void PdfPreviewWindow_ViewportFit_FillsAvailablePreviewArea()
+    {
+        WpfTestUtilities.RunSta(() =>
+        {
+            var document = CreateSquareDocument();
+            var window = new PdfPreviewWindow(
+                document,
+                LinearDisplayUnit.Millimeters,
+                new Renderer(),
+                Path.Combine(_tempRoot, "viewport-fit.pdf"),
+                null);
+
+            window.PrimaryView.Position = new Point(80, 120);
+            window.PrimaryView.Scale = 0.5;
+
+            window.Show();
+            window.UpdateLayout();
+
+            Assert.Equal(80, window.PrimaryView.Position.X, 1e-9);
+            Assert.Equal(120, window.PrimaryView.Position.Y, 1e-9);
+            Assert.Equal(0.5, window.PrimaryView.Scale, 1e-9);
+
+            var fitSize = window.PreviewViewportFitSizeForTesting();
+            Assert.True(fitSize.Width > 200);
+            Assert.True(fitSize.Height > 200);
+
+            var displayScale = window.GetPreviewSheetDisplayScaleForTesting();
+            Assert.InRange(displayScale, 0.25, 1.5);
+
+            var layout = window.RenderResult!.Layout;
+            var scaledWidth = layout.PageWidthDip * displayScale;
+            var scaledHeight = layout.PageHeightDip * displayScale;
+            var widthFill = scaledWidth / fitSize.Width;
+            var heightFill = scaledHeight / fitSize.Height;
+            Assert.True(Math.Max(widthFill, heightFill) >= 0.85);
+
+            window.Close();
+        });
+    }
+
+    [Fact]
+    public void PdfPreviewWindow_ViewportFit_RecalculatesOnOrientationChangeWithoutChangingViewTransform()
+    {
+        WpfTestUtilities.RunSta(() =>
+        {
+            var document = CreateSquareDocument();
+            var window = new PdfPreviewWindow(
+                document,
+                LinearDisplayUnit.Millimeters,
+                new Renderer(),
+                Path.Combine(_tempRoot, "viewport-orientation.pdf"),
+                null);
+
+            window.PrimaryView.Position = new Point(42, 18);
+            window.PrimaryView.Scale = 1.75;
+
+            window.Show();
+            window.UpdateLayout();
+
+            var portraitScale = window.GetPreviewSheetDisplayScaleForTesting();
+            Assert.True(portraitScale > 0);
+
+            window.OrientationCombo.SelectedIndex = 1;
+            window.UpdateLayout();
+
+            Assert.Equal(42, window.PrimaryView.Position.X, 1e-9);
+            Assert.Equal(18, window.PrimaryView.Position.Y, 1e-9);
+            Assert.Equal(1.75, window.PrimaryView.Scale, 1e-9);
+
+            var landscapeScale = window.GetPreviewSheetDisplayScaleForTesting();
+            Assert.True(landscapeScale > 0);
+            Assert.NotEqual(portraitScale, landscapeScale, 3);
+
+            window.Close();
+        });
+    }
+
+    [Fact]
     public void PdfPreviewWindow_InitialView_IsFitToPageCenter()
     {
         WpfTestUtilities.RunSta(() =>

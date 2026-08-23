@@ -16,6 +16,8 @@ namespace LiteCad.UI.Pdf;
 
 public partial class PdfPreviewWindow : Window
 {
+    private const double PreviewFitMarginDip = 32.0;
+
     private readonly CadDocument _document;
     private readonly LinearDisplayUnit _linearUnit;
     private readonly Renderer _renderer;
@@ -41,8 +43,25 @@ public partial class PdfPreviewWindow : Window
         InitializeComponent();
         Background = (Brush)FindResource("CadBackgroundBrush");
         Owner = owner;
+        PreviewScrollViewer.SizeChanged += (_, _) => UpdatePreviewViewportFit();
+        Loaded += (_, _) => UpdatePreviewViewportFit();
         RefreshPreview();
     }
+
+    internal double GetPreviewSheetDisplayScaleForTesting()
+    {
+        if (_renderResult is null
+            || PreviewViewbox.Width <= 0
+            || PreviewViewbox.Height <= 0)
+        {
+            return 0;
+        }
+
+        return PreviewViewbox.Width / _renderResult.Layout.PageWidthDip;
+    }
+
+    internal Size PreviewViewportFitSizeForTesting()
+        => new(PreviewViewbox.Width, PreviewViewbox.Height);
 
     public bool Saved { get; private set; }
 
@@ -86,6 +105,29 @@ public partial class PdfPreviewWindow : Window
         PreviewImage.Source = drawing is null ? null : new DrawingImage(drawing);
         PreviewImage.Width = _renderResult.Layout.PageWidthDip;
         PreviewImage.Height = _renderResult.Layout.PageHeightDip;
+        UpdatePreviewViewportFit();
+    }
+
+    private void UpdatePreviewViewportFit()
+    {
+        if (_renderResult is null)
+        {
+            return;
+        }
+
+        PreviewScrollViewer.UpdateLayout();
+        var availableWidth = Math.Max(0, PreviewScrollViewer.ViewportWidth - PreviewFitMarginDip);
+        var availableHeight = Math.Max(0, PreviewScrollViewer.ViewportHeight - PreviewFitMarginDip);
+        if (availableWidth <= 1 || availableHeight <= 1)
+        {
+            return;
+        }
+
+        var pageWidth = _renderResult.Layout.PageWidthDip;
+        var pageHeight = _renderResult.Layout.PageHeightDip;
+        var scale = Math.Min(availableWidth / pageWidth, availableHeight / pageHeight);
+        PreviewViewbox.Width = pageWidth * scale;
+        PreviewViewbox.Height = pageHeight * scale;
     }
 
     private void PreviewImage_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
