@@ -2,7 +2,13 @@
 
 LiteCAD is a lightweight 2D CAD application for technical drawings, plans, and elevations.
 
-**Repository:** [https://github.com/Siragudin/LiteCad](https://github.com/Siragudin/LiteCad)
+**Developed by Siragudin Guseynov.**
+
+<p align="center">
+  <img src="docs/icon.png" alt="LiteCAD screenshot" width="900">
+</p>
+
+**Repository:** https://github.com/Siragudin/LiteCad
 
 ## Status
 
@@ -61,7 +67,6 @@ Build:
 
 ```bash
 dotnet build
-```
 
 Run:
 
