@@ -193,6 +193,7 @@
                                       SelectionChanged="FillToolPatternCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Solid}" Tag="Solid" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Diagonal}" Tag="Diagonal" />
+                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.DiagonalWide}" Tag="DiagonalWide" />
                             </ComboBox>
                         </StackPanel>
                     </StackPanel>
@@ -287,6 +288,7 @@
                                       SelectionChanged="FaceFillPatternCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Solid}" Tag="Solid" IsSelected="True" />
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Diagonal}" Tag="Diagonal" />
+                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.DiagonalWide}" Tag="DiagonalWide" />
                             </ComboBox>
                         </StackPanel>
                     </StackPanel>

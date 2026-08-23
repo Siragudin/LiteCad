@@ -137,6 +137,42 @@ public class OffsetOperationsTests
     }
 
     [Fact]
+    public void ExecuteObjectOffset_NewVerticesRemainSnappableWithWarmedCache()
+    {
+        var document = CreateSquareFaceDocument(out var face);
+        var snapService = new SnapService();
+        const double uiTolerance = 12.0;
+        snapService.GetVisibleSnaps(document, new PointF(0, 0), uiTolerance);
+
+        var selection = new Selection();
+        Assert.NotNull(OffsetOperations.ExecuteObjectOffset(document, selection, face, 1, Tol));
+
+        var offsetCorner = new PointF(-1, -1);
+        var snap = snapService.FindBestSnap(document, offsetCorner, uiTolerance);
+        Assert.True(snap.HasSnap);
+        Assert.Equal(SnapKind.Endpoint, snap.Snap!.Value.Kind);
+        Assert.True(MathUtils.ArePointsEqual(snap.Snap.Value.Position, offsetCorner, Tol));
+    }
+
+    [Fact]
+    public void ExecuteObjectOffset_LargeUiSnapRadius_DoesNotHideOffsetVertices()
+    {
+        var document = CreateSquareFaceDocument(out var face);
+        var snapService = new SnapService();
+        const double largeUiTolerance = 1000.0;
+        snapService.GetVisibleSnaps(document, new PointF(0, 0), largeUiTolerance);
+
+        var selection = new Selection();
+        Assert.NotNull(OffsetOperations.ExecuteObjectOffset(document, selection, face, 1, Tol));
+
+        var offsetCorner = new PointF(-1, -1);
+        var snap = snapService.FindBestSnap(document, offsetCorner, largeUiTolerance);
+        Assert.True(snap.HasSnap);
+        Assert.Equal(SnapKind.Endpoint, snap.Snap!.Value.Kind);
+        Assert.True(MathUtils.ArePointsEqual(snap.Snap.Value.Position, offsetCorner, Tol));
+    }
+
+    [Fact]
     public void FacePickOperations_PicksSmallestFace()
     {
         var document = CreateTwoSeparateFacesDocument();

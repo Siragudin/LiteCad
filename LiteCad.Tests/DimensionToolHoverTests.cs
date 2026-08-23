@@ -100,6 +100,77 @@ public class DimensionToolHoverTests
     }
 
     [Fact]
+    public void Hover_MidEdge_FindsOnEdgeSnap()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateHarness();
+            var vertexCount = harness.Session.Document.Vertices.Count;
+
+            harness.MoveMouse(new PointF(25, 3));
+
+            Assert.Equal(vertexCount, harness.Session.Document.Vertices.Count);
+            Assert.NotNull(harness.Tool.HoverMeasurementSnap);
+            Assert.Equal(SnapKind.OnEdge, harness.Tool.HoverMeasurementSnap!.Value.Kind);
+            Assert.True(MathUtils.ArePointsEqual(new PointF(25, 0), harness.Tool.HoverMeasurementSnap.Value.Position, Tol));
+        });
+    }
+
+    [Fact]
+    public void Hover_NearVertex_PrefersEndpoint()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateHarness();
+
+            harness.MoveMouse(new PointF(4, 2));
+
+            Assert.NotNull(harness.Tool.HoverMeasurementSnap);
+            Assert.Equal(SnapKind.Endpoint, harness.Tool.HoverMeasurementSnap!.Value.Kind);
+            Assert.True(MathUtils.ArePointsEqual(new PointF(0, 0), harness.Tool.HoverMeasurementSnap.Value.Position, Tol));
+        });
+    }
+
+    [Fact]
+    public void Commit_MidEdge_CreatesVertexAtProjection()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateHarness();
+            var vertexCountBefore = harness.Session.Document.Vertices.Count;
+            var startId = harness.Edge.StartVertexId;
+            var endId = harness.Edge.EndVertexId;
+
+            harness.LeftClick(new PointF(25, 3));
+
+            Assert.True(harness.Tool.HasPendingOperation);
+            Assert.Equal(vertexCountBefore + 1, harness.Session.Document.Vertices.Count);
+            Assert.Contains(
+                harness.Session.Document.Vertices,
+                vertex => MathUtils.ArePointsEqual(vertex.Position, new PointF(25, 0), Tol)
+                    && vertex.Id != startId
+                    && vertex.Id != endId);
+        });
+    }
+
+    [Fact]
+    public void Commit_NearVertex_UsesExistingVertex()
+    {
+        RunSta(() =>
+        {
+            using var harness = CreateHarness();
+            var vertexCountBefore = harness.Session.Document.Vertices.Count;
+            var startId = harness.Edge.StartVertexId;
+
+            harness.LeftClick(new PointF(4, 2));
+
+            Assert.True(harness.Tool.HasPendingOperation);
+            Assert.Equal(vertexCountBefore, harness.Session.Document.Vertices.Count);
+            Assert.Equal(startId, harness.Session.Document.Vertices.Single(v => MathUtils.ArePointsEqual(v.Position, new PointF(0, 0), Tol)).Id);
+        });
+    }
+
+    [Fact]
     public void Hover_AtLineIntersection_DoesNotCreateVertex()
     {
         RunSta(() =>

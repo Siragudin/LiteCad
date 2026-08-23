@@ -138,6 +138,7 @@ public static class Strings
     public static string Label_FillPattern => Get("Label.FillPattern");
     public static string Label_FillPattern_Solid => Get("Label.FillPattern.Solid");
     public static string Label_FillPattern_Diagonal => Get("Label.FillPattern.Diagonal");
+    public static string Label_FillPattern_DiagonalWide => Get("Label.FillPattern.DiagonalWide");
     public static string Label_Radius => Get("Label.Radius");
     public static string Label_ArcHeight => Get("Label.ArcHeight");
     public static string Label_Angle => Get("Label.Angle");

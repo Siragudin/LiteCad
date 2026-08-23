@@ -342,7 +342,7 @@ public sealed class DimensionTool : ToolBase
             Context.Session.Document,
             world,
             Context.SnapTolerance,
-            includeOnEdge: false);
+            includeOnEdge: true);
 
         if (!result.HasSnap)
         {
@@ -371,7 +371,11 @@ public sealed class DimensionTool : ToolBase
     }
 
     private static bool IsMeasurementSnap(SnapKind kind)
-        => kind is SnapKind.Endpoint or SnapKind.Intersection or SnapKind.AxisIntersection;
+        => kind is SnapKind.Endpoint
+            or SnapKind.Intersection
+            or SnapKind.AxisIntersection
+            or SnapKind.Midpoint
+            or SnapKind.OnEdge;
 
     private static bool TryParseOffset(string input, out double offset)
     {

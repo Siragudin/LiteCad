@@ -8,7 +8,13 @@ namespace LiteCad.Rendering;
 public static class FaceFillRenderer
 {
     private const double DiagonalSpacingScreenPixels = 8.0;
+    private const double DiagonalWideSpacingMultiplier = 3.0;
     private const double DiagonalLineWidthScreenPixels = 1.0;
+
+    public static double GetHatchSpacingScreenPixels(FaceFillPattern pattern)
+        => pattern == FaceFillPattern.DiagonalWide
+            ? DiagonalSpacingScreenPixels * DiagonalWideSpacingMultiplier
+            : DiagonalSpacingScreenPixels;
 
     public static void Render(
         DrawingContext context,
@@ -38,7 +44,7 @@ public static class FaceFillRenderer
             new SolidColorBrush(displayColor),
             DiagonalLineWidthScreenPixels,
             zoom);
-        var spacing = DiagonalSpacingScreenPixels / zoom;
+        var spacing = GetHatchSpacingScreenPixels(style.FillPattern) / zoom;
         var span = bounds.Width + bounds.Height;
 
         context.PushClip(geometry);

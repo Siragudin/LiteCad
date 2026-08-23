@@ -38,7 +38,11 @@ public sealed class SnapService
             .ToList();
 
         SnapPoint? best = nearby.Count > 0 ? nearby[0].Snap : null;
-        var visible = nearby.Select(candidate => candidate.Snap).ToList();
+        var visible = DeduplicateByPosition(
+                nearby.Select(candidate => (candidate.Snap, candidate.Identity)).ToList(),
+                tolerance)
+            .Select(candidate => candidate.Snap)
+            .ToList();
         return new SnapQueryResult(new SnapResult(best, best.HasValue), visible);
     }
 
@@ -117,7 +121,7 @@ public sealed class SnapService
             return false;
         }
 
-        var cache = GetOrBuildCache(document, tolerance);
+        var cache = GetOrBuildCache(document);
         var referencePoints = alignment == OrthoAlignment.Horizontal
             ? cache.AlignmentPoints
             : cache.VerticalAlignmentPoints;
@@ -190,6 +194,8 @@ public sealed class SnapService
             case SnapKind.Endpoint:
             case SnapKind.Intersection:
             case SnapKind.AxisIntersection:
+            case SnapKind.Midpoint:
+            case SnapKind.OnEdge:
                 vertexId = TopologyService.FindOrCreateVertex(document, snap.Position, tolerance);
                 anchor = TopologyService.GetVertexPosition(document, vertexId);
                 return true;
@@ -206,7 +212,7 @@ public sealed class SnapService
         bool includeOnEdge)
     {
         tolerance = TopologyTolerance.Resolve(tolerance);
-        var cache = GetOrBuildCache(document, tolerance);
+        var cache = GetOrBuildCache(document);
 
         var candidates = new List<(SnapPoint Snap, SnapIdentity Identity)>(cache.StaticCandidates);
         if (includeOnEdge)
@@ -217,7 +223,7 @@ public sealed class SnapService
         return ResolveDistances(candidates, cursor);
     }
 
-    private DocumentSnapCache GetOrBuildCache(CadDocument document, double tolerance)
+    private DocumentSnapCache GetOrBuildCache(CadDocument document)
     {
         var fingerprint = ComputeDocumentFingerprint(document);
         if (_cache?.Fingerprint == fingerprint)
@@ -225,7 +231,7 @@ public sealed class SnapService
             return _cache;
         }
 
-        _cache = BuildDocumentSnapCache(document, tolerance, fingerprint);
+        _cache = BuildDocumentSnapCache(document, TopologyTolerance.ForMutation, fingerprint);
         return _cache;
     }
 
@@ -658,6 +664,19 @@ public sealed class SnapService
             {
                 var vertex = TopologyService.FindVertex(document, point, tolerance);
                 AddUniquePoint(points, vertex?.Position ?? point, tolerance);
+            }
+        }
+
+        foreach (var axis in document.Axes)
+        {
+            if (Geometry2D.GetOrthoAlignment(axis.Start, axis.End, tolerance) != OrthoAlignment.Vertical)
+            {
+                continue;
+            }
+
+            foreach (var point in new[] { axis.Start, axis.End, MathUtils.Midpoint(axis.Start, axis.End) })
+            {
+                AddUniquePoint(points, point, tolerance);
             }
         }
 

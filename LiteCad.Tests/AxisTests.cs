@@ -11,6 +11,7 @@ namespace LiteCad.Tests;
 public class AxisTests
 {
     private const double Tol = 1e-4;
+    private const double UiTolerance = 12.0;
 
     [Fact]
     public void CreateAxis_AddsToDocument()
@@ -343,5 +344,43 @@ public class AxisTests
 
         Assert.Single(loaded.Axes);
         Assert.Equal(150, MathUtils.Distance(loaded.Axes[0].Start, loaded.Axes[0].End), 3);
+    }
+
+    [Fact]
+    public void ParallelHorizontalAxes_AlignByLength()
+    {
+        var document = new CadDocument();
+        AxisService.Create(document, new PointF(0, 0), new PointF(100, 0), Tol);
+
+        var start = new PointF(0, 40);
+        var target = new PointF(95, 40);
+        var snapService = new SnapService();
+
+        Assert.True(snapService.TrySnapDrawingAlignment(document, start, target, UiTolerance, out var aligned));
+        Assert.Equal(100, aligned.X, 3);
+        Assert.Equal(40, aligned.Y, 3);
+
+        var visible = snapService.FindVisibleDrawingAlignmentSnap(document, start, target, UiTolerance);
+        Assert.NotNull(visible);
+        Assert.Equal(SnapKind.Alignment, visible.Value.Kind);
+    }
+
+    [Fact]
+    public void ParallelVerticalAxes_AlignByLength()
+    {
+        var document = new CadDocument();
+        AxisService.Create(document, new PointF(0, 0), new PointF(0, 100), Tol);
+
+        var start = new PointF(40, 0);
+        var target = new PointF(40, 95);
+        var snapService = new SnapService();
+
+        Assert.True(snapService.TrySnapDrawingAlignment(document, start, target, UiTolerance, out var aligned));
+        Assert.Equal(40, aligned.X, 3);
+        Assert.Equal(100, aligned.Y, 3);
+
+        var visible = snapService.FindVisibleDrawingAlignmentSnap(document, start, target, UiTolerance);
+        Assert.NotNull(visible);
+        Assert.Equal(SnapKind.Alignment, visible.Value.Kind);
     }
 }

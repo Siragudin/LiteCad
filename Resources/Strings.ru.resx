@@ -428,6 +428,9 @@
   <data name="Label.FillPattern.Diagonal" xml:space="preserve">
     <value>Диагональ</value>
   </data>
+  <data name="Label.FillPattern.DiagonalWide" xml:space="preserve">
+    <value>Диагональ (крупная)</value>
+  </data>
   <data name="Label.Radius" xml:space="preserve">
     <value>Радиус:</value>
   </data>

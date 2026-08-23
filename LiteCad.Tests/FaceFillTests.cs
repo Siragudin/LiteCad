@@ -2,6 +2,7 @@ using LiteCad.Core.Document;
 using LiteCad.Core.Geometry;
 using LiteCad.Core.Selection;
 using LiteCad.Infrastructure;
+using LiteCad.Rendering;
 using LiteCad.Services;
 using System.Windows.Media;
 using Xunit;
@@ -84,6 +85,27 @@ public class FaceFillTests
 
         Assert.True(document.FaceFillStyles.TryGetValue(key, out var style));
         Assert.Equal(FaceFillPattern.Diagonal, style.FillPattern);
+    }
+
+    [Fact]
+    public void FillPattern_WideDiagonal_IsPersistedInDocument()
+    {
+        var document = CreateSquareDocument();
+        var face = Assert.Single(document.Polygons);
+        var key = FaceIdentity.Create(document, face);
+
+        Assert.True(FaceFillService.TrySetFillPattern(document, face, FaceFillPattern.DiagonalWide));
+
+        Assert.True(document.FaceFillStyles.TryGetValue(key, out var style));
+        Assert.Equal(FaceFillPattern.DiagonalWide, style.FillPattern);
+    }
+
+    [Fact]
+    public void WideDiagonalHatch_IsThreeTimesCoarserThanDiagonal()
+    {
+        Assert.Equal(
+            FaceFillRenderer.GetHatchSpacingScreenPixels(FaceFillPattern.Diagonal) * 3,
+            FaceFillRenderer.GetHatchSpacingScreenPixels(FaceFillPattern.DiagonalWide));
     }
 
     [Fact]

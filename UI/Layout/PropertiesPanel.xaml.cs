@@ -869,11 +869,7 @@ public partial class PropertiesPanel : UserControl
             return;
         }
 
-        _session.FillToolOptions.FillPattern = item.Tag?.ToString() switch
-        {
-            "Diagonal" => FaceFillPattern.Diagonal,
-            _ => FaceFillPattern.Solid
-        };
+        _session.FillToolOptions.FillPattern = FaceFillService.ParsePatternTag(item.Tag?.ToString());
     }
 
     private void SelectFillToolColor(Color color)
@@ -891,7 +887,7 @@ public partial class PropertiesPanel : UserControl
 
     private void SelectFillToolPattern(FaceFillPattern fillPattern)
     {
-        var tag = fillPattern == FaceFillPattern.Diagonal ? "Diagonal" : "Solid";
+        var tag = FaceFillService.GetPatternTag(fillPattern);
         foreach (ComboBoxItem item in FillToolPatternCombo.Items)
         {
             if (item.Tag?.ToString() == tag)
@@ -950,11 +946,7 @@ public partial class PropertiesPanel : UserControl
             return;
         }
 
-        var fillPattern = item.Tag?.ToString() switch
-        {
-            "Diagonal" => FaceFillPattern.Diagonal,
-            _ => FaceFillPattern.Solid
-        };
+        var fillPattern = FaceFillService.ParsePatternTag(item.Tag?.ToString());
 
         var currentFill = FaceFillService.GetFill(_session.Document, polygon);
         if (currentFill.FillPattern == fillPattern)
@@ -998,7 +990,7 @@ public partial class PropertiesPanel : UserControl
 
     private void SelectFaceFillPattern(FaceFillPattern fillPattern)
     {
-        var tag = fillPattern == FaceFillPattern.Diagonal ? "Diagonal" : "Solid";
+        var tag = FaceFillService.GetPatternTag(fillPattern);
         foreach (ComboBoxItem item in FaceFillPatternCombo.Items)
         {
             if (item.Tag?.ToString() == tag)

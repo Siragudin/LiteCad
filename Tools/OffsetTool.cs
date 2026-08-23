@@ -461,6 +461,7 @@ public sealed class OffsetTool : ToolBase
         }
 
         ResetPreview();
+        Context.Session.SnapService.InvalidateCache();
         Context.SetStatus(Strings.Status_OffsetCompleted);
         Context.RequestRedraw();
         return true;

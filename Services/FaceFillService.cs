@@ -92,6 +92,22 @@ public static class FaceFillService
             _ => Color.FromRgb(0x22, 0x22, 0x22)
         };
 
+    public static FaceFillPattern ParsePatternTag(string? tag)
+        => tag switch
+        {
+            "DiagonalWide" => FaceFillPattern.DiagonalWide,
+            "Diagonal" => FaceFillPattern.Diagonal,
+            _ => FaceFillPattern.Solid
+        };
+
+    public static string GetPatternTag(FaceFillPattern pattern)
+        => pattern switch
+        {
+            FaceFillPattern.DiagonalWide => "DiagonalWide",
+            FaceFillPattern.Diagonal => "Diagonal",
+            _ => "Solid"
+        };
+
     public static string? GetPaletteTag(Color color)
     {
         if (color == Color.FromRgb(0x66, 0x66, 0x66))
