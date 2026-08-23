@@ -78,7 +78,7 @@ public class RussianLocalizationTests : IDisposable
         Assert.Equal("Заливка", Strings.Tool_Fill);
         Assert.Equal("_Файл", Strings.Get("Menu.Header.File"));
         Assert.Equal("Готово", Strings.Status_Ready);
-        Assert.Equal("LiteCad 0.2.1", Strings.Label_AppTitle);
+        Assert.Equal("LiteCad 0.4.1", Strings.Label_AppTitle);
         Assert.Equal("Проект", Strings.Label_DefaultProjectName);
         Assert.Equal(" м²", Strings.Format_AreaSuffix);
         Assert.Equal("Предпросмотр PDF", Strings.Get("Dialog.PdfPreview.Title"));
