@@ -20,6 +20,12 @@ LiteCAD is a lightweight 2D CAD application for technical drawings, plans, and e
 | UI language | Russian / English |
 
 
+## Download
+
+**[Download LiteCAD 0.4.3](https://github.com/Siragudin/LiteCad/releases/tag/v0.4.3)**
+
+Windows · Beta · ~1.2 MB download
+
 ## Important
 
 - **Platform:** Windows only
