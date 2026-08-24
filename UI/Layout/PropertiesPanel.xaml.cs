@@ -253,7 +253,8 @@ public partial class PropertiesPanel : UserControl
 
         _suppressFillToolEvents = true;
         SelectFillToolColor(_session.FillToolOptions.FillColor);
-        SelectFillToolPattern(_session.FillToolOptions.FillPattern);
+        _session.FillToolOptions.FillPattern = FaceFillPattern.Solid;
+        SelectFillToolPattern(FaceFillPattern.Solid);
         _suppressFillToolEvents = false;
     }
 
@@ -942,12 +943,13 @@ public partial class PropertiesPanel : UserControl
 
     private void FillToolPatternCombo_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (_session is null || _suppressFillToolEvents || FillToolPatternCombo.SelectedItem is not ComboBoxItem item)
+        if (_session is null || _suppressFillToolEvents)
         {
             return;
         }
 
-        _session.FillToolOptions.FillPattern = FaceFillService.ParsePatternTag(item.Tag?.ToString());
+        _session.FillToolOptions.FillPattern = FaceFillPattern.Solid;
+        SelectFillToolPattern(FaceFillPattern.Solid);
     }
 
     private void SelectFillToolColor(Color color)
@@ -1025,6 +1027,11 @@ public partial class PropertiesPanel : UserControl
         }
 
         var fillPattern = FaceFillService.ParsePatternTag(item.Tag?.ToString());
+        if (fillPattern != FaceFillPattern.Solid)
+        {
+            SelectFaceFillPattern(FaceFillPattern.Solid);
+            return;
+        }
 
         var currentFill = FaceFillService.GetFill(_session.Document, polygon);
         if (currentFill.FillPattern == fillPattern)
@@ -1068,7 +1075,8 @@ public partial class PropertiesPanel : UserControl
 
     private void SelectFaceFillPattern(FaceFillPattern fillPattern)
     {
-        var tag = FaceFillService.GetPatternTag(fillPattern);
+        _ = fillPattern;
+        var tag = FaceFillService.GetPatternTag(FaceFillPattern.Solid);
         foreach (ComboBoxItem item in FaceFillPatternCombo.Items)
         {
             if (item.Tag?.ToString() == tag)

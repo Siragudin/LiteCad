@@ -185,15 +185,16 @@
                             </ComboBox>
                         </StackPanel>
 
-                        <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
+                        <StackPanel Style="{StaticResource CadPropertyFieldStyle}" Visibility="Collapsed">
                             <TextBlock Text="{loc:Loc Key=Label.FillPattern}"
                                        Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="FillToolPatternCombo"
                                       Style="{StaticResource CadPropertiesComboBoxStyle}"
+                                      IsEnabled="False"
                                       SelectionChanged="FillToolPatternCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Solid}" Tag="Solid" IsSelected="True" />
-                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Diagonal}" Tag="Diagonal" />
-                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.DiagonalWide}" Tag="DiagonalWide" />
+                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Diagonal}" Tag="Diagonal" IsEnabled="False" />
+                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.DiagonalWide}" Tag="DiagonalWide" IsEnabled="False" />
                             </ComboBox>
                         </StackPanel>
                     </StackPanel>
@@ -306,15 +307,16 @@
                             </ComboBox>
                         </StackPanel>
 
-                        <StackPanel Style="{StaticResource CadPropertyFieldStyle}">
+                        <StackPanel Style="{StaticResource CadPropertyFieldStyle}" Visibility="Collapsed">
                             <TextBlock Text="{loc:Loc Key=Label.FillPattern}"
                                        Style="{StaticResource CadPropertiesSectionLabelStyle}" />
                             <ComboBox x:Name="FaceFillPatternCombo"
                                       Style="{StaticResource CadPropertiesComboBoxStyle}"
+                                      IsEnabled="False"
                                       SelectionChanged="FaceFillPatternCombo_OnSelectionChanged">
                                 <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Solid}" Tag="Solid" IsSelected="True" />
-                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Diagonal}" Tag="Diagonal" />
-                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.DiagonalWide}" Tag="DiagonalWide" />
+                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.Diagonal}" Tag="Diagonal" IsEnabled="False" />
+                                <ComboBoxItem Content="{loc:Loc Key=Label.FillPattern.DiagonalWide}" Tag="DiagonalWide" IsEnabled="False" />
                             </ComboBox>
                         </StackPanel>
                     </StackPanel>
