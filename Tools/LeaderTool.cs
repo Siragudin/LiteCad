@@ -98,7 +98,7 @@ public sealed class LeaderTool : ToolBase
                 Context.Session.Document,
                 world,
                 Context.SnapTolerance));
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

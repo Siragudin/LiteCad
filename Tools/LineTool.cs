@@ -100,7 +100,7 @@ public sealed class LineTool : ToolBase
             Context.SetLength(null);
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
     }
 
     public override void OnKeyDown(KeyEventArgs e)
@@ -204,6 +204,7 @@ public sealed class LineTool : ToolBase
 
         EdgeOperations.AddSegment(Context.Session.Document, _startPoint, endPoint, template, topologyTolerance);
         PolygonBuilder.SyncFaces(Context.Session.Document, topologyTolerance);
+        Context.Session.Document.NotifyChanged(DocumentChangeKind.Topology);
         Context.Session.SnapService.InvalidateCache();
 
         _startPoint = endPoint;

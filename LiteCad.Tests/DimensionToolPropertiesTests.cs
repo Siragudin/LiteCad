@@ -131,6 +131,7 @@ public class DimensionToolPropertiesTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 recordUndo: () => Session.History.Record(Session.Document));
 
             ToolService.Initialize(context);

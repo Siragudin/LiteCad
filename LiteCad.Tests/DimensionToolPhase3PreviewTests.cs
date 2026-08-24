@@ -263,6 +263,7 @@ public class DimensionToolPhase3PreviewTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setLineInputModeEnabled: (_, _) => { },
                 recordUndo: () => Session.History.Record(Session.Document),
                 activateSelectionTool: () => { });

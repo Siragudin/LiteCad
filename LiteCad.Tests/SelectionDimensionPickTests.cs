@@ -63,6 +63,7 @@ public class SelectionDimensionPickTests
                 _ => new Point(0, 0),
                 () => { },
                 () => { },
+                () => { },
                 () => { }));
         }
 

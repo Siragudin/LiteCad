@@ -12,7 +12,8 @@ public sealed class ToolContext
         Func<Size> getViewportSize,
         Func<Point, PointF> screenToWorld,
         Func<MouseEventArgs, Point> getMousePositionOnViewport,
-        Action requestRedraw,
+        Action requestFullRedraw,
+        Action requestOverlayRedraw,
         Action captureMouse,
         Action releaseMouseCapture,
         Action<string>? setStatus = null,
@@ -40,7 +41,8 @@ public sealed class ToolContext
         GetViewportSize = getViewportSize;
         ScreenToWorld = screenToWorld;
         GetMousePositionOnViewport = getMousePositionOnViewport;
-        RequestRedraw = requestRedraw;
+        RequestFullRedraw = requestFullRedraw;
+        RequestOverlayRedraw = requestOverlayRedraw;
         CaptureMouse = captureMouse;
         ReleaseMouseCapture = releaseMouseCapture;
         SetStatus = setStatus ?? (_ => { });
@@ -73,7 +75,11 @@ public sealed class ToolContext
 
     public Func<MouseEventArgs, Point> GetMousePositionOnViewport { get; }
 
-    public Action RequestRedraw { get; }
+    public Action RequestFullRedraw { get; }
+
+    public Action RequestOverlayRedraw { get; }
+
+    public Action RequestRedraw => RequestFullRedraw;
 
     public Action CaptureMouse { get; }
 

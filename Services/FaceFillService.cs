@@ -39,6 +39,7 @@ public static class FaceFillService
 
         style.FillColor = fillColor;
         document.FaceFillStyles[key] = style;
+        document.NotifyChanged(DocumentChangeKind.FaceFill);
         return true;
     }
 
@@ -57,6 +58,7 @@ public static class FaceFillService
 
         style.FillPattern = fillPattern;
         document.FaceFillStyles[key] = style;
+        document.NotifyChanged(DocumentChangeKind.FaceFill);
         return true;
     }
 
@@ -68,6 +70,7 @@ public static class FaceFillService
         }
 
         document.FaceFillStyles[key] = style.Clone();
+        document.NotifyChanged(DocumentChangeKind.FaceFill);
         return true;
     }
 
@@ -78,7 +81,12 @@ public static class FaceFillService
             return;
         }
 
-        document.FaceFillStyles.Remove(key);
+        if (!document.FaceFillStyles.Remove(key))
+        {
+            return;
+        }
+
+        document.NotifyChanged(DocumentChangeKind.FaceFill);
     }
 
     public static Color ParsePaletteTag(string? tag)

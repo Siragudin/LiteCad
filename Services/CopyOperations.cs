@@ -106,6 +106,8 @@ public static class CopyOperations
             selection.SelectedAxisIds.Add(axisId);
         }
 
+        document.NotifyChanged(
+            DocumentChangeKind.Topology | DocumentChangeKind.FaceFill | DocumentChangeKind.Axes);
         return oldToNewEdgeIds.Values.ToHashSet();
     }
 

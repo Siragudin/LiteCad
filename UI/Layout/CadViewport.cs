@@ -1,4 +1,5 @@
 using LiteCad.Infrastructure;
+using LiteCad.Rendering;
 using LiteCad.Tools;
 using System.Windows;
 using System.Windows.Media;
@@ -14,6 +15,8 @@ public sealed class CadViewport : FrameworkElement
             typeof(CadViewport),
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender, OnSessionChanged));
 
+    private ViewportRenderPass _nextPass = ViewportRenderPass.Full;
+
     public CadSession? Session
     {
         get => (CadSession?)GetValue(SessionProperty);
@@ -24,7 +27,7 @@ public sealed class CadViewport : FrameworkElement
     {
         SnapsToDevicePixels = true;
         ClipToBounds = true;
-        SizeChanged += (_, _) => InvalidateVisual();
+        SizeChanged += (_, _) => RequestFullRedraw();
     }
 
     private static void OnSessionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -46,18 +49,14 @@ public sealed class CadViewport : FrameworkElement
             newSession.DisplayUnitSettings.Changed += viewport.OnDisplayUnitsChanged;
         }
 
-        viewport.InvalidateVisual();
+        viewport.RequestFullRedraw();
     }
 
     private void OnCameraChanged()
-    {
-        InvalidateVisual();
-    }
+        => RequestFullRedraw();
 
     private void OnDisplayUnitsChanged()
-    {
-        InvalidateVisual();
-    }
+        => RequestFullRedraw();
 
     protected override void OnRender(DrawingContext drawingContext)
     {
@@ -65,6 +64,9 @@ public sealed class CadViewport : FrameworkElement
         {
             return;
         }
+
+        var pass = _nextPass;
+        _nextPass = ViewportRenderPass.OverlayOnly;
 
         var viewport = new Size(ActualWidth, ActualHeight);
         drawingContext.PushClip(new RectangleGeometry(new Rect(0, 0, viewport.Width, viewport.Height)));
@@ -78,7 +80,8 @@ public sealed class CadViewport : FrameworkElement
                 Session.Camera,
                 viewport,
                 Session.ToolService.ActiveTool,
-                Session.DisplayUnitSettings.LinearUnit);
+                Session.DisplayUnitSettings.LinearUnit,
+                pass);
         }
         finally
         {
@@ -86,8 +89,18 @@ public sealed class CadViewport : FrameworkElement
         }
     }
 
-    public void RequestRedraw()
+    public void RequestFullRedraw()
     {
+        _nextPass = ViewportRenderPass.Full;
         InvalidateVisual();
     }
+
+    public void RequestOverlayRedraw()
+    {
+        _nextPass = ViewportRenderPass.OverlayOnly;
+        InvalidateVisual();
+    }
+
+    public void RequestRedraw()
+        => RequestFullRedraw();
 }

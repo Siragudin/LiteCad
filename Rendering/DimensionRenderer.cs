@@ -39,9 +39,6 @@ public sealed class DimensionRenderer
 
         if (!isOffsetPreview)
         {
-            DimensionService.RemoveInvalid(document, TopologyTolerance.ForMutation);
-            _committedCache = null;
-            _committedCacheKey = null;
             RenderDimensions(context, document, selection, camera, viewport, linearUnit, forScreenDisplay);
             return;
         }

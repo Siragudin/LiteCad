@@ -50,12 +50,11 @@ public static class FaceIdentity
 
     private static List<Guid> GetStartVertexSequence(CadDocument document, Loop loop)
     {
-        var edgeMap = document.Edges.ToDictionary(edge => edge.Id);
         var vertices = new List<Guid>(loop.Edges.Count);
 
         foreach (var reference in loop.Edges)
         {
-            if (!edgeMap.TryGetValue(reference.EdgeId, out var edge))
+            if (!document.Index.TryGetEdge(reference.EdgeId, out var edge))
             {
                 return [];
             }

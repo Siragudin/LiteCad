@@ -136,7 +136,7 @@ public sealed class ArcTool : ToolBase
             UpdatePreviewSagittaDisplay();
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
     }
 
     public override void OnKeyDown(KeyEventArgs e)
@@ -410,6 +410,7 @@ public sealed class ArcTool : ToolBase
         }
 
         PolygonBuilder.SyncFaces(document, topologyTolerance);
+        document.NotifyChanged(DocumentChangeKind.Topology);
         Context.Session.SnapService.InvalidateCache();
 
         ResetAfterCommit();

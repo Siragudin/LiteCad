@@ -89,7 +89,7 @@ public sealed class RectangleTool : ToolBase
             Context.SetArea(null);
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
     }
 
     public override void OnKeyDown(KeyEventArgs e)
@@ -207,6 +207,7 @@ public sealed class RectangleTool : ToolBase
         EdgeOperations.AddSegment(document, corners.V3, corners.V4, template, topologyTolerance);
         EdgeOperations.AddSegment(document, corners.V4, corners.V1, template, topologyTolerance);
         PolygonBuilder.SyncFaces(document, topologyTolerance);
+        document.NotifyChanged(DocumentChangeKind.Topology);
 
         ResetAfterCommit();
         Context.SetStatus(Strings.Input_Rectangle_SelectFirstCorner);

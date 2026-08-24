@@ -1,5 +1,7 @@
 using LiteCad.Core.Document;
+using LiteCad.Core.Geometry;
 using LiteCad.Core.Selection;
+using LiteCad.Dimensions;
 using LiteCad.Rendering;
 using LiteCad.Rendering.Pdf;
 using LiteCad.Services;
@@ -46,16 +48,28 @@ public sealed class CadSession
 
     public ProjectFileState ProjectFile { get; } = new();
 
+    public CadSession()
+    {
+        Document.Changed += OnDocumentChanged;
+    }
+
     public void NewDocument()
     {
-        ClearDocumentContent();
+        ResetDocumentContent();
+        Document.NotifyChanged(DocumentChangeKind.FullReplace);
         ProjectFile.Reset();
     }
 
     public void LoadProject(ProjectDocumentDto dto, string filePath)
     {
-        ClearDocumentContent();
-        ProjectDocumentSerializer.Apply(Document, dto);
+        ResetDocumentContent();
+
+        using (Document.BeginMutationBatch())
+        {
+            ProjectDocumentSerializer.ApplyCore(Document, dto);
+            Document.NotifyChanged(DocumentChangeKind.FullReplace);
+        }
+
         DisplayUnitSettings.LinearUnit = ProjectDocumentSerializer.ParseLinearDisplayUnit(dto.LinearDisplayUnit);
         ProjectFile.MarkSaved(filePath);
     }
@@ -85,10 +99,9 @@ public sealed class CadSession
             padding);
     }
 
-    private void ClearDocumentContent()
+    private void ResetDocumentContent()
     {
-        Document.Vertices.Clear();
-        Document.Edges.Clear();
+        Document.ClearTopology();
         Document.Polygons.Clear();
         Document.Dimensions.Clear();
         Document.Axes.Clear();
@@ -100,5 +113,18 @@ public sealed class CadSession
         Selection.Clear();
         History.Clear();
         Camera.Reset();
+        Renderer.InvalidateWorldGeometryCache();
+    }
+
+    private void OnDocumentChanged(object? sender, DocumentChangedEventArgs e)
+    {
+        Renderer.InvalidateWorldGeometryCache();
+
+        if ((e.Kind & DocumentChangeKind.Topology) == 0)
+        {
+            return;
+        }
+
+        DimensionService.RemoveInvalid(Document, TopologyTolerance.ForMutation);
     }
 }

@@ -166,6 +166,7 @@ public class LineToolBehaviorTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setLengthInputEnabled: _ => { },
                 resetLengthInput: _ => { },
                 processLengthKey: _ => false,

@@ -136,6 +136,7 @@ public static class MoveOperations
         }
 
         PolygonBuilder.SyncFaces(document, TopologyTolerance.ForMutation);
+        document.NotifyChanged(DocumentChangeKind.Topology);
     }
 
     public static HashSet<Guid> ExecuteObjectMove(
@@ -157,7 +158,7 @@ public static class MoveOperations
             .Select(polygon => polygon.Id)
             .ToHashSet();
 
-        document.Edges.RemoveAll(edge => edgeIdsToRemove.Contains(edge.Id));
+        document.RemoveEdgesWhere(edge => edgeIdsToRemove.Contains(edge.Id));
         document.Polygons.RemoveAll(polygon => userPolygonIds.Contains(polygon.Id));
 
         if (edgeIdsToRemove.Count > 0)
@@ -231,8 +232,15 @@ public static class MoveOperations
             selection.SelectedEdgeIds.Add(newEdgeId);
         }
 
+        document.NotifyChanged(ObjectTransformChangeKind);
         return oldToNewEdgeIds.Values.ToHashSet();
     }
+
+    private static DocumentChangeKind ObjectTransformChangeKind
+        => DocumentChangeKind.Topology
+            | DocumentChangeKind.FaceFill
+            | DocumentChangeKind.Axes
+            | DocumentChangeKind.Annotations;
 
     public static bool CanMove(Selection selection)
         => selection.SelectedVertexIds.Count > 0

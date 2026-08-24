@@ -141,31 +141,33 @@ public class DimensionToolTests
     }
 
     [Fact]
-    public void RemoveInvalid_DeletingFirstVertex_RemovesDimension()
+    public void RemoveInvalid_DeletingFirstVertex_KeepsDimensionWhileAnchorVerticesRemain()
     {
         var document = CreateLineDocument(new PointF(0, 0), new PointF(100, 0), out var firstId, out _);
         DimensionService.Create(document, firstId, document.Edges[0].EndVertexId, 50, Tol);
 
-        document.Edges.Clear();
+        document.ClearEdges();
         TopologyService.PruneUnusedVertices(document);
 
         DimensionService.RemoveInvalid(document, Tol);
 
-        Assert.Empty(document.Dimensions);
+        Assert.Single(document.Dimensions);
+        Assert.Equal(2, document.Vertices.Count);
     }
 
     [Fact]
-    public void RemoveInvalid_DeletingSecondVertex_RemovesDimension()
+    public void RemoveInvalid_DeletingSecondVertex_KeepsDimensionWhileAnchorVerticesRemain()
     {
         var document = CreateLineDocument(new PointF(0, 0), new PointF(100, 0), out _, out var secondId);
         DimensionService.Create(document, document.Edges[0].StartVertexId, secondId, 50, Tol);
 
-        document.Edges.Clear();
+        document.ClearEdges();
         TopologyService.PruneUnusedVertices(document);
 
         DimensionService.RemoveInvalid(document, Tol);
 
-        Assert.Empty(document.Dimensions);
+        Assert.Single(document.Dimensions);
+        Assert.Equal(2, document.Vertices.Count);
     }
 
     [Fact]

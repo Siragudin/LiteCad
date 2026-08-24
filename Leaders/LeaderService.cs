@@ -15,14 +15,17 @@ public static class LeaderService
     {
         var leader = new Leader(Guid.NewGuid(), kind, target, textPosition, text);
         document.Leaders.Add(leader);
+        document.NotifyChanged(DocumentChangeKind.Annotations);
         return leader;
     }
 
     public static Leader CreateElevation(CadDocument document, PointF measurePoint, PointF graphicOrigin)
     {
+        var changeKind = DocumentChangeKind.Annotations;
         if (!document.ElevationBaseY.HasValue)
         {
             document.ElevationBaseY = measurePoint.Y;
+            changeKind |= DocumentChangeKind.FaceFill;
         }
 
         var delta = ElevationFormatting.ComputeDelta(document.ElevationBaseY.Value, measurePoint.Y);
@@ -30,12 +33,15 @@ public static class LeaderService
         var sideHint = LeaderGeometry.CreateSideHint(
             graphicOrigin,
             LeaderGeometry.ResolveSide(measurePoint, graphicOrigin));
-        return Create(
-            document,
+        var leader = new Leader(
+            Guid.NewGuid(),
             LeaderKind.Elevation,
             graphicOrigin,
             sideHint,
             ElevationFormatting.Format(delta));
+        document.Leaders.Add(leader);
+        document.NotifyChanged(changeKind);
+        return leader;
     }
 
     public static int DeleteSelected(CadDocument document, Selection selection)
@@ -47,6 +53,11 @@ public static class LeaderService
 
         var removed = document.Leaders.RemoveAll(item => selection.SelectedLeaderIds.Contains(item.Id));
         selection.SelectedLeaderIds.Clear();
+        if (removed > 0)
+        {
+            document.NotifyChanged(DocumentChangeKind.Annotations);
+        }
+
         return removed;
     }
 }

@@ -161,7 +161,10 @@ public class HandToolTests
                 _ => _screenPosition,
                 () => RedrawRequested = true,
                 () => { },
+                () => { },
                 () => { });
+
+            Session.Camera.Changed += () => RedrawRequested = true;
 
             ToolService.Initialize(context);
         }

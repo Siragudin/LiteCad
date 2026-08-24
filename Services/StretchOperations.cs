@@ -81,6 +81,7 @@ public static class StretchOperations
             new PointF(plan.EndPosition.X + move.X, plan.EndPosition.Y + move.Y));
 
         PolygonBuilder.SyncFaces(document, TopologyTolerance.ForMutation);
+        document.NotifyChanged(DocumentChangeKind.Topology);
     }
 
     private static bool ValidateEndpoint(

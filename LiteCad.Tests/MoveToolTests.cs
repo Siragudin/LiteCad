@@ -605,7 +605,9 @@ public class MoveToolTests
                 _ => new Point(0, 0),
                 () => RedrawRequested = true,
                 () => { },
-                () => Session.History.Record(Session.Document));
+                () => { },
+                () => { },
+                recordUndo: () => Session.History.Record(Session.Document));
 
             ToolService.Initialize(context);
         }

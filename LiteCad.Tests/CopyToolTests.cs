@@ -480,6 +480,7 @@ public class CopyToolTests
             () => { },
             () => { },
             () => { },
+            () => { },
             recordUndo: () => session.History.Record(session.Document));
 
     private sealed class CopyHarness

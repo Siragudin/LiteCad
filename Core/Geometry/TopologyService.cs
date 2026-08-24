@@ -5,18 +5,7 @@ namespace LiteCad.Core.Geometry;
 public static class TopologyService
 {
     public static Vertex? FindVertex(CadDocument document, PointF position, double tolerance)
-    {
-        tolerance = TopologyTolerance.Resolve(tolerance);
-        foreach (var vertex in document.Vertices)
-        {
-            if (MathUtils.ArePointsEqual(vertex.Position, position, tolerance))
-            {
-                return vertex;
-            }
-        }
-
-        return null;
-    }
+        => document.Index.FindVertex(document, position, tolerance);
 
     public static Guid FindOrCreateVertex(CadDocument document, PointF position, double tolerance)
     {
@@ -28,26 +17,25 @@ public static class TopologyService
         }
 
         var vertex = new Vertex(position);
-        document.Vertices.Add(vertex);
+        document.AddVertex(vertex);
         return vertex.Id;
     }
 
     public static Vertex GetVertex(CadDocument document, Guid vertexId)
     {
-        var vertex = document.Vertices.FirstOrDefault(item => item.Id == vertexId);
-        if (vertex is null)
+        if (document.Index.TryGetVertex(vertexId, out var vertex))
         {
-            throw new InvalidOperationException($"Vertex {vertexId} was not found.");
+            return vertex;
         }
 
-        return vertex;
+        throw new InvalidOperationException($"Vertex {vertexId} was not found.");
     }
 
     public static bool TryGetVertex(CadDocument document, Guid vertexId, out Vertex vertex)
-    {
-        vertex = document.Vertices.FirstOrDefault(item => item.Id == vertexId)!;
-        return vertex is not null;
-    }
+        => document.Index.TryGetVertex(vertexId, out vertex!);
+
+    public static bool TryGetEdge(CadDocument document, Guid edgeId, out Edge edge)
+        => document.Index.TryGetEdge(edgeId, out edge!);
 
     public static PointF GetVertexPosition(CadDocument document, Guid vertexId)
         => GetVertex(document, vertexId).Position;
@@ -71,15 +59,20 @@ public static class TopologyService
         var edge = template.CloneGeometry();
         edge.StartVertexId = startVertexId;
         edge.EndVertexId = endVertexId;
-        document.Edges.Add(edge);
+        document.AddEdge(edge);
         return edge;
     }
 
     public static void DeleteEdge(CadDocument document, Edge edge)
-        => document.Edges.Remove(edge);
+        => document.RemoveEdge(edge);
 
     public static void MoveVertex(CadDocument document, Guid vertexId, PointF newPosition)
-        => GetVertex(document, vertexId).Position = newPosition;
+    {
+        var vertex = GetVertex(document, vertexId);
+        var oldPosition = vertex.Position;
+        vertex.Position = newPosition;
+        document.Index.UpdateVertexPosition(vertex, oldPosition, newPosition);
+    }
 
     public static void SplitEdge(CadDocument document, Edge edge, PointF point, double tolerance)
     {
@@ -123,6 +116,6 @@ public static class TopologyService
             used.Add(edge.EndVertexId);
         }
 
-        document.Vertices.RemoveAll(vertex => !used.Contains(vertex.Id));
+        document.RemoveUnusedVertices(used);
     }
 }

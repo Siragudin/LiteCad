@@ -100,6 +100,7 @@ public static class MirrorOperations
             selection.SelectedPolygonIds.Add(polygonId);
         }
 
+        document.NotifyChanged(DocumentChangeKind.Topology | DocumentChangeKind.FaceFill);
         return oldToNewEdgeIds.Values.ToHashSet();
     }
 

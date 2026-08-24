@@ -131,6 +131,7 @@ public static class ExtendOperations
 
         TopologyService.PruneUnusedVertices(document);
         PolygonBuilder.SyncFaces(document, tolerance);
+        document.NotifyChanged(DocumentChangeKind.Topology);
         return true;
     }
 

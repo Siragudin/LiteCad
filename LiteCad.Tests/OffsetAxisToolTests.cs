@@ -394,6 +394,7 @@ public class OffsetAxisToolTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setLineInputModeEnabled: (_, _) => { },
                 recordUndo: () => Session.History.Record(Session.Document));
 

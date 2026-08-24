@@ -69,7 +69,7 @@ public sealed class EraserTool : ToolBase
         }
 
         UpdateHover(world);
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

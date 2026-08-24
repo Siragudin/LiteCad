@@ -71,5 +71,11 @@ public abstract class ToolBase : ITool
 
     public virtual bool TryApplyRectangleSize(string width, string height) => false;
 
+    protected void RequestOverlayRedraw()
+        => Context?.RequestOverlayRedraw();
+
+    protected void RequestFullRedraw()
+        => Context?.RequestFullRedraw();
+
     public virtual void RenderOverlay(DrawingContext context, Camera camera, Size viewport) { }
 }

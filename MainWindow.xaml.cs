@@ -61,14 +61,15 @@ public partial class MainWindow : Window
             ViewModel.Session,
             OnMoveOrthoChanged,
             OnMirrorOrthoChanged,
-            () => MainCanvas.RequestRedraw());
+            () => MainCanvas.RequestFullRedraw());
 
         var toolContext = new ToolContext(
             ViewModel.Session,
             () => MainCanvas.GetViewportSize(),
             screen => ViewModel.Session.Camera.ScreenToWorld(screen, MainCanvas.GetViewportSize()),
             e => MainCanvas.GetMousePositionOnViewport(e),
-            () => MainCanvas.RequestRedraw(),
+            () => MainCanvas.RequestFullRedraw(),
+            () => MainCanvas.RequestOverlayRedraw(),
             () => MainCanvas.CaptureMouse(),
             () => MainCanvas.ReleaseMouseCapture(),
             status => MainStatusBar.SetStatus(status),

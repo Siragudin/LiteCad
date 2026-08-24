@@ -325,6 +325,7 @@ public class DimensionToolHoverTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setLineInputModeEnabled: (_, _) => { },
                 recordUndo: () => Session.History.Record(Session.Document),
                 activateSelectionTool: () => { });
@@ -362,6 +363,7 @@ public class DimensionToolHoverTests
                 () => new Size(800, 600),
                 _ => PointF.Zero,
                 _ => new Point(0, 0),
+                () => { },
                 () => { },
                 () => { },
                 () => { },

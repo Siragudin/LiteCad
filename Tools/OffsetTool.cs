@@ -192,7 +192,7 @@ public sealed class OffsetTool : ToolBase
             UpdateDistancePreviewDisplay();
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 
@@ -218,7 +218,7 @@ public sealed class OffsetTool : ToolBase
             UpdateAxisDistancePreviewDisplay();
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

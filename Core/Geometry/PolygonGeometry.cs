@@ -11,12 +11,11 @@ public static class PolygonGeometry
             return Array.Empty<PointF>();
         }
 
-        var edgeMap = BuildEdgeMap(document);
         var points = new List<PointF>(loop.Edges.Count);
 
         foreach (var reference in loop.Edges)
         {
-            if (!edgeMap.TryGetValue(reference.EdgeId, out var edge))
+            if (!document.Index.TryGetEdge(reference.EdgeId, out var edge))
             {
                 return Array.Empty<PointF>();
             }
@@ -54,12 +53,11 @@ public static class PolygonGeometry
         Polygon polygon,
         double tolerance = MathUtils.DefaultTolerance)
     {
-        var edgeMap = BuildEdgeMap(document);
-        double perimeter = SumLoopEdgeLengths(document, polygon.OuterLoop, edgeMap);
+        double perimeter = SumLoopEdgeLengths(document, polygon.OuterLoop);
 
         foreach (var hole in polygon.InnerLoops)
         {
-            perimeter += SumLoopEdgeLengths(document, hole, edgeMap);
+            perimeter += SumLoopEdgeLengths(document, hole);
         }
 
         return perimeter;
@@ -123,25 +121,21 @@ public static class PolygonGeometry
         }
     }
 
-    private static double SumLoopEdgeLengths(
-        CadDocument document,
-        Loop loop,
-        Dictionary<Guid, Edge> edgeMap)
+    private static double SumLoopEdgeLengths(CadDocument document, Loop loop)
     {
         double length = 0;
         foreach (var reference in loop.Edges)
         {
-            if (edgeMap.TryGetValue(reference.EdgeId, out var edge))
+            if (!document.Index.TryGetEdge(reference.EdgeId, out var edge))
             {
-                length += MathUtils.Distance(
-                    TopologyService.GetEdgeStartPoint(document, edge),
-                    TopologyService.GetEdgeEndPoint(document, edge));
+                continue;
             }
+
+            length += MathUtils.Distance(
+                TopologyService.GetEdgeStartPoint(document, edge),
+                TopologyService.GetEdgeEndPoint(document, edge));
         }
 
         return length;
     }
-
-    private static Dictionary<Guid, Edge> BuildEdgeMap(CadDocument document)
-        => document.Edges.ToDictionary(edge => edge.Id);
 }

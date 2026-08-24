@@ -55,16 +55,30 @@ public static class AxisService
 
         if (MathUtils.Distance(mergedStart, mergedEnd) <= tolerance)
         {
+            if (axesToRemove.Count > 0)
+            {
+                document.NotifyChanged(DocumentChangeKind.Axes);
+            }
+
             return null;
         }
 
         var axis = new Axis(mergedStart, mergedEnd);
         document.Axes.Add(axis);
+        document.NotifyChanged(DocumentChangeKind.Axes);
         return axis;
     }
 
     public static bool Delete(CadDocument document, Guid axisId)
-        => document.Axes.RemoveAll(axis => axis.Id == axisId) > 0;
+    {
+        if (document.Axes.RemoveAll(axis => axis.Id == axisId) == 0)
+        {
+            return false;
+        }
+
+        document.NotifyChanged(DocumentChangeKind.Axes);
+        return true;
+    }
 
     public static Axis? Find(CadDocument document, Guid axisId)
         => document.Axes.FirstOrDefault(axis => axis.Id == axisId);

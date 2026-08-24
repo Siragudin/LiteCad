@@ -74,6 +74,7 @@ public class ToolAltRightClickTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 activateSelectionTool: () =>
                 {
                     SelectionActivateCount++;

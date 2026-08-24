@@ -44,6 +44,17 @@ public sealed class Camera
         return GetWorldToScreenMatrix(viewport).Transform(new Point(world.X, world.Y));
     }
 
+    public Rect GetWorldViewportBounds(Size viewport)
+    {
+        var topLeft = ScreenToWorld(new Point(0, 0), viewport);
+        var bottomRight = ScreenToWorld(new Point(viewport.Width, viewport.Height), viewport);
+        var minX = Math.Min(topLeft.X, bottomRight.X);
+        var maxX = Math.Max(topLeft.X, bottomRight.X);
+        var minY = Math.Min(topLeft.Y, bottomRight.Y);
+        var maxY = Math.Max(topLeft.Y, bottomRight.Y);
+        return new Rect(minX, minY, maxX - minX, maxY - minY);
+    }
+
     public void PanScreen(double deltaX, double deltaY)
     {
         PanOffset = new PointF(PanOffset.X + deltaX, PanOffset.Y + deltaY);

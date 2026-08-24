@@ -110,7 +110,7 @@ public sealed class MirrorTool : ToolBase
             _axisEnd = ResolveSnapWithOrtho(world);
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

@@ -191,6 +191,7 @@ public class ExtendToolBehaviorTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 recordUndo: () => Session.History.Record(Session.Document),
                 activateSelectionTool: () => SelectionActivated = true);
 

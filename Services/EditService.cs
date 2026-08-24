@@ -86,11 +86,20 @@ public sealed class EditService
 
         session.History.Record(session.Document);
 
-        DimensionService.DeleteSelected(session.Document, session.Selection);
-        LeaderService.DeleteSelected(session.Document, session.Selection);
-        TextNoteService.DeleteSelected(session.Document, session.Selection);
+        using (session.Document.BeginMutationBatch())
+        {
+            DimensionService.DeleteSelected(session.Document, session.Selection);
+            LeaderService.DeleteSelected(session.Document, session.Selection);
+            TextNoteService.DeleteSelected(session.Document, session.Selection);
 
-        RemoveSelection(session);
+            RemoveSelection(session);
+
+            session.Document.NotifyChanged(
+                DocumentChangeKind.Topology
+                | DocumentChangeKind.Annotations
+                | DocumentChangeKind.Axes
+                | DocumentChangeKind.FaceFill);
+        }
 
         session.Selection.Clear();
 
@@ -279,7 +288,15 @@ public sealed class EditService
 
         session.History.Record(session.Document);
 
-        RemoveSelection(session);
+        using (session.Document.BeginMutationBatch())
+        {
+            RemoveSelection(session);
+
+            session.Document.NotifyChanged(
+                DocumentChangeKind.Topology
+                | DocumentChangeKind.Axes
+                | DocumentChangeKind.FaceFill);
+        }
 
         session.Selection.Clear();
 
@@ -399,6 +416,8 @@ public sealed class EditService
 
         SyncFaces(session);
 
+        session.Document.NotifyChanged(DocumentChangeKind.Topology);
+
         return true;
 
     }
@@ -429,7 +448,7 @@ public sealed class EditService
 
 
 
-        document.Edges.RemoveAll(edge => selection.SelectedEdgeIds.Contains(edge.Id));
+        document.RemoveEdgesWhere(edge => selection.SelectedEdgeIds.Contains(edge.Id));
 
         document.Axes.RemoveAll(axis => selection.SelectedAxisIds.Contains(axis.Id));
 
