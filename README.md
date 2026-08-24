@@ -24,13 +24,13 @@ LiteCAD is a lightweight 2D CAD application for technical drawings, plans, and e
 
 **[Download LiteCAD 0.4.5](https://github.com/Siragudin/LiteCad/releases/tag/v0.4.5)**
 
-Windows · Beta · ~1.2 MB download
+Windows · Beta · ~1.4 MB download
 
 ## Important
 
 - **Platform:** Windows only
 - **Status:** Beta
-- **Download size:** ~1.2 MB
+- **Download size:** ~1.4 MB
 - **Application files:** ~2.9 MB
 - **Project format:** `.sit` (LiteCAD native format)
 - **Export:** PDF
