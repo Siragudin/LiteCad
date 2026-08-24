@@ -23,7 +23,8 @@ public static class FaceFillRenderer
         Geometry geometry,
         FaceFillStyle style,
         double zoom,
-        bool forScreenDisplay = true)
+        bool forScreenDisplay = true,
+        Rect? viewportWorldBounds = null)
     {
         var displayColor = DocumentDisplayColors.ResolveFillColor(style.FillColor, forScreenDisplay);
         if (style.FillPattern == FaceFillPattern.Solid)
@@ -40,17 +41,23 @@ public static class FaceFillRenderer
             return;
         }
 
+        var spacing = GetHatchSpacingScreenPixels(style.FillPattern) / zoom;
+        var hatchBounds = ResolveHatchGenerationBounds(bounds, forScreenDisplay, viewportWorldBounds);
+        if (hatchBounds.IsEmpty)
+        {
+            return;
+        }
+
+        var (offsetStart, offsetEnd) = GetHatchOffsetRange(bounds, hatchBounds);
         var pen = RenderStyles.CreateScreenPen(
             new SolidColorBrush(displayColor),
             DiagonalLineWidthScreenPixels,
             zoom);
-        var spacing = GetHatchSpacingScreenPixels(style.FillPattern) / zoom;
-        var span = bounds.Width + bounds.Height;
 
         context.PushClip(geometry);
         try
         {
-            for (var offset = bounds.Left - span; offset <= bounds.Right + span; offset += spacing)
+            for (var offset = offsetStart; offset <= offsetEnd; offset += spacing)
             {
                 context.DrawLine(
                     pen,
@@ -62,6 +69,46 @@ public static class FaceFillRenderer
         {
             context.Pop();
         }
+    }
+
+    internal static int CountDiagonalHatchLines(Rect bounds, Rect? viewportWorldBounds, double spacing, bool cullToViewport)
+    {
+        if (bounds.IsEmpty || spacing <= 0)
+        {
+            return 0;
+        }
+
+        var hatchBounds = ResolveHatchGenerationBounds(bounds, cullToViewport, viewportWorldBounds);
+        if (hatchBounds.IsEmpty)
+        {
+            return 0;
+        }
+
+        var (offsetStart, offsetEnd) = GetHatchOffsetRange(bounds, hatchBounds);
+        var count = 0;
+        for (var offset = offsetStart; offset <= offsetEnd; offset += spacing)
+        {
+            count++;
+        }
+
+        return count;
+    }
+
+    internal static Rect ResolveHatchGenerationBounds(Rect bounds, bool cullToViewport, Rect? viewportWorldBounds)
+    {
+        if (!cullToViewport || viewportWorldBounds is not Rect viewport)
+        {
+            return bounds;
+        }
+
+        bounds.Intersect(viewport);
+        return bounds;
+    }
+
+    internal static (double Start, double End) GetHatchOffsetRange(Rect bounds, Rect hatchBounds)
+    {
+        var span = bounds.Width + bounds.Height;
+        return (hatchBounds.Left - span, hatchBounds.Right + span);
     }
 
     private static Rect GetBounds(CadDocument document, Polygon polygon)

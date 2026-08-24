@@ -624,6 +624,7 @@ public class StretchToolTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setLength: length => StatusBar?.SetLength(length),
                 setLengthInputEnabled: enabled => StatusBar?.SetLengthInputEnabled(enabled),
                 resetLengthInput: length => StatusBar?.ResetLengthEditing(length),

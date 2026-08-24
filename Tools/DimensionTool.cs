@@ -113,14 +113,14 @@ public sealed class DimensionTool : ToolBase
         if (!_secondVertexId.HasValue)
         {
             UpdateVertexHover(world);
-            Context.RequestRedraw();
+            RequestOverlayRedraw();
             e.Handled = true;
             return;
         }
 
         UpdateOffsetFromCursor(world);
         Context.SetLength(_offset);
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

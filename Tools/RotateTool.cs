@@ -113,7 +113,7 @@ public sealed class RotateTool : ToolBase
             Context.SetLength(Math.Abs(_sweepAngleDegrees));
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

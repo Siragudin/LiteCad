@@ -190,6 +190,7 @@ public class TextToolTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 recordUndo: () => Session.History.Record(Session.Document),
                 activateSelectionTool: () => { });
             Session.ToolService.Initialize(context);

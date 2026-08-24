@@ -217,6 +217,7 @@ public class MoveExactInputDistanceSemanticsTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setLength: length =>
                 {
                     LastDistanceDisplay = length ?? 0;

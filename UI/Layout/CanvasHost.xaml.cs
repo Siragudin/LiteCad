@@ -54,7 +54,7 @@ public partial class CanvasHost : System.Windows.Controls.UserControl
     {
         Focus();
         Viewport.Session ??= Session;
-        Viewport.RequestRedraw();
+        Viewport.RequestFullRedraw();
     }
 
     protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -164,10 +164,14 @@ public partial class CanvasHost : System.Windows.Controls.UserControl
         e.Handled = true;
     }
 
+    public void RequestFullRedraw()
+        => Viewport.RequestFullRedraw();
+
+    public void RequestOverlayRedraw()
+        => Viewport.RequestOverlayRedraw();
+
     public void RequestRedraw()
-    {
-        Viewport.RequestRedraw();
-    }
+        => RequestFullRedraw();
 
     private PointF GetWorldPoint(MouseEventArgs e)
     {

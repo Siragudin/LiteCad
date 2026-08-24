@@ -118,11 +118,11 @@ public sealed class StretchTool : ToolBase
         {
             _previewPoint = ResolveSnap(world);
             UpdateDistancePreviewDisplay();
-            Context.RequestRedraw();
+            RequestOverlayRedraw();
         }
         else
         {
-            Context.RequestRedraw();
+            RequestOverlayRedraw();
         }
 
         e.Handled = true;

@@ -8,7 +8,22 @@ namespace LiteCad.Rendering;
 
 public sealed class PolygonRenderer
 {
-    public void Render(DrawingContext context, CadDocument document, Camera camera, bool forScreenDisplay = true)
+    public void Render(
+        DrawingContext context,
+        CadDocument document,
+        Camera camera,
+        bool forScreenDisplay = true,
+        Size? viewport = null)
+    {
+        RenderSolidGeometry(context, document, camera, forScreenDisplay);
+        RenderFaceHatches(context, document, camera, forScreenDisplay, viewport);
+    }
+
+    public void RenderSolidGeometry(
+        DrawingContext context,
+        CadDocument document,
+        Camera camera,
+        bool forScreenDisplay = true)
     {
         foreach (var polygon in document.Polygons)
         {
@@ -26,12 +41,67 @@ public sealed class PolygonRenderer
             if (polygon.Type == PolygonType.Face)
             {
                 var fillStyle = FaceFillService.GetFill(document, polygon);
-                FaceFillRenderer.Render(context, document, polygon, geometry, fillStyle, camera.Zoom, forScreenDisplay);
+                if (fillStyle.FillPattern != FaceFillPattern.Solid)
+                {
+                    continue;
+                }
+
+                FaceFillRenderer.Render(
+                    context,
+                    document,
+                    polygon,
+                    geometry,
+                    fillStyle,
+                    camera.Zoom,
+                    forScreenDisplay,
+                    viewportWorldBounds: null);
                 continue;
             }
 
             var (fill, stroke) = RenderStyles.ForPolygonType(polygon.Type, camera.Zoom);
             context.DrawGeometry(fill, stroke, geometry);
+        }
+    }
+
+    public void RenderFaceHatches(
+        DrawingContext context,
+        CadDocument document,
+        Camera camera,
+        bool forScreenDisplay = true,
+        Size? viewport = null)
+    {
+        var viewportWorldBounds = forScreenDisplay && viewport is Size viewportSize
+            ? camera.GetWorldViewportBounds(viewportSize)
+            : (Rect?)null;
+
+        foreach (var polygon in document.Polygons)
+        {
+            if (polygon.Type != PolygonType.Face || polygon.OuterLoop.Edges.Count < 3)
+            {
+                continue;
+            }
+
+            var fillStyle = FaceFillService.GetFill(document, polygon);
+            if (fillStyle.FillPattern == FaceFillPattern.Solid)
+            {
+                continue;
+            }
+
+            var geometry = CreateGeometry(document, polygon);
+            if (geometry is null)
+            {
+                continue;
+            }
+
+            FaceFillRenderer.Render(
+                context,
+                document,
+                polygon,
+                geometry,
+                fillStyle,
+                camera.Zoom,
+                forScreenDisplay,
+                viewportWorldBounds);
         }
     }
 
@@ -74,4 +144,4 @@ public sealed class PolygonRenderer
         }
     }
 }
-
+

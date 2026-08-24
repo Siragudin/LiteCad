@@ -175,6 +175,7 @@ public class MovePropertiesOrthoTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setRectangleSizeInputEnabled: enabled => StatusBar.SetRectangleSizeInputEnabled(enabled),
                 setRectangleSizePreview: StatusBar.SetRectangleSizePreview,
                 resetRectangleSizeInput: StatusBar.ResetRectangleSizeInput,

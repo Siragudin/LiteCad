@@ -351,22 +351,19 @@ public sealed class SnapService
         var axisEdgeGroups = new Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)>(StringComparer.Ordinal);
         var axisAxisGroups = new Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)>(StringComparer.Ordinal);
 
-        foreach (var edgeA in document.Edges)
+        if (document.Edges.Count > 0)
         {
-            var aStart = TopologyService.GetEdgeStartPoint(document, edgeA);
-            var aEnd = TopologyService.GetEdgeEndPoint(document, edgeA);
-
-            foreach (var edgeB in document.Edges)
+            var edgeGrid = BuildEdgeSpatialGrid(document, tolerance);
+            foreach (var (outerIndex, innerIndex) in edgeGrid.GetOrderedPairIndices())
             {
-                if (edgeA.Id.CompareTo(edgeB.Id) >= 0)
-                {
-                    continue;
-                }
-
-                var bStart = TopologyService.GetEdgeStartPoint(document, edgeB);
-                var bEnd = TopologyService.GetEdgeEndPoint(document, edgeB);
-
-                foreach (var contact in CollectSegmentContactPoints(aStart, aEnd, bStart, bEnd, tolerance))
+                var edgeA = document.Edges[outerIndex];
+                var edgeB = document.Edges[innerIndex];
+                foreach (var contact in CollectSegmentContactPoints(
+                             edgeGrid.GetStart(outerIndex),
+                             edgeGrid.GetEnd(outerIndex),
+                             edgeGrid.GetStart(innerIndex),
+                             edgeGrid.GetEnd(innerIndex),
+                             tolerance))
                 {
                     if (TopologyService.FindVertex(document, contact, tolerance) is not null)
                     {
@@ -376,45 +373,68 @@ public sealed class SnapService
                     RegisterEdgeContactGroup(edgeEdgeGroups, contact, edgeA.Id, edgeB.Id, tolerance);
                 }
             }
-        }
 
-        foreach (var axis in document.Axes)
-        {
-            foreach (var edge in document.Edges)
+            if (document.Axes.Count > 0)
             {
-                var edgeStart = TopologyService.GetEdgeStartPoint(document, edge);
-                var edgeEnd = TopologyService.GetEdgeEndPoint(document, edge);
-
-                foreach (var contact in CollectSegmentContactPoints(axis.Start, axis.End, edgeStart, edgeEnd, tolerance))
+                var edgeIndexById = BuildEdgeIndexById(document);
+                foreach (var axis in document.Axes)
                 {
-                    if (TopologyService.FindVertex(document, contact, tolerance) is not null)
+                    var candidateEdgeIndices = edgeGrid.GetCandidateIndicesForSegment(axis.Start, axis.End, tolerance);
+                    foreach (var edge in document.Edges)
                     {
-                        continue;
-                    }
+                        if (!candidateEdgeIndices.Contains(edgeIndexById[edge.Id]))
+                        {
+                            continue;
+                        }
 
-                    RegisterIntersectionGroup(axisEdgeGroups, contact, axis.Id, edge.Id, tolerance);
+                        var edgeIndex = edgeIndexById[edge.Id];
+                        foreach (var contact in CollectSegmentContactPoints(
+                                     axis.Start,
+                                     axis.End,
+                                     edgeGrid.GetStart(edgeIndex),
+                                     edgeGrid.GetEnd(edgeIndex),
+                                     tolerance))
+                        {
+                            if (TopologyService.FindVertex(document, contact, tolerance) is not null)
+                            {
+                                continue;
+                            }
+
+                            RegisterIntersectionGroup(axisEdgeGroups, contact, axis.Id, edge.Id, tolerance);
+                        }
+                    }
                 }
             }
+        }
 
-            foreach (var otherAxis in document.Axes)
+        if (document.Axes.Count > 0)
+        {
+            var axisGrid = BuildAxisSpatialGrid(document, tolerance);
+            foreach (var (outerIndex, innerIndex) in axisGrid.GetOrderedPairIndices())
             {
-                if (axis.Id.CompareTo(otherAxis.Id) >= 0)
-                {
-                    continue;
-                }
-
+                var axisA = document.Axes[outerIndex];
+                var axisB = document.Axes[innerIndex];
                 foreach (var contact in CollectSegmentContactPoints(
-                             axis.Start,
-                             axis.End,
-                             otherAxis.Start,
-                             otherAxis.End,
+                             axisGrid.GetStart(outerIndex),
+                             axisGrid.GetEnd(outerIndex),
+                             axisGrid.GetStart(innerIndex),
+                             axisGrid.GetEnd(innerIndex),
                              tolerance))
                 {
-                    RegisterIntersectionGroup(axisAxisGroups, contact, axis.Id, otherAxis.Id, tolerance);
+                    RegisterIntersectionGroup(axisAxisGroups, contact, axisA.Id, axisB.Id, tolerance);
                 }
             }
         }
 
+        AppendLinearContactCandidates(candidates, edgeEdgeGroups, axisEdgeGroups, axisAxisGroups);
+    }
+
+    private static void AppendLinearContactCandidates(
+        List<(SnapPoint Snap, SnapIdentity Identity)> candidates,
+        Dictionary<string, (PointF Position, HashSet<Guid> EdgeIds)> edgeEdgeGroups,
+        Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)> axisEdgeGroups,
+        Dictionary<string, (PointF Position, HashSet<Guid> ObjectIds)> axisAxisGroups)
+    {
         foreach (var group in edgeEdgeGroups.Values)
         {
             candidates.Add((
@@ -580,22 +600,17 @@ public sealed class SnapService
             AddUniquePoint(points, MathUtils.Midpoint(axis.Start, axis.End), tolerance);
         }
 
-        foreach (var edgeA in document.Edges)
+        if (document.Edges.Count > 0)
         {
-            var aStart = TopologyService.GetEdgeStartPoint(document, edgeA);
-            var aEnd = TopologyService.GetEdgeEndPoint(document, edgeA);
-
-            foreach (var edgeB in document.Edges)
+            var edgeGrid = BuildEdgeSpatialGrid(document, tolerance);
+            foreach (var (outerIndex, innerIndex) in edgeGrid.GetOrderedPairIndices())
             {
-                if (edgeA.Id.CompareTo(edgeB.Id) >= 0)
-                {
-                    continue;
-                }
-
-                var bStart = TopologyService.GetEdgeStartPoint(document, edgeB);
-                var bEnd = TopologyService.GetEdgeEndPoint(document, edgeB);
-
-                foreach (var contact in CollectSegmentContactPoints(aStart, aEnd, bStart, bEnd, tolerance))
+                foreach (var contact in CollectSegmentContactPoints(
+                             edgeGrid.GetStart(outerIndex),
+                             edgeGrid.GetEnd(outerIndex),
+                             edgeGrid.GetStart(innerIndex),
+                             edgeGrid.GetEnd(innerIndex),
+                             tolerance))
                 {
                     if (TopologyService.FindVertex(document, contact, tolerance) is not null)
                     {
@@ -603,40 +618,52 @@ public sealed class SnapService
                     }
 
                     AddUniquePoint(points, contact, tolerance);
+                }
+            }
+
+            if (document.Axes.Count > 0)
+            {
+                var edgeIndexById = BuildEdgeIndexById(document);
+                foreach (var axis in document.Axes)
+                {
+                    var candidateEdgeIndices = edgeGrid.GetCandidateIndicesForSegment(axis.Start, axis.End, tolerance);
+                    foreach (var edge in document.Edges)
+                    {
+                        if (!candidateEdgeIndices.Contains(edgeIndexById[edge.Id]))
+                        {
+                            continue;
+                        }
+
+                        var edgeIndex = edgeIndexById[edge.Id];
+                        foreach (var contact in CollectSegmentContactPoints(
+                                     axis.Start,
+                                     axis.End,
+                                     edgeGrid.GetStart(edgeIndex),
+                                     edgeGrid.GetEnd(edgeIndex),
+                                     tolerance))
+                        {
+                            if (TopologyService.FindVertex(document, contact, tolerance) is not null)
+                            {
+                                continue;
+                            }
+
+                            AddUniquePoint(points, contact, tolerance);
+                        }
+                    }
                 }
             }
         }
 
-        foreach (var axis in document.Axes)
+        if (document.Axes.Count > 0)
         {
-            foreach (var edge in document.Edges)
+            var axisGrid = BuildAxisSpatialGrid(document, tolerance);
+            foreach (var (outerIndex, innerIndex) in axisGrid.GetOrderedPairIndices())
             {
-                var edgeStart = TopologyService.GetEdgeStartPoint(document, edge);
-                var edgeEnd = TopologyService.GetEdgeEndPoint(document, edge);
-
-                foreach (var contact in CollectSegmentContactPoints(axis.Start, axis.End, edgeStart, edgeEnd, tolerance))
-                {
-                    if (TopologyService.FindVertex(document, contact, tolerance) is not null)
-                    {
-                        continue;
-                    }
-
-                    AddUniquePoint(points, contact, tolerance);
-                }
-            }
-
-            foreach (var otherAxis in document.Axes)
-            {
-                if (axis.Id.CompareTo(otherAxis.Id) >= 0)
-                {
-                    continue;
-                }
-
                 foreach (var contact in CollectSegmentContactPoints(
-                             axis.Start,
-                             axis.End,
-                             otherAxis.Start,
-                             otherAxis.End,
+                             axisGrid.GetStart(outerIndex),
+                             axisGrid.GetEnd(outerIndex),
+                             axisGrid.GetStart(innerIndex),
+                             axisGrid.GetEnd(innerIndex),
                              tolerance))
                 {
                     AddUniquePoint(points, contact, tolerance);
@@ -645,6 +672,42 @@ public sealed class SnapService
         }
 
         return points;
+    }
+
+    private static SnapSegmentSpatialGrid BuildEdgeSpatialGrid(CadDocument document, double tolerance)
+    {
+        var segments = new List<(Guid Id, PointF Start, PointF End)>(document.Edges.Count);
+        foreach (var edge in document.Edges)
+        {
+            segments.Add((
+                edge.Id,
+                TopologyService.GetEdgeStartPoint(document, edge),
+                TopologyService.GetEdgeEndPoint(document, edge)));
+        }
+
+        return SnapSegmentSpatialGrid.FromSegments(segments, tolerance);
+    }
+
+    private static SnapSegmentSpatialGrid BuildAxisSpatialGrid(CadDocument document, double tolerance)
+    {
+        var segments = new List<(Guid Id, PointF Start, PointF End)>(document.Axes.Count);
+        foreach (var axis in document.Axes)
+        {
+            segments.Add((axis.Id, axis.Start, axis.End));
+        }
+
+        return SnapSegmentSpatialGrid.FromSegments(segments, tolerance);
+    }
+
+    private static Dictionary<Guid, int> BuildEdgeIndexById(CadDocument document)
+    {
+        var edgeIndexById = new Dictionary<Guid, int>(document.Edges.Count);
+        for (var index = 0; index < document.Edges.Count; index++)
+        {
+            edgeIndexById[document.Edges[index].Id] = index;
+        }
+
+        return edgeIndexById;
     }
 
     private static List<PointF> BuildVerticalAlignmentReferencePoints(CadDocument document, double tolerance)

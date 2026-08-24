@@ -117,7 +117,7 @@ public sealed class SectorTool : ToolBase
             UpdatePreviewArea();
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
     }
 
     public override void OnKeyDown(KeyEventArgs e)
@@ -371,6 +371,7 @@ public sealed class SectorTool : ToolBase
         }
 
         PolygonBuilder.SyncFaces(document, topologyTolerance);
+        document.NotifyChanged(DocumentChangeKind.Topology);
 
         ResetAfterCommit();
         Context.SetStatus(Strings.Input_Sector_SelectCenter);

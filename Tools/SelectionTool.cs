@@ -49,7 +49,7 @@ public sealed class SelectionTool : ToolBase
         }
 
         _selectCurrentWorld = world;
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

@@ -190,6 +190,7 @@ public class DimensionOrthogonalTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 recordUndo: () => Session.History.Record(Session.Document)));
 
             PropertiesPanel.BindSession(Session);

@@ -225,6 +225,7 @@ public class RotateToolTests
                 () => RedrawRequested = true,
                 () => { },
                 () => { },
+                () => { },
                 recordUndo: () => Session.History.Record(Session.Document));
 
             ToolService.Initialize(context);

@@ -145,6 +145,7 @@ public class ResourceMigrationTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setRectangleSizeInputEnabled: enabled => StatusBar.SetRectangleSizeInputEnabled(enabled),
                 setRectangleSizePreview: StatusBar.SetRectangleSizePreview,
                 resetRectangleSizeInput: StatusBar.ResetRectangleSizeInput,

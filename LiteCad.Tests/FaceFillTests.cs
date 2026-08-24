@@ -4,6 +4,7 @@ using LiteCad.Core.Selection;
 using LiteCad.Infrastructure;
 using LiteCad.Rendering;
 using LiteCad.Services;
+using System.Windows;
 using System.Windows.Media;
 using Xunit;
 
@@ -106,6 +107,58 @@ public class FaceFillTests
         Assert.Equal(
             FaceFillRenderer.GetHatchSpacingScreenPixels(FaceFillPattern.Diagonal) * 3,
             FaceFillRenderer.GetHatchSpacingScreenPixels(FaceFillPattern.DiagonalWide));
+    }
+
+    [Fact]
+    public void DiagonalHatch_FullViewport_MatchesUnculledLineCount()
+    {
+        var bounds = new Rect(0, 0, 100, 100);
+        const double spacing = 8;
+
+        var fullCount = FaceFillRenderer.CountDiagonalHatchLines(bounds, viewportWorldBounds: null, spacing, cullToViewport: false);
+        var culledCount = FaceFillRenderer.CountDiagonalHatchLines(bounds, bounds, spacing, cullToViewport: true);
+
+        Assert.Equal(fullCount, culledCount);
+        Assert.Equal(63, fullCount);
+    }
+
+    [Fact]
+    public void DiagonalHatch_PartialViewport_ReducesGeneratedLineCount()
+    {
+        var bounds = new Rect(0, 0, 100, 100);
+        var partialViewport = new Rect(40, 40, 20, 20);
+        const double spacing = 8;
+
+        var fullCount = FaceFillRenderer.CountDiagonalHatchLines(bounds, viewportWorldBounds: null, spacing, cullToViewport: false);
+        var partialCount = FaceFillRenderer.CountDiagonalHatchLines(bounds, partialViewport, spacing, cullToViewport: true);
+
+        Assert.True(partialCount < fullCount);
+        Assert.True(partialCount > 0);
+        Assert.Equal(53, partialCount);
+    }
+
+    [Fact]
+    public void DiagonalHatch_OffscreenViewport_GeneratesNoLines()
+    {
+        var bounds = new Rect(0, 0, 100, 100);
+        var offscreenViewport = new Rect(500, 500, 50, 50);
+        const double spacing = 8;
+
+        Assert.Equal(
+            0,
+            FaceFillRenderer.CountDiagonalHatchLines(bounds, offscreenViewport, spacing, cullToViewport: true));
+    }
+
+    [Fact]
+    public void DiagonalHatch_ExportPath_IgnoresViewportCulling()
+    {
+        var bounds = new Rect(0, 0, 100, 100);
+        var partialViewport = new Rect(40, 40, 20, 20);
+        const double spacing = 8;
+
+        var exportCount = FaceFillRenderer.CountDiagonalHatchLines(bounds, partialViewport, spacing, cullToViewport: false);
+
+        Assert.Equal(63, exportCount);
     }
 
     [Fact]

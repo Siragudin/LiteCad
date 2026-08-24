@@ -104,7 +104,7 @@ public sealed class AxisTool : ToolBase
             Context.SetLength(null);
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
     }
 
     public override void OnKeyDown(KeyEventArgs e)

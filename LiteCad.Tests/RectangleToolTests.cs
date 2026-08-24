@@ -364,6 +364,7 @@ public class RectangleToolTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setRectangleSizeInputEnabled: _ => { },
                 setRectangleSizePreview: (_, _) => { },
                 resetRectangleSizeInput: (_, _) => { },

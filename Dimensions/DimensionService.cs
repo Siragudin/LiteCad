@@ -31,6 +31,7 @@ public static class DimensionService
         }
 
         document.Dimensions.Add(dimension);
+        document.NotifyChanged(DocumentChangeKind.Annotations);
         return dimension;
     }
 
@@ -54,6 +55,7 @@ public static class DimensionService
         }
 
         dimension.Offset = offset;
+        document.NotifyChanged(DocumentChangeKind.Annotations);
         return true;
     }
 
@@ -69,6 +71,7 @@ public static class DimensionService
         }
 
         dimension.ExtensionStyle = extensionStyle;
+        document.NotifyChanged(DocumentChangeKind.Annotations);
         return true;
     }
 
@@ -81,11 +84,20 @@ public static class DimensionService
         }
 
         dimension.TextSize = Dimension.NormalizeTextSize(textSize);
+        document.NotifyChanged(DocumentChangeKind.Annotations);
         return true;
     }
 
     public static bool Delete(CadDocument document, Guid dimensionId)
-        => document.Dimensions.RemoveAll(item => item.Id == dimensionId) > 0;
+    {
+        if (document.Dimensions.RemoveAll(item => item.Id == dimensionId) == 0)
+        {
+            return false;
+        }
+
+        document.NotifyChanged(DocumentChangeKind.Annotations);
+        return true;
+    }
 
     public static int DeleteSelected(CadDocument document, Selection selection)
     {
@@ -96,6 +108,11 @@ public static class DimensionService
 
         var removed = document.Dimensions.RemoveAll(item => selection.SelectedDimensionIds.Contains(item.Id));
         selection.SelectedDimensionIds.Clear();
+        if (removed > 0)
+        {
+            document.NotifyChanged(DocumentChangeKind.Annotations);
+        }
+
         return removed;
     }
 
@@ -113,6 +130,11 @@ public static class DimensionService
 
             document.Dimensions.RemoveAt(index);
             removed++;
+        }
+
+        if (removed > 0)
+        {
+            document.NotifyChanged(DocumentChangeKind.Annotations);
         }
 
         return removed;

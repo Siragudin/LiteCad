@@ -519,6 +519,7 @@ public class DimensionTextSizeTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 recordUndo: () => Session.History.Record(Session.Document));
 
             ToolService.Initialize(context);

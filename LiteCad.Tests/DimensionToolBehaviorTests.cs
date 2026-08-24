@@ -224,6 +224,7 @@ public class DimensionToolBehaviorTests
                 () => { },
                 () => { },
                 () => { },
+                () => { },
                 setLineInputModeEnabled: (enabled, _) => LineInputEnabled = enabled,
                 recordUndo: () => Session.History.Record(Session.Document),
                 activateSelectionTool: () => SelectionActivated = true);

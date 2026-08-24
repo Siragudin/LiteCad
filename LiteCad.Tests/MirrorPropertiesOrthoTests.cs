@@ -170,6 +170,7 @@ public class MirrorPropertiesOrthoTests
                 _ => new Point(0, 0),
                 () => { },
                 () => { },
+                () => { },
                 () => { });
 
             Session.ToolService.Initialize(context);

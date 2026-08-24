@@ -178,6 +178,7 @@ public class SelectionToolClickTests
                 _ => new Point(0, 0),
                 () => { },
                 () => { },
+                () => { },
                 () => { }));
         }
 

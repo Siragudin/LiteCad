@@ -41,7 +41,6 @@ public sealed class HandTool : ToolBase
         var deltaY = current.Y - _lastScreen.Y;
         Context.Session.Camera.PanScreen(deltaX, deltaY);
         _lastScreen = current;
-        Context.RequestRedraw();
         e.Handled = true;
     }
 

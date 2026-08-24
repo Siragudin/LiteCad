@@ -122,7 +122,7 @@ public sealed class TextTool : ToolBase
                 Context.Session.Document,
                 world,
                 Context.SnapTolerance));
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

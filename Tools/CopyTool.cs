@@ -117,7 +117,7 @@ public sealed class CopyTool : ToolBase
             _exactDelta = null;
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

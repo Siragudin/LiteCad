@@ -93,6 +93,7 @@ public static class AxisOffsetOperations
 
         selection.Clear();
         selection.SelectedEdgeIds.Add(newEdgeId.Value);
+        document.NotifyChanged(DocumentChangeKind.Topology);
         return newEdgeId;
     }
 

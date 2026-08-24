@@ -65,13 +65,21 @@ public static class ProjectDocumentSerializer
 
     public static void Apply(CadDocument document, ProjectDocumentDto dto)
     {
+        using (document.BeginMutationBatch())
+        {
+            ApplyCore(document, dto);
+            document.NotifyChanged(DocumentChangeKind.FullReplace);
+        }
+    }
+
+    internal static void ApplyCore(CadDocument document, ProjectDocumentDto dto)
+    {
         if (dto.FormatVersion != CurrentFormatVersion)
         {
             throw new NotSupportedException($"Unsupported project format version: {dto.FormatVersion}.");
         }
 
-        document.Vertices.Clear();
-        document.Edges.Clear();
+        document.ClearTopology();
         document.Polygons.Clear();
         document.Dimensions.Clear();
         document.Axes.Clear();
@@ -83,12 +91,12 @@ public static class ProjectDocumentSerializer
 
         foreach (var vertex in dto.Vertices)
         {
-            document.Vertices.Add(new Vertex(vertex.Id, new PointF((float)vertex.X, (float)vertex.Y)));
+            document.AddVertex(new Vertex(vertex.Id, new PointF((float)vertex.X, (float)vertex.Y)));
         }
 
         foreach (var edge in dto.Edges)
         {
-            document.Edges.Add(new Edge(edge.Id, edge.StartVertexId, edge.EndVertexId)
+            document.AddEdge(new Edge(edge.Id, edge.StartVertexId, edge.EndVertexId)
             {
                 IsAxis = edge.IsAxis,
                 Color = ParseColor(edge.Color),

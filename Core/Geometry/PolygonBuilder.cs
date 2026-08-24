@@ -30,7 +30,7 @@ public static class PolygonBuilder
 
             document.SuppressedFaceGeometryKeys.Clear();
 
-            document.Vertices.Clear();
+            document.ClearTopology();
 
             return;
 
@@ -454,7 +454,7 @@ public static class PolygonBuilder
 
     {
 
-        var edge = document.Edges.FirstOrDefault(item => item.Id == edgeId);
+        var edge = document.Index.TryGetEdge(edgeId, out var indexedEdge) ? indexedEdge : null;
 
         if (edge is null)
 

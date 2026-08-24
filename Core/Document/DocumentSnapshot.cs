@@ -90,65 +90,68 @@ public sealed class DocumentSnapshot
     public void Restore(CadDocument document, double tolerance)
     {
         _ = tolerance;
-        document.Vertices.Clear();
-        document.Edges.Clear();
-        document.Polygons.Clear();
-        document.Dimensions.Clear();
-        document.Axes.Clear();
-        document.Leaders.Clear();
-        document.Texts.Clear();
-        document.ElevationBaseY = null;
-        document.SuppressedFaceGeometryKeys.Clear();
-        document.FaceFillStyles.Clear();
-
-        foreach (var vertex in Vertices)
+        using (document.BeginMutationBatch())
         {
-            document.Vertices.Add(vertex.Clone());
+            document.ClearTopology();
+            document.Polygons.Clear();
+            document.Dimensions.Clear();
+            document.Axes.Clear();
+            document.Leaders.Clear();
+            document.Texts.Clear();
+            document.ElevationBaseY = null;
+            document.SuppressedFaceGeometryKeys.Clear();
+            document.FaceFillStyles.Clear();
+
+            foreach (var vertex in Vertices)
+            {
+                document.AddVertex(vertex.Clone());
+            }
+
+            foreach (var edge in Edges)
+            {
+                document.AddEdge(CloneEdge(edge));
+            }
+
+            foreach (var polygon in UserPolygons)
+            {
+                document.Polygons.Add(ClonePolygon(polygon));
+            }
+
+            foreach (var dimension in Dimensions)
+            {
+                document.Dimensions.Add(dimension.Clone());
+            }
+
+            foreach (var axis in Axes)
+            {
+                document.Axes.Add(axis.Clone());
+            }
+
+            foreach (var leader in Leaders)
+            {
+                document.Leaders.Add(leader.Clone());
+            }
+
+            foreach (var note in Texts)
+            {
+                document.Texts.Add(note.Clone());
+            }
+
+            document.ElevationBaseY = ElevationBaseY;
+
+            foreach (var key in SuppressedFaceGeometryKeys)
+            {
+                document.SuppressedFaceGeometryKeys.Add(key);
+            }
+
+            foreach (var (key, style) in FaceFillStyles)
+            {
+                document.FaceFillStyles[key] = style.Clone();
+            }
+
+            PolygonBuilder.SyncFaces(document, TopologyTolerance.ForMutation);
+            document.NotifyChanged(DocumentChangeKind.FullReplace);
         }
-
-        foreach (var edge in Edges)
-        {
-            document.Edges.Add(CloneEdge(edge));
-        }
-
-        foreach (var polygon in UserPolygons)
-        {
-            document.Polygons.Add(ClonePolygon(polygon));
-        }
-
-        foreach (var dimension in Dimensions)
-        {
-            document.Dimensions.Add(dimension.Clone());
-        }
-
-        foreach (var axis in Axes)
-        {
-            document.Axes.Add(axis.Clone());
-        }
-
-        foreach (var leader in Leaders)
-        {
-            document.Leaders.Add(leader.Clone());
-        }
-
-        foreach (var note in Texts)
-        {
-            document.Texts.Add(note.Clone());
-        }
-
-        document.ElevationBaseY = ElevationBaseY;
-
-        foreach (var key in SuppressedFaceGeometryKeys)
-        {
-            document.SuppressedFaceGeometryKeys.Add(key);
-        }
-
-        foreach (var (key, style) in FaceFillStyles)
-        {
-            document.FaceFillStyles[key] = style.Clone();
-        }
-
-        PolygonBuilder.SyncFaces(document, TopologyTolerance.ForMutation);
     }
 
     private static Edge CloneEdge(Edge edge)

@@ -17,6 +17,21 @@ public sealed class Renderer
     private readonly LeaderRenderer _leaderRenderer = new();
     private readonly TextRenderer _textRenderer = new();
     private readonly SelectionRenderer _selectionRenderer = new();
+    private readonly StaticSceneCache _worldGeometryCache = new();
+    private readonly ViewportCompositeCache _viewportCompositeCache = new();
+
+    public StaticSceneCache WorldGeometryCache => _worldGeometryCache;
+
+    public ViewportCompositeCache ViewportCompositeCache => _viewportCompositeCache;
+
+    public void InvalidateWorldGeometryCache()
+    {
+        _worldGeometryCache.Invalidate();
+        _viewportCompositeCache.Invalidate();
+    }
+
+    public void InvalidateViewportCompositeCache()
+        => _viewportCompositeCache.Invalidate();
 
     public void Render(
         DrawingContext context,
@@ -25,17 +40,74 @@ public sealed class Renderer
         Camera camera,
         Size viewport,
         ITool? activeTool,
-        LinearDisplayUnit linearUnit)
+        LinearDisplayUnit linearUnit,
+        ViewportRenderPass pass = ViewportRenderPass.Full)
     {
         context.DrawRectangle(CanvasTheme.CreateFrozenBrush(CanvasTheme.CanvasBackground), null, new Rect(0, 0, viewport.Width, viewport.Height));
+
+        var excludeDimensions = activeTool is DimensionTool { HasOffsetPhase: true };
+        var cacheKey = ViewportCompositeCache.CreateKey(
+            document,
+            selection,
+            camera,
+            viewport,
+            linearUnit,
+            excludeDimensions);
 
         context.PushTransform(new MatrixTransform(camera.GetWorldToScreenMatrix(viewport)));
         try
         {
-            _gridRenderer.Render(context, camera, viewport);
-            _polygonRenderer.Render(context, document, camera, forScreenDisplay: true);
-            _edgeRenderer.Render(context, document, camera, forScreenDisplay: true);
-            _axisRenderer.Render(context, document, camera);
+            _viewportCompositeCache.DrawCompositeOrBuild(
+                pass,
+                cacheKey,
+                compositeContext => RenderCompositeLayers(
+                    compositeContext,
+                    document,
+                    selection,
+                    camera,
+                    viewport,
+                    activeTool,
+                    linearUnit,
+                    excludeDimensions),
+                context);
+
+            if (excludeDimensions)
+            {
+                _dimensionRenderer.Render(
+                    context,
+                    document,
+                    selection,
+                    camera,
+                    viewport,
+                    linearUnit,
+                    activeTool,
+                    forScreenDisplay: true);
+            }
+
+            activeTool?.RenderOverlay(context, camera, viewport);
+        }
+        finally
+        {
+            context.Pop();
+        }
+    }
+
+    private void RenderCompositeLayers(
+        DrawingContext context,
+        CadDocument document,
+        Selection selection,
+        Camera camera,
+        Size viewport,
+        ITool? activeTool,
+        LinearDisplayUnit linearUnit,
+        bool excludeDimensions)
+    {
+        _gridRenderer.Render(context, camera, viewport);
+        _worldGeometryCache.DrawWorldGeometry(context, document, camera, forScreenDisplay: true);
+        _polygonRenderer.RenderFaceHatches(context, document, camera, forScreenDisplay: true, viewport);
+
+        if (!excludeDimensions)
+        {
             _dimensionRenderer.Render(
                 context,
                 document,
@@ -45,27 +117,23 @@ public sealed class Renderer
                 linearUnit,
                 activeTool,
                 forScreenDisplay: true);
-            _leaderRenderer.Render(
-                context,
-                document,
-                selection,
-                camera,
-                viewport,
-                forScreenDisplay: true);
-            _textRenderer.Render(
-                context,
-                document,
-                selection,
-                camera,
-                viewport,
-                forScreenDisplay: true);
-            _selectionRenderer.Render(context, document, selection, camera);
-            activeTool?.RenderOverlay(context, camera, viewport);
         }
-        finally
-        {
-            context.Pop();
-        }
+
+        _leaderRenderer.Render(
+            context,
+            document,
+            selection,
+            camera,
+            viewport,
+            forScreenDisplay: true);
+        _textRenderer.Render(
+            context,
+            document,
+            selection,
+            camera,
+            viewport,
+            forScreenDisplay: true);
+        _selectionRenderer.Render(context, document, selection, camera);
     }
 
     public void RenderForExport(

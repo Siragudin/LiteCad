@@ -159,6 +159,7 @@ public static class OffsetOperations
             selection.SelectedEdgeIds.Add(reference.EdgeId);
         }
 
+        document.NotifyChanged(DocumentChangeKind.Topology);
         return newFace.Id;
     }
 

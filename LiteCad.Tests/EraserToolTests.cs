@@ -353,6 +353,7 @@ public class EraserToolTests
                 _ => new Point(),
                 () => RedrawRequested = true,
                 () => { },
+                () => { },
                 () => { });
 
             ToolService.Initialize(context);

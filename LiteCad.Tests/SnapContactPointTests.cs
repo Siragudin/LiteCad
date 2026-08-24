@@ -294,7 +294,7 @@ public class SnapContactPointTests
         var endA = new Vertex(new PointF(100, 0));
         var startB = new Vertex(new PointF(100, 0));
         var endB = new Vertex(new PointF(200, 0));
-        document.Vertices.AddRange([startA, endA, startB, endB]);
+        document.AddVertices([startA, endA, startB, endB]);
 
         TopologyService.CreateEdge(document, startA.Id, endA.Id, template);
         TopologyService.CreateEdge(document, startB.Id, endB.Id, template);

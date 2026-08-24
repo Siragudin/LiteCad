@@ -94,7 +94,7 @@ public sealed class FillTool : ToolBase
             ? face
             : null;
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

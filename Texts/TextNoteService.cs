@@ -16,6 +16,7 @@ public static class TextNoteService
     {
         var note = new TextNote(Guid.NewGuid(), kind, origin, arrowTip, text, textSize);
         document.Texts.Add(note);
+        document.NotifyChanged(DocumentChangeKind.Annotations);
         return note;
     }
 
@@ -28,6 +29,11 @@ public static class TextNoteService
 
         var removed = document.Texts.RemoveAll(item => selection.SelectedTextIds.Contains(item.Id));
         selection.SelectedTextIds.Clear();
+        if (removed > 0)
+        {
+            document.NotifyChanged(DocumentChangeKind.Annotations);
+        }
+
         return removed;
     }
 }

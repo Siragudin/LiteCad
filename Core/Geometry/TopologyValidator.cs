@@ -9,17 +9,15 @@ public static class TopologyValidator
     {
         tolerance = TopologyTolerance.ForMutation;
         var errors = new List<string>();
-        var edgeMap = document.Edges.ToDictionary(edge => edge.Id);
-        var vertexMap = document.Vertices.ToDictionary(vertex => vertex.Id);
 
         foreach (var edge in document.Edges)
         {
-            if (!vertexMap.ContainsKey(edge.StartVertexId))
+            if (!document.Index.TryGetVertex(edge.StartVertexId, out _))
             {
                 errors.Add($"Edge {edge.Id} references missing StartVertexId {edge.StartVertexId}.");
             }
 
-            if (!vertexMap.ContainsKey(edge.EndVertexId))
+            if (!document.Index.TryGetVertex(edge.EndVertexId, out _))
             {
                 errors.Add($"Edge {edge.Id} references missing EndVertexId {edge.EndVertexId}.");
             }
@@ -51,20 +49,20 @@ public static class TopologyValidator
                 }
                 else
                 {
-                    ValidateLoop(document, polygon.OuterLoop, edgeMap, vertexMap, errors, tolerance, $"Face {polygon.Id} OuterLoop");
+                    ValidateLoop(document, polygon.OuterLoop, errors, tolerance, $"Face {polygon.Id} OuterLoop");
                 }
 
                 for (var i = 0; i < polygon.InnerLoops.Count; i++)
                 {
-                    ValidateLoop(document, polygon.InnerLoops[i], edgeMap, vertexMap, errors, tolerance, $"Face {polygon.Id} InnerLoop[{i}]");
+                    ValidateLoop(document, polygon.InnerLoops[i], errors, tolerance, $"Face {polygon.Id} InnerLoop[{i}]");
                 }
             }
             else if (polygon.OuterLoop.Edges.Count > 0)
             {
-                ValidateLoop(document, polygon.OuterLoop, edgeMap, vertexMap, errors, tolerance, "OuterLoop");
+                ValidateLoop(document, polygon.OuterLoop, errors, tolerance, "OuterLoop");
                 for (var i = 0; i < polygon.InnerLoops.Count; i++)
                 {
-                    ValidateLoop(document, polygon.InnerLoops[i], edgeMap, vertexMap, errors, tolerance, $"InnerLoop[{i}]");
+                    ValidateLoop(document, polygon.InnerLoops[i], errors, tolerance, $"InnerLoop[{i}]");
                 }
             }
         }
@@ -114,8 +112,6 @@ public static class TopologyValidator
     private static void ValidateLoop(
         CadDocument document,
         Loop loop,
-        Dictionary<Guid, Edge> edgeMap,
-        Dictionary<Guid, Vertex> vertexMap,
         List<string> errors,
         double tolerance,
         string label)
@@ -132,7 +128,7 @@ public static class TopologyValidator
         for (var i = 0; i < loop.Edges.Count; i++)
         {
             var reference = loop.Edges[i];
-            if (!edgeMap.TryGetValue(reference.EdgeId, out var edge))
+            if (!document.Index.TryGetEdge(reference.EdgeId, out var edge))
             {
                 errors.Add($"{label} references missing edge {reference.EdgeId}.");
                 continue;
@@ -141,7 +137,8 @@ public static class TopologyValidator
             var startVertexId = reference.Forward ? edge.StartVertexId : edge.EndVertexId;
             var endVertexId = reference.Forward ? edge.EndVertexId : edge.StartVertexId;
 
-            if (!vertexMap.ContainsKey(startVertexId) || !vertexMap.ContainsKey(endVertexId))
+            if (!document.Index.TryGetVertex(startVertexId, out _) ||
+                !document.Index.TryGetVertex(endVertexId, out _))
             {
                 errors.Add($"{label} edge {edge.Id} references missing vertex.");
                 continue;

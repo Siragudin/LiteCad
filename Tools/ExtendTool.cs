@@ -78,7 +78,7 @@ public sealed class ExtendTool : ToolBase
         }
 
         UpdateHover(world);
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

@@ -232,6 +232,7 @@ public class OffsetToolTests
                 () => RedrawRequested = true,
                 () => { },
                 () => { },
+                () => { },
                 recordUndo: () => Session.History.Record(Session.Document));
 
             ToolService.Initialize(context);

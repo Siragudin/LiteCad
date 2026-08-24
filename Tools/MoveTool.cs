@@ -184,7 +184,7 @@ public sealed class MoveTool : ToolBase
             UpdateExactInputPreviewDisplay();
         }
 
-        Context.RequestRedraw();
+        RequestOverlayRedraw();
         e.Handled = true;
     }
 

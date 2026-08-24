@@ -40,7 +40,7 @@ public static class RotateOperations
             .Select(polygon => polygon.Id)
             .ToHashSet();
 
-        document.Edges.RemoveAll(edge => edgeIdsToRemove.Contains(edge.Id));
+        document.RemoveEdgesWhere(edge => edgeIdsToRemove.Contains(edge.Id));
         document.Polygons.RemoveAll(polygon => userPolygonIds.Contains(polygon.Id));
 
         if (edgeIdsToRemove.Count > 0)
@@ -105,6 +105,8 @@ public static class RotateOperations
             selection.SelectedEdgeIds.Add(newEdgeId);
         }
 
+        document.NotifyChanged(
+            DocumentChangeKind.Topology | DocumentChangeKind.FaceFill | DocumentChangeKind.Axes);
         return oldToNewEdgeIds.Values.ToHashSet();
     }
 
