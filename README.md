@@ -14,7 +14,7 @@ LiteCAD is a lightweight 2D CAD application for technical drawings, plans, and e
 
 | | |
 | --- | --- |
-| Current version | 0.4.2 |
+| Current version | 0.4.5 |
 | Release | Beta |
 | Platform | Windows |
 | UI language | Russian / English |
